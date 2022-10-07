@@ -3,7 +3,6 @@ package ecom.bookstore.wbsbackend.entities;
 import ecom.bookstore.wbsbackend.entities.keys.AddressKey;
 import ecom.bookstore.wbsbackend.models.enums.EAddressType;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,7 +19,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Entity
 @Table(name="tbl_address")
-@Document(value = "tbl_address")
 public class Address {
   @EmbeddedId
   private AddressKey id;

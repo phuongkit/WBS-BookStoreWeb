@@ -1,10 +1,7 @@
 package ecom.bookstore.wbsbackend;
 
-import ecom.bookstore.wbsbackend.utils.Init.JpaInit;
-import ecom.bookstore.wbsbackend.utils.Init.MongoInit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,14 +16,6 @@ public class WbsBackendApplication implements CommandLineRunner {
   private final Logger LOGGER = LoggerFactory.getLogger(WbsBackendApplication.class);
   private final Random generator = new Random();
 
-//  @Autowired
-//  private roleRepo roleRepo;
-  @Autowired
-  private JpaInit jpaInit;
-  @Autowired
-  private MongoInit mongoInit;
-//  @Autowired private UserRepo userRepo;
-
   @Value("${spring.jpa.hibernate.ddl-auto}")
   private String hibernate_ddl;
 
@@ -39,12 +28,10 @@ public class WbsBackendApplication implements CommandLineRunner {
     if (Objects.equals(hibernate_ddl, "create") || Objects.equals(hibernate_ddl, "create-drop")) {
       initData();
     }
-    initData();
+//    initData();
     //    this.LOGGER .info(saleService.getMostOptimalSaleByProduct(10l).getName());
   }
 
   public void initData() {
-    jpaInit.init();
-    mongoInit.init();;
   }
 }

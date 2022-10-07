@@ -20,10 +20,10 @@ import java.util.Objects;
 @Embeddable
 public class AddressKey implements Serializable {
   @Column(name = "user_id")
-  Long userId;
+  Integer userId;
 
   @Column(name = "location_id")
-  Long locationId;
+  Integer locationId;
 
   @Override
   public boolean equals(Object o) {

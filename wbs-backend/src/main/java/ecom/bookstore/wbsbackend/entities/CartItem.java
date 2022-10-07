@@ -33,7 +33,7 @@ public class CartItem {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "product_id")
-  private Product product;
+  private Book book;
 
   @Column(name = "quantity", nullable = false)
   @NotNull(message = "An quantity is required!")

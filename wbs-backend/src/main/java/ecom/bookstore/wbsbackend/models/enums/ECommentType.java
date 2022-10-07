@@ -7,5 +7,5 @@ package ecom.bookstore.wbsbackend.models.enums;
  */
 public enum ECommentType {
   COMMENT,
-  FEEDBACK
+  REVIEW
 }

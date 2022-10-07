@@ -2,7 +2,6 @@ package ecom.bookstore.wbsbackend.entities;
 
 import ecom.bookstore.wbsbackend.models.enums.ERole;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,12 +18,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_role")
-@Document(value = "tbl_role")
 public class Role {
   @Id
   @GeneratedValue(strategy= GenerationType.IDENTITY)
-  @Column(nullable = false)
-  private String id;
+  private Integer id;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "name", length = 50, nullable = false, unique = true)

@@ -1,13 +1,12 @@
 package ecom.bookstore.wbsbackend.entities;
 
-import ecom.bookstore.wbsbackend.models.enums.ESex;
+import ecom.bookstore.wbsbackend.models.enums.EGender;
 import ecom.bookstore.wbsbackend.utils.Utils;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +29,6 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_user")
-@Document(value = "tbl_user")
 public class User implements UserDetails {
   private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
   /** */
@@ -38,13 +36,13 @@ public class User implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Integer id;
 
   @Column(name = "username", length = 20, nullable = false, unique = true)
   @NotNull(message = "An username is required!")
   private String username;
 
-//  private boolean isChangedUsername;
+  //  private boolean isChangedUsername;
 
   @Column(name = "password", length = 64, nullable = false)
   @NotNull(message = "An password is required!")
@@ -70,7 +68,7 @@ public class User implements UserDetails {
 
   @Column(name = "phone", length = 13, unique = true)
   @Size(message = "Invalid phone size.", max = 13, min = 9)
-//  @NotNull(message = "An phone is required!")
+  //  @NotNull(message = "An phone is required!")
   @Pattern(regexp = (Utils.REGEX_PHONE), message = "Invalid phone")
   private String phone;
 
@@ -86,8 +84,8 @@ public class User implements UserDetails {
   @Temporal(TemporalType.DATE)
   private Date birthDate;
 
-  @Column(name = "sex")
-  private ESex sex;
+  @Column(name = "gender")
+  private EGender gender;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private Set<Address> addresses = new HashSet<>();
@@ -112,9 +110,6 @@ public class User implements UserDetails {
   @JoinColumn(name = "role_id")
   private Role role;
 
-  @OneToMany(mappedBy = "relyForUser", cascade = CascadeType.ALL)
-  private Set<Comment> commentReliedList = new HashSet<>();
-
   @Column(name = "created_at")
   @CreationTimestamp
   private Date createdAt;
@@ -127,15 +122,15 @@ public class User implements UserDetails {
   @Temporal(TemporalType.TIMESTAMP)
   private Date lastLogin;
 
-//  @Override
-//  public Collection<? extends GrantedAuthority> getAuthorities() {
-//    List<SimpleGrantedAuthority> authories = new ArrayList<>();
-//    for (Role role : roles) {
-//      authories.add(new SimpleGrantedAuthority(role.getName().toString()));
-//    }
-//
-//    return authories;
-//  }
+  //  @Override
+  //  public Collection<? extends GrantedAuthority> getAuthorities() {
+  //    List<SimpleGrantedAuthority> authories = new ArrayList<>();
+  //    for (Role role : roles) {
+  //      authories.add(new SimpleGrantedAuthority(role.getName().toString()));
+  //    }
+  //
+  //    return authories;
+  //  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -163,11 +158,4 @@ public class User implements UserDetails {
   public boolean isEnabled() {
     return enabled;
   }
-
-  @PreRemove
-  private void preRemove() {
-    commentReliedList.forEach(child -> child.setRelyForUser(null));
-  }
-
-//  public User()
 }

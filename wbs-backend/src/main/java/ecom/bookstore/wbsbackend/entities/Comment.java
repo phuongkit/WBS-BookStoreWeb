@@ -1,6 +1,5 @@
 package ecom.bookstore.wbsbackend.entities;
 
-import ecom.bookstore.wbsbackend.models.enums.ECommentType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,8 +7,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author minh phuong
@@ -34,46 +31,20 @@ public class Comment {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id", nullable = false)
-  private Product product;
+  private Book book;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "author_id", nullable = false)
   private User author;
-
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(
-      name = "tbl_comment_images",
-      joinColumns = @JoinColumn(name = "comment_id"),
-      inverseJoinColumns = @JoinColumn(name = "image_id"))
-  private Set<Image> imageGallery = new HashSet<>();
-
-  public void addImage(Image image) {
-    imageGallery.add(image);
-  }
-
-  public void removeImage(Image image) {
-    imageGallery.remove(image);
-  }
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "rely_for_user_id")
   private User relyForUser;
 
   @ManyToOne
-  @JoinColumn(name = "main_comment_id")
-  private Comment mainComment;
+  @JoinColumn(name = "main_Review_id")
+  private Review mainReview;
 
-  @OneToMany(mappedBy = "mainComment", cascade = CascadeType.ALL)
-  private Set<Comment> childComments = new HashSet<>();
-
-  @ManyToOne
-  @JoinColumn(name = "main_feedback_id")
-  private Feedback mainFeedback;
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "comment_type", length = 50, nullable = false)
-  @NonNull
-  private ECommentType commentType;
 
   @Column(name = "created_at")
   @CreationTimestamp
@@ -84,45 +55,29 @@ public class Comment {
   private Date updatedAt;
 
 //  public Comment(Product product, User author, String content, User relyForUser, Comment mainComment,
-//                 Feedback mainFeedback) {
+//                 Review mainReview) {
 //    this.content = content;
 //    this.product = product;
 //    this.author = author;
 //    this.mainComment = mainComment;
-//    this.mainFeedback = mainFeedback;
-//    if (mainFeedback == null) {
+//    this.mainReview = mainReview;
+//    if (mainReview == null) {
 //      this.commentType = ECommentType.COMMENT;
 //      if (mainComment != null) {
 //        this.relyForUser = mainComment.getAuthor();
 //      }
 //    } else {
 //      this.relyForUser = mainComment.getAuthor();
-//      this.commentType = ECommentType.FEEDBACK;
+//      this.commentType = ECommentType.Review;
 //    }
 //  }
 //
-  public void setMainComment(Product product, User author, String content) {
-    this.content = content;
-    this.product = product;
-    this.author = author;
-    this.commentType = ECommentType.COMMENT;
-  }
 
-  public void setChildComment(Comment mainComment, User author, String content) {
+  public void setChildReview(Review mainReview, User author, String content) {
     this.content = content;
-    this.product = mainComment.getProduct();
+    this.book = mainReview.getBook();
     this.author = author;
-    this.mainComment = mainComment;
-    this.relyForUser = mainComment.getAuthor();
-    this.commentType = ECommentType.COMMENT;
-  }
-
-  public void setChildFeedback(Feedback mainFeedback, User author, String content) {
-    this.content = content;
-    this.product = mainFeedback.getProduct();
-    this.author = author;
-    this.mainFeedback = mainFeedback;
-    this.relyForUser = mainFeedback.getAuthor();
-    this.commentType = ECommentType.FEEDBACK;
+    this.mainReview = mainReview;
+    this.relyForUser = mainReview.getAuthor();
   }
 }

@@ -46,12 +46,6 @@ public class Category {
   @OneToMany(mappedBy = "parentCategory", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
   private Set<Category> categories = new HashSet<>();
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tbl_category_brands",
-      joinColumns = @JoinColumn(name = "category_id"),
-      inverseJoinColumns = @JoinColumn(name = "brand_id"))
-  private Set<Brand> brands = new HashSet<>();
-
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "thumbnail_id")
   private Image thumbnail;
@@ -65,11 +59,10 @@ public class Category {
     categories.forEach( child -> child.setParentCategory(null));
   }
 
-  public Category(String name, Image thumbnail, Image icon, Set<Brand> brands) {
+  public Category(String name, Image thumbnail, Image icon) {
     this.name = name;
     this.slug = Utils.toSlug(name);
     this.thumbnail = thumbnail;
     this.icon = icon;
-    this.brands = brands;
   }
 }

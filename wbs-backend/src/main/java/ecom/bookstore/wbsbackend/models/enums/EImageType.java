@@ -6,15 +6,13 @@ package ecom.bookstore.wbsbackend.models.enums;
  * @project gt-backend
  */
 public enum EImageType {
-  IMAGE_PRODUCT,
-  IMAGE_PRODUCT_GALLERY,
-  IMAGE_BRAND,
+  IMAGE_BOOK,
+  IMAGE_BOOK_GALLERY,
   IMAGE_CATEGORY,
   IMAGE_USER,
   IMAGE_SHOP,
   IMAGE_DISCOUNT,
   IMAGE_SALE,
-  IMAGE_COMMENT,
-  IMAGE_FEEDBACK,
+  IMAGE_REVIEW,
   IMAGE_OTHER;
 }
