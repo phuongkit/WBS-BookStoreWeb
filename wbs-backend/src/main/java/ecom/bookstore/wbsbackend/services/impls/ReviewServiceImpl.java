@@ -2,7 +2,6 @@ package ecom.bookstore.wbsbackend.services.impls;
 
 import ecom.bookstore.wbsbackend.dto.request.ReviewCreationDTO;
 import ecom.bookstore.wbsbackend.dto.request.ReviewUpdationDTO;
-import ecom.bookstore.wbsbackend.dto.response.RelyReviewResponseDTO;
 import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import ecom.bookstore.wbsbackend.dto.response.ReviewResponseDTO;
 import ecom.bookstore.wbsbackend.entities.*;
@@ -76,7 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
     this.userRepo = userRepo;
   }
 
-  @Override public Page<ReviewResponseDTO> getAllMainReviewsByBook(Long bookId, boolean isHasChild,
+  @Override public Page<ReviewResponseDTO> getAllReviewsByBook(Long bookId, boolean isHasChild,
                                                                    Pageable pageable) {
     Book BookFound = this.bookRepo.findById(bookId).orElseThrow(() -> new ResourceNotFoundException(
         String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Book.class.getSimpleName(), "ID", bookId)));
@@ -99,20 +98,6 @@ public class ReviewServiceImpl implements ReviewService {
               userId));
     }
     return Reviews.map(Review -> this.reviewMapper.ReviewToReviewResponseDTO(Review, isHasChild));
-  }
-
-  @Override public Page<RelyReviewResponseDTO> getAllRelyReviewsByMainReview(Long mainReviewId,
-                                                                             Pageable pageable) {
-    Review mainReviewFound = this.reviewRepo.findById(mainReviewId).orElseThrow(
-        () -> new ResourceAlreadyExistsException(
-            String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Review.class.getSimpleName(), "ID", mainReviewId)));
-    Page<Comment> comments = this.commentRepo.getAllChildReviewByMainReview(mainReviewFound, pageable);
-    if (comments.getContent().size() < 1) {
-      throw new ResourceNotFoundException(
-          String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Comment.class.getSimpleName(), Review.class.getSimpleName(),
-              mainReviewId));
-    }
-    return comments.map(comment -> this.reviewMapper.commentToRelyReviewResponseDTO(comment));
   }
 
   @Override public ReviewResponseDTO getReviewById(Long id, boolean isHasChild) {
@@ -233,18 +218,18 @@ public class ReviewServiceImpl implements ReviewService {
       comment.setMainReview(mainReviewFound);
       return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseObject(HttpStatus.CREATED,
           String.format(Utils.CREATE_OBJECT_SUCCESSFULLY, Review.class.getSimpleName()),
-          this.reviewMapper.commentToRelyReviewResponseDTO(this.commentRepo.save(comment))));
+          this.reviewMapper.commentToReplyReviewResponseDTO(this.commentRepo.save(comment))));
     }
   }
 
-  @Override public ResponseEntity<ResponseObject> updateMainReview(Long id, ReviewUpdationDTO updationDTO,
+  @Override public ResponseEntity<ResponseObject> updateReview(Long id, ReviewUpdationDTO updateDTO,
                                                                      MultipartFile[] imageGalleryFile) {
     this.LOGGER.info(String.format(Utils.LOG_UPDATE_OBJECT, "Main" + Review.class.getSimpleName(), "ID", id));
     Review ReviewFound = this.reviewRepo.findById(id).orElseThrow(() -> new ResourceAlreadyExistsException(
         String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Review.class.getSimpleName(), "ID", id)));
 
-    ReviewFound.setContent(updationDTO.getContent());
-    ReviewFound.setStar(updationDTO.getStar());
+    ReviewFound.setContent(updateDTO.getContent());
+    ReviewFound.setStar(updateDTO.getStar());
 
     // update image gallery
     if (imageGalleryFile != null && imageGalleryFile.length > 0) {
@@ -269,32 +254,6 @@ public class ReviewServiceImpl implements ReviewService {
         String.format(Utils.UPDATE_MAIN_OBJECT_SUCCESSFULLY, Review.class.getSimpleName()),
         this.reviewMapper.ReviewToReviewResponseDTO(this.reviewRepo.save(ReviewFound))));
   }
-
-//  @Override public ResponseEntity<ResponseObject> updateRelyReview(Long mainReviewId, Long childCommentId,
-//                                                                     CommentUpdationDTO updationDTO) {
-//    this.LOGGER.info(
-//        String.format(Utils.LOG_UPDATE_OBJECT, "Rely" + Comment.class.getSimpleName(), "ID", childCommentId));
-//
-//    Review mainReviewFound = this.reviewRepo.findById(mainReviewId).orElseThrow(
-//        () -> new ResourceAlreadyExistsException(
-//            String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Review.class.getSimpleName(), "ID", mainReviewId)));
-//
-//    Comment childCommentFound = this.commentRepo.findById(childCommentId).orElseThrow(
-//        () -> new ResourceAlreadyExistsException(
-//            String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Comment.class.getSimpleName(), "ID", childCommentId)));
-//
-//    if (childCommentFound.getMainReview() != mainReviewFound) {
-//      throw new InvalidFieldException(
-//          String.format(Utils.OBJECT_NOT_CHILD, Comment.class.getSimpleName(), "ID", childCommentId,
-//              Review.class.getSimpleName(), "ID", mainReviewId));
-//    }
-//
-//    childCommentFound.setContent(updationDTO.getContent());
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(HttpStatus.OK,
-//        String.format(Utils.UPDATE_RELY_OBJECT_SUCCESSFULLY, Review.class.getSimpleName()),
-//        this.reviewMapper.commentToRelyReviewResponseDTO(this.commentRepo.save(childCommentFound))));
-//  }
 
   @Override public ResponseEntity<ResponseObject> deleteReviewById(Long id) {
     this.LOGGER.info(String.format(Utils.LOG_DELETE_OBJECT, Review.class.getSimpleName(), "ID", id));

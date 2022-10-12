@@ -74,6 +74,8 @@ public class Book {
 
   private int minAge;
 
+  private int maxAge;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "supplier_id", nullable = false)
   private Supplier supplier;

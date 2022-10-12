@@ -5,7 +5,7 @@ package ecom.bookstore.wbsbackend.models.enums;
  * @created 01/10/2022 - 11:28 AM
  */
 public enum EGender {
-  FAMALE,
+  FEMALE,
   MALE,
   UNKNOWN
 }

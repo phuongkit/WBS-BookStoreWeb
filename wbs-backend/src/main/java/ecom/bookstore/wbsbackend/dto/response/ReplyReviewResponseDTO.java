@@ -7,18 +7,18 @@ import lombok.Setter;
 
 /**
  * @author minh phuong
- * @created 13/09/2022 - 6:07 PM
+ * @created 12/10/2022 - 3:52 PM
  */
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RelyReviewResponseDTO {
-  private Long replyForFeedbackId;
+public class ReplyReviewResponseDTO {
+  private Long replyForReviewId;
   private Long id;
   private UserSimpleResponseDTO creator;
   private String content;
-  private UserSimpleResponseDTO relyForUser;
+  private UserSimpleResponseDTO replyForUser;
   private String[] imageGallery;
   private String timeDistance;
   private boolean isUpdated;

@@ -46,6 +46,9 @@ public class Review {
   @NotNull(message = "An star is required!")
   private int star;
 
+  @OneToMany(mappedBy = "mainReview", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private Set<Comment> replyReviews = new HashSet<>();
+
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
       name = "tbl_review_images",

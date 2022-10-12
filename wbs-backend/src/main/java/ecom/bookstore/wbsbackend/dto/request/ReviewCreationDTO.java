@@ -18,5 +18,5 @@ public class ReviewCreationDTO {
   private Long authorId;
   private String content;
   private int star;
-  private Long replyForFeedbackId;
+  private Long replyForReviewId;
 }

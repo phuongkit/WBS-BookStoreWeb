@@ -15,11 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReviewResponseDTO {
   private Long id;
-  private Long productId;
+  private Long bookId;
   private String content;
   private int star;
   private UserSimpleResponseDTO creator;
-  private ChildReviewResponseDTO[] childFeedbacks;
+  private ReplyReviewResponseDTO[] replyReviews;
   private String[] imageGallery;
   private String timeDistance;
   private boolean isUpdated;

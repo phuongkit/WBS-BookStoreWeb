@@ -44,7 +44,6 @@ public class Comment {
   @JoinColumn(name = "main_Review_id")
   private Review mainReview;
 
-
   @Column(name = "created_at")
   @CreationTimestamp
   private Date createdAt;
@@ -52,31 +51,4 @@ public class Comment {
   @Column(name = "updated_at")
   @UpdateTimestamp
   private Date updatedAt;
-
-//  public Comment(Product product, User author, String content, User relyForUser, Comment mainComment,
-//                 Review mainReview) {
-//    this.content = content;
-//    this.product = product;
-//    this.author = author;
-//    this.mainComment = mainComment;
-//    this.mainReview = mainReview;
-//    if (mainReview == null) {
-//      this.commentType = ECommentType.COMMENT;
-//      if (mainComment != null) {
-//        this.relyForUser = mainComment.getAuthor();
-//      }
-//    } else {
-//      this.relyForUser = mainComment.getAuthor();
-//      this.commentType = ECommentType.Review;
-//    }
-//  }
-//
-
-  public void setChildReview(Review mainReview, User author, String content) {
-    this.content = content;
-    this.book = mainReview.getBook();
-    this.author = author;
-    this.mainReview = mainReview;
-    this.relyForUser = mainReview.getAuthor();
-  }
 }

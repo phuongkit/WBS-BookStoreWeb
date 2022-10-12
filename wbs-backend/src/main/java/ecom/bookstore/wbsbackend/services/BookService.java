@@ -6,6 +6,7 @@ import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,13 +19,17 @@ public interface BookService {
 
   ResponseEntity<Page<BookResponseDTO>> getAllBooksByCategory(Integer categoryId, Pageable pageable);
 
-  ResponseEntity<ResponseObject> getBookById(Long bookId);
+  ResponseEntity<ResponseObject> getBookById(Long id);
 
-  ResponseEntity<ResponseObject> getBookBySlug(String bookSlug);
+  ResponseEntity<ResponseObject> getBookBySlug(String slug);
 
-  ResponseEntity<ResponseObject> createBook(BookCreationDTO creationDTO);
+  ResponseEntity<ResponseObject> createBook(BookCreationDTO creationDTO,
+                                            MultipartFile thumbnailFile,
+                                            MultipartFile[] imageGalleryFile);
 
-  ResponseEntity<ResponseObject> updateBook(Long bookId, BookCreationDTO creationDTO);
+  ResponseEntity<ResponseObject> updateBook(Long id, BookCreationDTO creationDTO,
+                                            MultipartFile thumbnailFile,
+                                            MultipartFile[] imageGalleryFile);
 
-  ResponseEntity<ResponseObject> deleteBookById(Long bookId);
+  ResponseEntity<ResponseObject> deleteBookById(Long id);
 }

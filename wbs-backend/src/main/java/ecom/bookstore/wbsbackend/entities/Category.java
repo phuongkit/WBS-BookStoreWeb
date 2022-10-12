@@ -64,4 +64,10 @@ public class Category {
     this.thumbnail = thumbnail;
     this.icon = icon;
   }
+
+  public Category(String name, Category parentCategory) {
+    this.name = name;
+    this.slug = Utils.toSlug(name);
+    this.parentCategory = parentCategory;
+  }
 }
