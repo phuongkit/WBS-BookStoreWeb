@@ -29,7 +29,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="tbl_product")
+@Table(name = "tbl_product")
 public class Book {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,28 +72,30 @@ public class Book {
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
 
-  private int minAge;
+  private Integer minAge;
 
-  private int maxAge;
+  private Integer maxAge;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "supplier_id", nullable = false)
   private Supplier supplier;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tbl_product_authors",
+  @JoinTable(
+      name = "tbl_product_authors",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "author_id"))
   private Set<Author> authors = new HashSet<>();
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tbl_product_translators",
+  @JoinTable(
+      name = "tbl_product_translators",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "translator_id"))
   private Set<Translator> translators = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "series_id", nullable = false)
+  @JoinColumn(name = "series_id")
   private Series series;
 
   @ManyToOne(fetch = FetchType.EAGER)
@@ -104,28 +106,35 @@ public class Book {
   @JoinColumn(name = "publisher_id", nullable = false)
   private Publisher publisher;
 
-  private int publishYear;
+  private Integer publishYear;
 
-  private int weight;
+  private Integer reprintYear;
 
-  private double packagingLength;
+  private Integer weight;
 
-  private double packagingWidth;
+  private Double packagingLength;
 
-  private double packagingHeight;
+  private Double packagingWidth;
 
-  private int numPages;
+  private Double packagingHeight;
 
+  private Integer numPages;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "book_layout", length = 50, nullable = false)
+  @NotNull(message = "An book layout is required!")
   private EBookLayout bookLayout;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tbl_product_genres",
+  @JoinTable(
+      name = "tbl_product_genres",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "genre_id"))
   private Set<Genre> genres = new HashSet<>();
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tbl_sale_products",
+  @JoinTable(
+      name = "tbl_sale_products",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "sale_id"))
   private Set<Sales> saleGallery = new HashSet<>();
@@ -134,8 +143,9 @@ public class Book {
   @JoinColumn(name = "thumbnail")
   private Image thumbnail;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "tbl_product_images",
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "tbl_product_images",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "image_id"))
   private Set<Image> imageGallery = new HashSet<>();
@@ -152,7 +162,33 @@ public class Book {
   @UpdateTimestamp
   private Date updatedAt;
 
-  public Book(String name, BigDecimal standCost, BigDecimal listPrice, Integer quantity, Category category, Location location, Image thumbnail) {
+  public Book(
+      String name,
+      BigDecimal standCost,
+      BigDecimal listPrice,
+      Integer quantity,
+      Category category,
+      Integer minAge,
+      Integer maxAge,
+      Supplier supplier,
+      Set<Author> authors,
+      Set<Translator> translators,
+      Series series,
+      Language language,
+      Publisher publisher,
+      Integer publishYear,
+      Integer reprintYear,
+      Integer weight,
+      Double packagingLength,
+      Double packagingWidth,
+      Double packagingHeight,
+      Integer numPages,
+      EBookLayout bookLayout,
+      Set<Genre> genres,
+      Location location,
+      Image thumbnail,
+      Set<Image> imageGallery,
+      String description) {
     this.name = name;
     this.slug = Utils.toSlug(name) + "." + UUID.randomUUID().toString().replace("-", "");
     this.standCost = standCost;
@@ -160,7 +196,79 @@ public class Book {
     this.quantity = quantity;
     this.status = EBookStatus.PRODUCT_TRADING;
     this.category = category;
+    this.maxAge = maxAge;
+    this.minAge = minAge;
+    this.supplier = supplier;
+    this.authors = authors;
+    this.translators = translators;
+    this.series = series;
+    this.language = language;
+    this.publisher = publisher;
+    this.publishYear = publishYear;
+    this.reprintYear = reprintYear;
+    this.weight = weight;
+    this.packagingLength = packagingLength;
+    this.packagingWidth = packagingWidth;
+    this.packagingHeight = packagingHeight;
+    this.numPages = numPages;
+    this.bookLayout = bookLayout != null ? bookLayout : EBookLayout.PAPERBACK;
+    this.genres = genres;
     this.location = location;
     this.thumbnail = thumbnail;
+    this.imageGallery = imageGallery;
+    this.description = description;
+  }
+
+  public Book(
+      String name,
+      BigDecimal listPrice,
+      Category category,
+      Integer minAge,
+      Integer maxAge,
+      Supplier supplier,
+      Set<Author> authors,
+      Set<Translator> translators,
+      Series series,
+      Language language,
+      Publisher publisher,
+      Integer publishYear,
+      Integer reprintYear,
+      Integer weight,
+      Double packagingLength,
+      Double packagingWidth,
+      Double packagingHeight,
+      Integer numPages,
+      EBookLayout bookLayout,
+      Set<Genre> genres,
+      Location location,
+      Image thumbnail,
+      String description) {
+    this.name = name;
+    this.slug = Utils.toSlug(name) + "." + UUID.randomUUID().toString().replace("-", "");
+    this.standCost = listPrice.multiply(new BigDecimal("0.9"));
+    this.listPrice = listPrice;
+    this.quantity = 1000;
+    this.status = EBookStatus.PRODUCT_TRADING;
+    this.category = category;
+    this.maxAge = maxAge;
+    this.minAge = minAge;
+    this.supplier = supplier;
+    this.authors = authors;
+    this.translators = translators;
+    this.series = series;
+    this.language = language;
+    this.publisher = publisher;
+    this.publishYear = publishYear != null ? publishYear : reprintYear;
+    this.reprintYear = reprintYear;
+    this.weight = weight;
+    this.packagingLength = packagingLength;
+    this.packagingWidth = packagingWidth;
+    this.packagingHeight = packagingHeight;
+    this.numPages = numPages;
+    this.bookLayout = bookLayout != null ? bookLayout : EBookLayout.PAPERBACK;
+    this.genres = genres;
+    this.location = location;
+    this.thumbnail = thumbnail;
+    this.description = description;
   }
 }

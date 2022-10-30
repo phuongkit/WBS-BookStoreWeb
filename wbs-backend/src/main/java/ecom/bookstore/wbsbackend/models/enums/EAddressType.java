@@ -6,5 +6,5 @@ package ecom.bookstore.wbsbackend.models.enums;
  */
 public enum EAddressType {
   ADDRESS_HOME,
-  ADDRESS_WORK
+  ADDRESS_WORK;
 }

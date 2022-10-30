@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author minh phuong
@@ -22,12 +23,16 @@ public class Publisher {
   @GeneratedValue(strategy= GenerationType.IDENTITY)
   private Integer id;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "name", length = 50, nullable = false, unique = true)
+  @Column(name = "name", length = 100, nullable = false, unique = true)
+  @Size(message = "Invalid email size.", max = 100, min = 1)
   @NotNull(message = "An name is required!")
-  private ERole name;
+  private String name;
 
-  @Column(name = "description", length = 200, nullable = false)
-  @NotNull(message = "An description is required!")
+  @Column(name = "description", length = 200)
+//  @NotNull(message = "An description is required!")
   private String description;
+
+  public Publisher(String name) {
+    this.name = name;
+  }
 }

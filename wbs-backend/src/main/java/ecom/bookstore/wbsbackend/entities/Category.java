@@ -32,7 +32,7 @@ public class Category {
 
   @Column(name = "slug", length = 50, nullable = false, unique = true)
   @Size(message = "Invalid slug size.", max = 50, min = 1)
-  @NotNull(message = "An name is required!")
+  @NotNull(message = "An slug is required!")
   private String slug;
 
   @Column(name = "description")

@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 /**
  * @author minh phuong
  * @created 07/10/2022 - 10:55 PM
@@ -12,4 +14,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface TranslatorRepo extends JpaRepository<Translator, Integer> {
+  Optional<Translator> findByFullName(String fullName);
 }

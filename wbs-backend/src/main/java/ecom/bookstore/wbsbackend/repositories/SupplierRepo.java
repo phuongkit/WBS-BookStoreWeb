@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 /**
  * @author minh phuong
  * @created 07/10/2022 - 10:56 PM
@@ -12,4 +14,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public interface SupplierRepo extends JpaRepository<Supplier, Integer> {
+  Optional<Supplier> findByName(String name);
 }

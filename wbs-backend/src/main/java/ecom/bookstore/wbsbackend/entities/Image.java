@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author minh phuong
@@ -34,5 +36,22 @@ public class Image {
   public Image(String path, EImageType imageType) {
     this.path = path;
     this.imageType = imageType;
+  }
+
+  public static Image createBookThumbnail(String name) {
+    String path = EImageType.IMAGE_BOOK + "/" + name;
+    EImageType imageType = EImageType.IMAGE_BOOK;
+    return new Image(path, imageType);
+  }
+
+  public static Set<Image> createBookGallery(String[] names) {
+    Set<Image> gallery = new HashSet<>();
+    for (String name : names) {
+      String path = EImageType.IMAGE_BOOK_GALLERY + "/" + name;
+      EImageType imageType = EImageType.IMAGE_BOOK_GALLERY;
+      Image image = new Image(path, imageType);
+      gallery.add(image);
+    }
+    return gallery;
   }
 }

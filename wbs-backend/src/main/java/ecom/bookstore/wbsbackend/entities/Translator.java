@@ -22,16 +22,22 @@ public class Translator {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "first_name", length = 45)
-  @NotNull(message = "An firstname is required!")
-  private String firstName;
-
-  @Column(name = "last_name", length = 45)
-  @NotNull(message = "An lastname is required!")
-  private String lastName;
+  @Column(name = "full_name", length = 100)
+  @NotNull(message = "An fullname is required!")
+  private String fullName;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "gender", length = 50, nullable = false, unique = true)
+  @Column(name = "gender", length = 50, nullable = false)
   @NotNull(message = "An gender is required!")
   private EGender gender;
+
+  public Translator(String fullName) {
+    this.fullName = fullName;
+    this.gender = EGender.UNKNOWN;
+  }
+
+  public Translator(String fullName, EGender gender) {
+    this.fullName = fullName;
+    this.gender = gender;
+  }
 }

@@ -1,5 +1,6 @@
 package ecom.bookstore.wbsbackend.entities;
 
+import ecom.bookstore.wbsbackend.models.enums.ELanguage;
 import ecom.bookstore.wbsbackend.models.enums.ERole;
 import lombok.*;
 
@@ -16,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tbl_author")
+@Table(name = "tbl_language")
 public class Language {
   @Id
   @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -25,5 +26,12 @@ public class Language {
   @Enumerated(EnumType.STRING)
   @Column(name = "name", length = 50, nullable = false, unique = true)
   @NotNull(message = "An name is required!")
-  private ERole name;
+  private ELanguage name;
+
+  private String syntax;
+
+  public Language(ELanguage name, String syntax) {
+    this.name = name;
+    this.syntax = syntax;
+  }
 }

@@ -83,7 +83,9 @@ public class User implements UserDetails {
   @Temporal(TemporalType.DATE)
   private Date birthDate;
 
-  @Column(name = "gender")
+  @Enumerated(EnumType.STRING)
+  @Column(name = "gender", length = 50, nullable = false)
+  @NotNull(message = "An gender is required!")
   private EGender gender;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

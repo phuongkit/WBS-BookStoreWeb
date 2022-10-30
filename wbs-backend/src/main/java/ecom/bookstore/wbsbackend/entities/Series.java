@@ -1,10 +1,13 @@
 package ecom.bookstore.wbsbackend.entities;
 
 import ecom.bookstore.wbsbackend.models.enums.ERole;
+import ecom.bookstore.wbsbackend.models.enums.ESeries;
+import ecom.bookstore.wbsbackend.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,22 +27,53 @@ public class Series {
   @GeneratedValue(strategy= GenerationType.IDENTITY)
   private Integer id;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "name", length = 50, nullable = false, unique = true)
+  @Column(name = "name", length = 255, nullable = false, unique = true)
+  @Size(message = "Invalid email size.", max = 100, min = 1)
   @NotNull(message = "An name is required!")
-  private ERole name;
+  private String name;
+
+  @Column(name = "slug", length = 255, nullable = false, unique = true)
+  @Size(message = "Invalid slug size.", max = 50, min = 1)
+  @NotNull(message = "An slug is required!")
+  private String slug;
 
   @Column(name = "description", length = 200, nullable = false)
   @NotNull(message = "An description is required!")
   private String description;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "tbl_product_authors",
-      joinColumns = @JoinColumn(name = "product_id"),
+  @JoinTable(name = "tbl_series_authors",
+      joinColumns = @JoinColumn(name = "series_id"),
       inverseJoinColumns = @JoinColumn(name = "author_id"))
   private Set<Author> authors = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "publisher_id", nullable = false)
+  @JoinColumn(name = "supplier_id")
+  private Supplier supplier;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "publisher_id")
   private Publisher publisher;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type", length = 50, nullable = false)
+  @NotNull(message = "An type is required!")
+  private ESeries type;
+
+  public Series(String name, Set<Author> authors, Supplier supplier, Publisher publisher, ESeries type) {
+    this.name = name;
+    this.slug = Utils.toSlug(name);
+    this.authors = authors;
+    this.supplier = supplier;
+    this.publisher = publisher;
+    this.type = type;
+  }
+
+  public static Series createCombo(String name, Set<Author> authors, Supplier supplier, Publisher publisher) {
+    return new Series(name, authors, supplier, publisher, ESeries.COMBO);
+  }
+
+  public static Series createSeries(String name, Set<Author> authors, Publisher publisher) {
+    return new Series(name, authors, null, publisher, ESeries.SERIES);
+  }
 }

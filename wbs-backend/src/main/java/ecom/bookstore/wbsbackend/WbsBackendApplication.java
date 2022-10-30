@@ -1,7 +1,9 @@
 package ecom.bookstore.wbsbackend;
 
+import ecom.bookstore.wbsbackend.utils.InitData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +21,8 @@ public class WbsBackendApplication implements CommandLineRunner {
   @Value("${spring.jpa.hibernate.ddl-auto}")
   private String hibernate_ddl;
 
+  @Autowired private InitData initData;
+
   public static void main(String[] args) {
     SpringApplication.run(WbsBackendApplication.class, args);
   }
@@ -26,12 +30,9 @@ public class WbsBackendApplication implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     if (Objects.equals(hibernate_ddl, "create") || Objects.equals(hibernate_ddl, "create-drop")) {
-      initData();
+      initData.init();
     }
-//    initData();
+    initData.init();
     //    this.LOGGER .info(saleService.getMostOptimalSaleByProduct(10l).getName());
-  }
-
-  public void initData() {
   }
 }

@@ -1,5 +1,7 @@
 package ecom.bookstore.wbsbackend.entities;
 
+import ecom.bookstore.wbsbackend.repositories.GenreRepo;
+import ecom.bookstore.wbsbackend.utils.Utils;
 import lombok.*;
 
 import javax.persistence.*;
@@ -38,4 +40,9 @@ public class Genre {
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "thumbnail_id")
   private Image thumbnail;
+
+  public Genre(String name) {
+    this.name = name;
+    this.slug = Utils.toSlug(name);
+  }
 }
