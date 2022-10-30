@@ -8,7 +8,6 @@ import Slider from 'react-slick';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
-// import styles from './home.module.scss';
 import { Link } from 'react-router-dom';
 import './Home.scss';
 
