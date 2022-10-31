@@ -1,13 +1,9 @@
 import axios from 'axios';
 
-//const apiProduction = 'https://json-kali.onrender.com';
-// const apiProduction = 'https://jsonserv.glitch.me';
-// const apiDev = 'https://jsonserv.glitch.me';
-
 const apiProduction = 'http://localhost:8080/api/v1';
 const apiDev = 'http://localhost:8080/api/v1';
 
-const baseURL = import.meta.env.MODE === 'production' ? apiProduction : apiDev;
+const baseURL = process.env.NODE_ENV === 'production' ? apiProduction : apiDev;
 
 const axiosClient = axios.create({
     baseURL,

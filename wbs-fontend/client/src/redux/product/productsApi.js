@@ -30,6 +30,10 @@ export const getAllProductByCategoryIdAndBrandId = async (dispatch, categoryId, 
     let res = await productService.getProductByCategoryIdAndBrandId(categoryId, brandId);
     dispatch(getAllProducts(res));
 };
+export const getAllProductByOptionApi = async (dispatch, homeOptionId) => {
+    let res = await productService.getAllProductsByOption(homeOptionId);
+    dispatch(getAllProducts(res.data));
+};
 //get by location and page and limit
 export const getLocation = async (dispatch, location) => {
     let res = await productService.getProductByLocation(location);
@@ -42,6 +46,7 @@ export const getAllProductApi = async (dispatch) => {
 
 export const getProductDetailApi = async (dispatch, slug) => {
     let res = await productService.getProductBySlug(slug);
-    let resRating = await ratingService.getRating(res.id);
-    dispatch(getProductDetail({...res, rating: resRating}));
+    // let resRating = await ratingService.getRating(res.id);
+    let resRating = {};
+    dispatch(getProductDetail({...res.data, rating: resRating}));
 };

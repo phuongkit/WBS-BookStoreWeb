@@ -6,6 +6,9 @@ export const categoryService = {
     getAllCategories() {
         return axiosClient.get(`${branch_api}`);
     },
+    getAllCategoriesWithHierarchy() {
+        return axiosClient.get(`${branch_api}/hierarchy`);
+    },
     getCategoryBySlug(slug) {
         return axiosClient.get(`${branch_api}/slug/${slug}`);
     },
