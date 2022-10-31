@@ -5,11 +5,11 @@ import NotFound from '../pages/User/NotFound';
 import { publishRoutes } from './PublishRoutes';
 // import { productDetailRoute } from './ProductDetailRoutes';
 // import { newsDetailRoutes } from './NewsDetailRoutes';
-// import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 export default function Routes() {
     const routes = [
         {
-            path: '',
+            path: '/',
             element: <CommonLayout />,
             children: [
                 ...publishRoutes,

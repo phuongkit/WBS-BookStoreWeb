@@ -1,12 +1,12 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { productService, ratingService } from '~/services';
 import { getProductDetailApi } from '~/redux/product/productsApi';
 
 const ProductDetailContext = createContext({});
 
 const ProductDetailProvider = ({ children }) => {
+    const dispatch = useDispatch();
     const { productSlug } = useParams();
 
     // console.log(1);
@@ -18,19 +18,7 @@ const ProductDetailProvider = ({ children }) => {
     // console.log(productDetailData);
     // console.log(children);
 
-    useEffect(() => {
-        async function getProductBySlug() {
-            const product = await productService.getProductBySlug(productSlug);
-        //     const resArticle = await productService.getArticle(resProduct[0].id);
-        //     const resRating = await ratingService.getRating(resProduct[0].id);
-        //     const article = resArticle.lenght > 0 ? resArticle[0]?.article : 'no content'
-        //     const product = { ...resProduct[0], article, rating: resRating };
-        //     const product = { ...resProduct[0], article: resProduct[0].info, rating: resRating };
-            setProductDetailData(product);
-        }
-        getProductBySlug(productSlug);
-        // getProductDetailApi(dispatch, productSlug);
-    }, []);
+    getProductDetailApi(dispatch, productSlug)
 
     return (
         <ProductDetailContext.Provider
