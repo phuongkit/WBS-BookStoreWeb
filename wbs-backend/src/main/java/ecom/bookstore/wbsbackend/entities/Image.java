@@ -39,16 +39,16 @@ public class Image {
   }
 
   public static Image createBookThumbnail(String name) {
-    String path = EImageType.IMAGE_BOOK + "/" + name;
-    EImageType imageType = EImageType.IMAGE_BOOK;
+    String path = EImageType.IMAGE_PRODUCT + "/" + name;
+    EImageType imageType = EImageType.IMAGE_PRODUCT;
     return new Image(path, imageType);
   }
 
   public static Set<Image> createBookGallery(String[] names) {
     Set<Image> gallery = new HashSet<>();
     for (String name : names) {
-      String path = EImageType.IMAGE_BOOK_GALLERY + "/" + name;
-      EImageType imageType = EImageType.IMAGE_BOOK_GALLERY;
+      String path = EImageType.IMAGE_PRODUCT_GALLERY + "/" + name;
+      EImageType imageType = EImageType.IMAGE_PRODUCT_GALLERY;
       Image image = new Image(path, imageType);
       gallery.add(image);
     }

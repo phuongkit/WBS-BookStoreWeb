@@ -1,6 +1,6 @@
 package ecom.bookstore.wbsbackend.repositories;
 
-import ecom.bookstore.wbsbackend.entities.Book;
+import ecom.bookstore.wbsbackend.entities.Product;
 import ecom.bookstore.wbsbackend.entities.Sales;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,10 +38,10 @@ public interface SalesRepo extends JpaRepository<Sales, Long> {
       Pageable pageable);
 
   @Query(
-      "select s from Sales s inner join s.books b where "
-          + "(b = :book) " +
+      "select s from Sales s inner join s.products p where "
+          + "(p = :product) " +
           "and s.startDate <= current_timestamp " +
           "and s.endDate >= current_timestamp " +
           "order by s.percent desc, s.endDate desc")
-  List<Sales> findMostOptimalSaleByBook(Book book);
+  List<Sales> findMostOptimalSaleByBook(Product product);
 }

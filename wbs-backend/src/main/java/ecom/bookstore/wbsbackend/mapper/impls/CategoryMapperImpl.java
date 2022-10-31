@@ -15,17 +15,27 @@ import static ecom.bookstore.wbsbackend.utils.Utils.IMAGE_DEFAULT_PATH;
 @Component
 public class CategoryMapperImpl implements CategoryMapper {
   @Override
-  public CategoryResponseDTO categoryToCategoryResponseDTO(Category entity) {
+  public CategoryResponseDTO categoryToCategoryResponseDTO(Category entity, boolean... isFull) {
     if (entity == null) {
       return null;
     }
     CategoryResponseDTO responseDTO = new CategoryResponseDTO();
     responseDTO.setId(entity.getId());
-    responseDTO.setTitle(entity.getName());
-    responseDTO.setHref(entity.getSlug());
+    responseDTO.setName(entity.getName());
+    responseDTO.setSlug(entity.getSlug());
     responseDTO.setDescription(entity.getDescription());
-    if (entity.getParentCategory() != null) {
-      responseDTO.setParentCategoryId(entity.getParentCategory().getId());
+    if (isFull.length > 0 && isFull[0]) {
+      if (entity.getCategories() != null && entity.getCategories().size() > 0) {
+        CategoryResponseDTO[] categoryChildren =
+            new CategoryResponseDTO[entity.getCategories().size()];
+        int i = 0;
+        for (Category category : entity.getCategories()) {
+          categoryChildren[i] = new CategoryResponseDTO();
+          categoryChildren[i] = this.categoryToCategoryResponseDTO(category);
+          i++;
+        }
+        responseDTO.setChildCategories(categoryChildren);
+      }
     }
     if (entity.getThumbnail() != null) {
       responseDTO.setImg(Utils.getUrlFromPathImage(entity.getThumbnail().getPath()));

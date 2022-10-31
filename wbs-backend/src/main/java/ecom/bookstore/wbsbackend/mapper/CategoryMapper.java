@@ -8,5 +8,5 @@ import ecom.bookstore.wbsbackend.entities.Category;
  * @created 11/09/2022 - 12:37 PM
  */
 public interface CategoryMapper {
-  CategoryResponseDTO categoryToCategoryResponseDTO(Category entity);
+  CategoryResponseDTO categoryToCategoryResponseDTO(Category entity, boolean... isFull);
 }

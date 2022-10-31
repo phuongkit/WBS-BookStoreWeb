@@ -1,16 +1,15 @@
 package ecom.bookstore.wbsbackend.services.impls;
 
 import ecom.bookstore.wbsbackend.dto.request.SaleCreationDTO;
-import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import ecom.bookstore.wbsbackend.dto.response.SaleResponseDTO;
-import ecom.bookstore.wbsbackend.entities.Book;
 import ecom.bookstore.wbsbackend.entities.Image;
+import ecom.bookstore.wbsbackend.entities.Product;
 import ecom.bookstore.wbsbackend.entities.Sales;
 import ecom.bookstore.wbsbackend.entities.User;
 import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
 import ecom.bookstore.wbsbackend.mapper.SaleMapper;
 import ecom.bookstore.wbsbackend.models.enums.EImageType;
-import ecom.bookstore.wbsbackend.repositories.BookRepo;
+import ecom.bookstore.wbsbackend.repositories.ProductRepo;
 import ecom.bookstore.wbsbackend.repositories.SalesRepo;
 import ecom.bookstore.wbsbackend.repositories.UserRepo;
 import ecom.bookstore.wbsbackend.services.ImageService;
@@ -21,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,11 +51,11 @@ public class SaleServiceImpl implements SaleService {
     this.saleMapper = saleMapper;
   }
 
-  private   BookRepo bookRepo;
+  private ProductRepo productRepo;
 
   @Autowired
-  public void BookRepo(BookRepo bookRepo) {
-    this.bookRepo = bookRepo;
+  public void BookRepo(ProductRepo productRepo) {
+    this.productRepo = productRepo;
   }
 
   private SalesRepo saleRepo;
@@ -125,20 +122,20 @@ public class SaleServiceImpl implements SaleService {
   }
 
   @Override
-  public Sales getMostOptimalSaleByBook(Long bookId) {
-    Book BookFound =
-        this.bookRepo
-            .findById(bookId)
+  public Sales getMostOptimalSaleByProduct(Long productId) {
+    Product productFound =
+        this.productRepo
+            .findById(productId)
             .orElse(null);
-    if (BookFound == null) {
+    if (productFound == null) {
       return null;
     }
-    List<Sales> saleList = this.saleRepo.findMostOptimalSaleByBook(BookFound);
+    List<Sales> saleList = this.saleRepo.findMostOptimalSaleByBook(productFound);
     return saleList.size() > 0 ? saleList.get(0) : null;
   }
 
   @Override
-  public ResponseEntity<ResponseObject> createSale(
+  public SaleResponseDTO createSale(
       SaleCreationDTO creationDTO, MultipartFile thumbnailFile) {
     this.LOGGER.info(
         String.format(
@@ -149,25 +146,25 @@ public class SaleServiceImpl implements SaleService {
     sale.setPercent(creationDTO.getPercent());
 
     // set Book gallery
-    if (creationDTO.getBookIds() != null && creationDTO.getBookIds().size() > 0) {
-      Set<Book> Books = new HashSet<>();
+    if (creationDTO.getProductIds() != null && creationDTO.getProductIds().size() > 0) {
+      Set<Product> products = new HashSet<>();
       int i = 0;
-      for (Long BookId : creationDTO.getBookIds()) {
-        Book BookFound =
-            this.bookRepo
-                .findById(BookId)
+      for (Long productId : creationDTO.getProductIds()) {
+        Product productFound =
+            this.productRepo
+                .findById(productId)
                 .orElseThrow(
                     () ->
                         new ResourceNotFoundException(
                             String.format(
                                 Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                                Book.class.getSimpleName(),
+                                Product.class.getSimpleName(),
                                 "ID",
-                                BookId)));
-        Books.add(BookFound);
+                                productId)));
+        products.add(productFound);
         i++;
       }
-      sale.setBooks(Books);
+      sale.setProducts(products);
     }
 
     // set creator
@@ -193,16 +190,11 @@ public class SaleServiceImpl implements SaleService {
       sale.setThumbnail(thumbnailImage);
     }
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(
-            new ResponseObject(
-                HttpStatus.CREATED,
-                String.format(Utils.CREATE_OBJECT_SUCCESSFULLY, Sales.class.getSimpleName()),
-                this.saleMapper.saleToSaleResponseDTO(this.saleRepo.save(sale), true)));
+    return this.saleMapper.saleToSaleResponseDTO(this.saleRepo.save(sale), true);
   }
 
   @Override
-  public ResponseEntity<ResponseObject> updateSale(
+  public SaleResponseDTO updateSale(
       Long id, SaleCreationDTO creationDTO, MultipartFile thumbnailFile) {
     this.LOGGER.info(
         String.format(
@@ -223,25 +215,25 @@ public class SaleServiceImpl implements SaleService {
     saleFound.setPercent(creationDTO.getPercent());
 
     // update Book gallery
-    if (creationDTO.getBookIds() != null && creationDTO.getBookIds().size() > 0) {
-      Set<Book> Books = new HashSet<>();
+    if (creationDTO.getProductIds() != null && creationDTO.getProductIds().size() > 0) {
+      Set<Product> products = new HashSet<>();
       int i = 0;
-      for (Long BookId : creationDTO.getBookIds()) {
-        Book BookFound =
-            this.bookRepo
-                .findById(BookId)
+      for (Long productId : creationDTO.getProductIds()) {
+        Product productFound =
+            this.productRepo
+                .findById(productId)
                 .orElseThrow(
                     () ->
                         new ResourceNotFoundException(
                             String.format(
                                 Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                                Book.class.getSimpleName(),
+                                Product.class.getSimpleName(),
                                 "ID",
-                                BookId)));
-        Books.add(BookFound);
+                                productId)));
+        products.add(productFound);
         i++;
       }
-      saleFound.setBooks(Books);
+      saleFound.setProducts(products);
     }
 
     // update creator
@@ -277,16 +269,11 @@ public class SaleServiceImpl implements SaleService {
       saleFound.setThumbnail(thumbnailImage);
     }
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(
-            new ResponseObject(
-                HttpStatus.OK,
-                String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, Sales.class.getSimpleName()),
-                this.saleMapper.saleToSaleResponseDTO(this.saleRepo.save(saleFound), true)));
+    return this.saleMapper.saleToSaleResponseDTO(this.saleRepo.save(saleFound), true);
   }
 
   @Override
-  public ResponseEntity<ResponseObject> deleteSaleById(Long id) {
+  public SaleResponseDTO deleteSaleById(Long id) {
     this.LOGGER.info(String.format(Utils.LOG_DELETE_OBJECT, Sales.class.getSimpleName(), "ID", id));
     Sales saleFound =
         this.saleRepo
@@ -307,11 +294,6 @@ public class SaleServiceImpl implements SaleService {
 
     // delete Sale
     this.saleRepo.deleteById(id);
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(
-            new ResponseObject(
-                HttpStatus.OK,
-                String.format(Utils.DELETE_OBJECT_SUCCESSFULLY, Sales.class.getSimpleName()),
-                null));
+    return null;
   }
 }

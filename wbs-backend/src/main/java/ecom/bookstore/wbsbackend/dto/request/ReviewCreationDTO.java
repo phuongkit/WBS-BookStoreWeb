@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewCreationDTO {
-  private Long bookId;
+  private Long productId;
   private Long authorId;
   private String content;
   private int star;

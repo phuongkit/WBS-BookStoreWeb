@@ -32,7 +32,7 @@ public class WbsBackendApplication implements CommandLineRunner {
     if (Objects.equals(hibernate_ddl, "create") || Objects.equals(hibernate_ddl, "create-drop")) {
       initData.init();
     }
-    initData.init();
+//    initData.init();
     //    this.LOGGER .info(saleService.getMostOptimalSaleByProduct(10l).getName());
   }
 }

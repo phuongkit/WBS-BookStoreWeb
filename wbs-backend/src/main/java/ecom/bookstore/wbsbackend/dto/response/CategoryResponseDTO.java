@@ -15,10 +15,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CategoryResponseDTO {
   private Integer id;
-  private String title;
-  private String href;
+  private String name;
+  private String slug;
   private String description;
-  private Integer parentCategoryId;
+  private CategoryResponseDTO[] childCategories;
   private String img;
   private String icon;
 }

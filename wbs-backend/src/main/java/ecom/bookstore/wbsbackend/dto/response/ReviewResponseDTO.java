@@ -14,12 +14,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewResponseDTO {
+  private Long replyForReviewId;
   private Long id;
   private Long bookId;
   private String content;
   private int star;
-  private UserSimpleResponseDTO creator;
-  private ReplyReviewResponseDTO[] replyReviews;
+  private UserSimpleResponseDTO author;
+  private ReviewResponseDTO[] childReviews;
+  private UserSimpleResponseDTO replyForUser;
   private String[] imageGallery;
   private String timeDistance;
   private boolean isUpdated;

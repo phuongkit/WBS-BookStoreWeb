@@ -30,7 +30,7 @@ public class Review {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id", nullable = false)
-  private Book book;
+  private Product product;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "author_id", nullable = false)
@@ -72,8 +72,8 @@ public class Review {
   @UpdateTimestamp
   private Date updatedAt;
 
-  public Review(Book book, User author, String content, Integer star) {
-    this.book = book;
+  public Review(Product product, User author, String content, Integer star) {
+    this.product = product;
     this.author = author;
     this.content = content;
     this.star = star;

@@ -49,7 +49,7 @@ public class Sales {
       name = "tbl_sale_products",
       joinColumns = @JoinColumn(name = "sale_id"),
       inverseJoinColumns = @JoinColumn(name = "product_id"))
-  private Set<Book> books = new HashSet<>();
+  private Set<Product> products = new HashSet<>();
 
   @ManyToOne
   @JoinColumn(name = "creator")
@@ -74,11 +74,11 @@ public class Sales {
   @UpdateTimestamp
   private Date updatedAt;
 
-  public Sales(String name, String description, Double percent, Set<Book> books, User creator, Date startDate, Date endDate) {
+  public Sales(String name, String description, Double percent, Set<Product> products, User creator, Date startDate, Date endDate) {
     this.name = name;
     this.description= description;
     this.percent = percent;
-    this.books = books;
+    this.products = products;
     this.creator = creator;
     this.startDate = startDate;
     this.endDate = endDate;

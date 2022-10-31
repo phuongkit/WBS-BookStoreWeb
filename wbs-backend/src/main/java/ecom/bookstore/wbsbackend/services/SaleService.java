@@ -23,11 +23,11 @@ public interface SaleService {
 
   SaleResponseDTO getSaleById(Long id, boolean isHasChild);
 
-  Sales getMostOptimalSaleByBook(Long bookId);
+  Sales getMostOptimalSaleByProduct(Long productId);
 
-  ResponseEntity<ResponseObject> createSale(SaleCreationDTO creationDTO, MultipartFile thumbnailFile);
+  SaleResponseDTO createSale(SaleCreationDTO creationDTO, MultipartFile thumbnailFile);
 
-  ResponseEntity<ResponseObject> updateSale(Long id, SaleCreationDTO creationDTO, MultipartFile thumbnailFile);
+  SaleResponseDTO updateSale(Long id, SaleCreationDTO creationDTO, MultipartFile thumbnailFile);
 
-  ResponseEntity<ResponseObject> deleteSaleById(Long id);
+  SaleResponseDTO deleteSaleById(Long id);
 }

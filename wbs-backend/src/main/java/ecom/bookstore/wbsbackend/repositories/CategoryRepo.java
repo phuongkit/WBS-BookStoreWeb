@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,6 +22,9 @@ public interface CategoryRepo extends SearchRepository<Category, Integer> {
           "select c from Category c where " +
               "lower(c.name) like lower(concat('%', :keyword,'%'))")
   Page<Category> findAll(String keyword, Pageable pageable);
+
+  @Query(value = "select c from Category c where c.parentCategory is null")
+  List<Category> findAllParentCategory();
 
   Optional<Category> findByName(String name);
 

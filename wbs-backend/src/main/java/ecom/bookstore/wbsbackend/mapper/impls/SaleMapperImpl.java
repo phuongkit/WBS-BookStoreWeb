@@ -1,10 +1,10 @@
 package ecom.bookstore.wbsbackend.mapper.impls;
 
-import ecom.bookstore.wbsbackend.dto.response.BookGalleryDTO;
+import ecom.bookstore.wbsbackend.dto.response.ProductGalleryDTO;
 import ecom.bookstore.wbsbackend.dto.response.SaleResponseDTO;
-import ecom.bookstore.wbsbackend.entities.Book;
+import ecom.bookstore.wbsbackend.entities.Product;
 import ecom.bookstore.wbsbackend.entities.Sales;
-import ecom.bookstore.wbsbackend.mapper.BookMapper;
+import ecom.bookstore.wbsbackend.mapper.ProductMapper;
 import ecom.bookstore.wbsbackend.mapper.SaleMapper;
 import ecom.bookstore.wbsbackend.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SaleMapperImpl implements SaleMapper {
-  private BookMapper bookMapper;
+  private ProductMapper productMapper;
 
   @Autowired
-  public void BookMapper(BookMapper bookMapper) {
-    this.bookMapper = bookMapper;
+  public void BookMapper(ProductMapper productMapper) {
+    this.productMapper = productMapper;
   }
 
   private UserMapper userMapper;
@@ -40,12 +40,12 @@ public class SaleMapperImpl implements SaleMapper {
     responseDTO.setName(entity.getName());
     responseDTO.setDescription(entity.getDescription());
     responseDTO.setPercent(entity.getPercent());
-    if (isFull.length > 0 && isFull[0] && entity.getBooks() != null) {
-      BookGalleryDTO[] BookGalleries = new BookGalleryDTO[entity.getBooks().size()];
+    if (isFull.length > 0 && isFull[0] && entity.getProducts() != null) {
+      ProductGalleryDTO[] BookGalleries = new ProductGalleryDTO[entity.getProducts().size()];
       int i = 0;
-      for (Book book : entity.getBooks()) {
-        BookGalleries[i] = new BookGalleryDTO();
-        BookGalleries[i] = this.bookMapper.bookToBookGalleryDTO(book);
+      for (Product product : entity.getProducts()) {
+        BookGalleries[i] = new ProductGalleryDTO();
+        BookGalleries[i] = this.productMapper.productToProductGalleryDTO(product);
         i++;
       }
       responseDTO.setBookGalleries(BookGalleries);

@@ -21,7 +21,7 @@ public class SaleResponseDTO {
   private String name;
   private String description;
   private Double percent;
-  private BookGalleryDTO[] bookGalleries;
+  private ProductGalleryDTO[] bookGalleries;
   private UserSimpleResponseDTO creator;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date startDate;

@@ -12,5 +12,5 @@ import ecom.bookstore.wbsbackend.entities.Review;
 public interface ReviewMapper {
   ReviewResponseDTO ReviewToReviewResponseDTO(Review entity, boolean... isFull);
 
-  ReplyReviewResponseDTO commentToReplyReviewResponseDTO(Comment entity);
+  ReviewResponseDTO commentToReplyReviewResponseDTO(Comment entity);
 }

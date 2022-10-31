@@ -30,18 +30,18 @@ public class Comment {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id", nullable = false)
-  private Book book;
+  private Product product;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "author_id", nullable = false)
   private User author;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "rely_for_user_id")
+  @JoinColumn(name = "rely_for_user_id", nullable = false)
   private User relyForUser;
 
   @ManyToOne
-  @JoinColumn(name = "main_Review_id")
+  @JoinColumn(name = "main_Review_id", nullable = false)
   private Review mainReview;
 
   @Column(name = "created_at")

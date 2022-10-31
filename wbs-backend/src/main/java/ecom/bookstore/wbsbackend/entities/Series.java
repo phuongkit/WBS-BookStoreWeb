@@ -27,18 +27,18 @@ public class Series {
   @GeneratedValue(strategy= GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "name", length = 255, nullable = false, unique = true)
-  @Size(message = "Invalid email size.", max = 100, min = 1)
+  @Column(name = "name", length = 500, nullable = false, unique = true)
+  @Size(message = "Invalid name size.", max = 500, min = 1)
   @NotNull(message = "An name is required!")
   private String name;
 
-  @Column(name = "slug", length = 255, nullable = false, unique = true)
-  @Size(message = "Invalid slug size.", max = 50, min = 1)
+  @Column(name = "slug", length = 500, nullable = false, unique = true)
+  @Size(message = "Invalid slug size.", max = 500, min = 1)
   @NotNull(message = "An slug is required!")
   private String slug;
 
-  @Column(name = "description", length = 200, nullable = false)
-  @NotNull(message = "An description is required!")
+  @Column(name = "description", length = 500)
+//  @NotNull(message = "An description is required!")
   private String description;
 
   @ManyToMany(fetch = FetchType.LAZY)

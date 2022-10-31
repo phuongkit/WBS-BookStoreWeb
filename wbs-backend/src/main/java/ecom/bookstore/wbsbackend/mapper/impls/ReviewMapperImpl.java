@@ -29,11 +29,11 @@ public class ReviewMapperImpl implements ReviewMapper {
     responseDTO.setId(entity.getId());
     responseDTO.setContent(entity.getContent());
     responseDTO.setStar(entity.getStar());
-    if (entity.getBook() != null) {
-      responseDTO.setBookId(entity.getBook().getId());
+    if (entity.getProduct() != null) {
+      responseDTO.setBookId(entity.getProduct().getId());
     }
     if (entity.getAuthor() != null) {
-      responseDTO.setCreator(this.userMapper.userToUserSimpleResponseDTO(entity.getAuthor()));
+      responseDTO.setAuthor(this.userMapper.userToUserSimpleResponseDTO(entity.getAuthor()));
     }
 
     if (entity.getImageGallery() != null && entity.getImageGallery().size() > 0) {
@@ -48,13 +48,13 @@ public class ReviewMapperImpl implements ReviewMapper {
 
     if (isFull.length > 0 && isFull[0]) {
       if (entity.getReplyReviews() != null && entity.getReplyReviews().size() > 0) {
-        ReplyReviewResponseDTO[] ReplyReviews = new ReplyReviewResponseDTO[entity.getReplyReviews().size()];
+        ReviewResponseDTO[] replyReviews = new ReviewResponseDTO[entity.getReplyReviews().size()];
         int i = 0;
         for (Comment replyReview : entity.getReplyReviews()) {
-          ReplyReviews[i] = this.commentToReplyReviewResponseDTO(replyReview);
+          replyReviews[i] = this.commentToReplyReviewResponseDTO(replyReview);
           i++;
         }
-        responseDTO.setReplyReviews(ReplyReviews);
+        responseDTO.setChildReviews(replyReviews);
       }
     }
 
@@ -64,17 +64,18 @@ public class ReviewMapperImpl implements ReviewMapper {
     return responseDTO;
   }
 
-  @Override public ReplyReviewResponseDTO commentToReplyReviewResponseDTO(Comment entity) {
+  @Override public ReviewResponseDTO commentToReplyReviewResponseDTO(Comment entity) {
     if (entity == null) {
       return null;
     }
-    ReplyReviewResponseDTO responseDTO = new ReplyReviewResponseDTO();
+    ReviewResponseDTO responseDTO = new ReviewResponseDTO();
     if (entity.getMainReview() != null) {
       responseDTO.setReplyForReviewId(entity.getMainReview().getId());
     }
     responseDTO.setId(entity.getId());
-    responseDTO.setCreator(this.userMapper.userToUserSimpleResponseDTO(entity.getAuthor()));
+    responseDTO.setAuthor(this.userMapper.userToUserSimpleResponseDTO(entity.getAuthor()));
     responseDTO.setContent(entity.getContent());
+    responseDTO.setReplyForUser(this.userMapper.userToUserSimpleResponseDTO(entity.getRelyForUser()));
     Utils.TimeDistance timeDistance = Utils.getTimeDistance(entity.getCreatedAt(), entity.getUpdatedAt());
     responseDTO.setTimeDistance(timeDistance.getTimeDistance());
     responseDTO.setUpdated(timeDistance.isUpdated());
