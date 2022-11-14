@@ -1,12 +1,12 @@
 package ecom.bookstore.wbsbackend.mapper.impls;
 
+import ecom.bookstore.wbsbackend.dto.response.GenreResponseDTO;
 import ecom.bookstore.wbsbackend.dto.response.ProductGalleryDTO;
 import ecom.bookstore.wbsbackend.dto.response.ProductResponseDTO;
-import ecom.bookstore.wbsbackend.entities.Author;
-import ecom.bookstore.wbsbackend.entities.Product;
-import ecom.bookstore.wbsbackend.entities.Image;
-import ecom.bookstore.wbsbackend.entities.Sales;
+import ecom.bookstore.wbsbackend.entities.*;
+import ecom.bookstore.wbsbackend.mapper.GenreMapper;
 import ecom.bookstore.wbsbackend.mapper.ProductMapper;
+import ecom.bookstore.wbsbackend.mapper.SeriesMapper;
 import ecom.bookstore.wbsbackend.models.clazzs.Rating;
 import ecom.bookstore.wbsbackend.services.ReviewService;
 import ecom.bookstore.wbsbackend.services.SaleService;
@@ -27,6 +27,10 @@ import static ecom.bookstore.wbsbackend.utils.Utils.IMAGE_DEFAULT_PATH;
 @Component
 public class ProductMapperImpl implements ProductMapper {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  private GenreMapper genreMapper;
+  @Autowired public void GenreMapper(GenreMapper genreMapper) {
+    this.genreMapper  = genreMapper;
+  }
   private ReviewService reviewService;
 
   @Autowired
@@ -39,6 +43,10 @@ public class ProductMapperImpl implements ProductMapper {
   @Autowired
   public void SaleService(SaleService saleService) {
     this.saleService = saleService;
+  }
+  private SeriesMapper seriesMapper;
+  @Autowired public void SeriesMapper(SeriesMapper seriesMapper) {
+    this.seriesMapper = seriesMapper;
   }
 
   @Override
@@ -53,22 +61,14 @@ public class ProductMapperImpl implements ProductMapper {
     }
     responseDTO.setName(entity.getName());
     responseDTO.setSlug(entity.getSlug());
-    responseDTO.setQuantity(entity.getQuantity());
+    responseDTO.setAvailableQuantity(entity.getQuantity());
+    //    responseDTO.setSoldQuantity();
     responseDTO.setOriginPrice(entity.getListPrice());
-    Sales sale = this.saleService.getMostOptimalSaleByProduct(entity.getId());
+    Sale sale = this.saleService.getMostOptimalSaleByProduct(entity.getId());
     if (sale != null) {
-      BigDecimal salePrice = entity.getListPrice().multiply(BigDecimal.valueOf(sale.getPercent()));
+      BigDecimal salePrice = Utils.getPriceProduct(entity, sale);
       responseDTO.setSalePrice(salePrice);
       responseDTO.setSale(sale.getPercent());
-    }
-    if (entity.getAuthors() != null && entity.getAuthors().size() > 0) {
-      String[] authors = new String[entity.getAuthors().size()];
-      int i= 0;
-      for (Author author : entity.getAuthors()) {
-        authors[i] = author.getFullName();
-        i++;
-      }
-      responseDTO.setAuthors(authors);
     }
     Rating rating = this.reviewService.getRatingByProduct(entity.getId());
     if (rating != null) {
@@ -83,6 +83,53 @@ public class ProductMapperImpl implements ProductMapper {
       responseDTO.setCategoryName(entity.getCategory().getName());
       responseDTO.setCategorySlug(entity.getCategory().getSlug());
     }
+    responseDTO.setMinAge(entity.getMinAge());
+    responseDTO.setMaxAge(entity.getMaxAge());
+    if (entity.getSupplier() != null) {
+      responseDTO.setSupplier(entity.getSupplier().getName());
+    }
+    if (entity.getPublisher() != null) {
+      responseDTO.setPublisher(entity.getPublisher().getName());
+    }
+    if (entity.getAuthors() != null && entity.getAuthors().size() > 0) {
+      String[] authors = new String[entity.getAuthors().size()];
+      int i= 0;
+      for (Author author : entity.getAuthors()) {
+        authors[i] = author.getFullName();
+        i++;
+      }
+      responseDTO.setAuthors(authors);
+    }
+    if (entity.getTranslators() != null && entity.getTranslators().size() > 0) {
+      String[] translators = new String[entity.getTranslators().size()];
+      int i =0;
+      for (Translator translator : entity.getTranslators()) {
+        translators[i] = translator.getFullName();
+        i++;
+      }
+      responseDTO.setTranslators(translators);
+    }
+    if (entity.getSeries() != null) {
+      responseDTO.setSeries(seriesMapper.seriesToSeriesResponseDTO(entity.getSeries()));
+    }
+    responseDTO.setLanguage(entity.getLanguage().getName());
+    responseDTO.setPublishYear(entity.getPublishYear());
+    responseDTO.setReprintYear(entity.getReprintYear());
+    responseDTO.setWeight(entity.getWeight());
+    responseDTO.setPackagingHeight(entity.getPackagingHeight());
+    responseDTO.setPackagingLength(entity.getPackagingLength());
+    responseDTO.setPackagingWidth(entity.getPackagingWidth());
+    responseDTO.setNumPages(entity.getNumPages());
+    responseDTO.setLayout(entity.getBookLayout());
+    if (entity.getGenres() != null && entity.getGenres().size() > 0) {
+      GenreResponseDTO[] genres = new GenreResponseDTO[entity.getGenres().size()];
+      int i =0;
+      for (Genre genre : entity.getGenres()){
+        genres[i] = genreMapper.genreToGenreResponseDTO(genre);
+        i++;
+      }
+      responseDTO.setGenres(genres);
+    }
     if (entity.getImageGallery() != null && entity.getImageGallery().size() > 0) {
       String[] gallery = new String[entity.getImageGallery().size()];
       int i = 0;
@@ -96,6 +143,7 @@ public class ProductMapperImpl implements ProductMapper {
       responseDTO.setLocation(Utils.getLocationStringFromLocation(entity.getLocation()));
     }
     responseDTO.setDescription(entity.getDescription());
+    responseDTO.setStatus(entity.getStatus());
     return responseDTO;
   }
 
@@ -113,11 +161,12 @@ public class ProductMapperImpl implements ProductMapper {
     }
     responseDTO.setName(entity.getName());
     responseDTO.setSlug(entity.getSlug());
-    responseDTO.setQuantity(entity.getQuantity());
+    responseDTO.setAvailableQuantity(entity.getQuantity());
+//    responseDTO.setSoldQuantity();
     responseDTO.setOriginPrice(entity.getListPrice());
-    Sales sale = this.saleService.getMostOptimalSaleByProduct(entity.getId());
+    Sale sale = this.saleService.getMostOptimalSaleByProduct(entity.getId());
     if (sale != null) {
-      BigDecimal salePrice = entity.getListPrice().multiply(BigDecimal.valueOf(sale.getPercent()));
+      BigDecimal salePrice = Utils.getPriceProduct(entity, sale);
       responseDTO.setSalePrice(salePrice);
       responseDTO.setSale(sale.getPercent());
     }

@@ -12,36 +12,50 @@ export const cartItemsSlice = createSlice({
     reducers: {
         addItem: (state, action) => {
             const newItem = action.payload;
-            const duplicate = state.value.filter(
-                (e) => e.slug === newItem.slug && e.color === newItem.color && e.size === newItem.size,
-            );
-            if (duplicate.length > 0) {
+            const oldItem = state.value.filter(
+                (e) => e.slug === newItem.slug);
+            if (oldItem.length > 0) {
                 state.value = state.value.filter(
-                    (e) => e.slug !== newItem.slug || e.color !== newItem.color || e.size !== newItem.size,
-                );
-
+                    (e) => e.slug !== newItem.slug);
                 state.value = [
                     ...state.value,
                     {
-                        id: duplicate[0].id,
+                        id: oldItem[0].id,
                         img: newItem.img,
-                        title: newItem.title,
-                        discount: newItem.discount,
+                        name: newItem.name,
                         slug: newItem.slug,
-                        color: newItem.color,
-                        size: newItem.size,
-                        price: newItem.price,
-                        brand: newItem.brand,
-                        category: newItem.category,
-                        quantity: newItem.quantity + duplicate[0].quantity,
+                        availableQuantity: newItem.availableQuantity,
+                        soldQuantity: newItem.soldQuantity,
+                        originPrice: newItem.originPrice,
+                        salePrice: newItem.salePrice,
+                        sale: newItem.sale,
+                        authors: newItem.authors,
+                        star: newItem.star,
+                        totalVote: newItem.totalVote,
+                        categoryName: newItem.categoryName,
+                        categorySlug: newItem.categorySlug,
+                        quantity: newItem.quantity + oldItem[0].quantity,
                     },
                 ];
             } else {
                 state.value = [
                     ...state.value,
                     {
-                        ...action.payload,
-                        id: state.value.length > 0 ? state.value[state.value.length - 1].id + 1 : 1,
+                        id: newItem.id,
+                        img: newItem.img,
+                        name: newItem.name,
+                        slug: newItem.slug,
+                        availableQuantity: newItem.availableQuantity,
+                        soldQuantity: newItem.soldQuantity,
+                        originPrice: newItem.originPrice,
+                        salePrice: newItem.salePrice,
+                        sale: newItem.sale,
+                        authors: newItem.authors,
+                        star: newItem.star,
+                        totalVote: newItem.totalVote,
+                        categoryName: newItem.categoryName,
+                        categorySlug: newItem.categorySlug,
+                        quantity: newItem.quantity,
                     },
                 ];
             }
@@ -52,10 +66,10 @@ export const cartItemsSlice = createSlice({
         },
         updateItem: (state, action) => {
             const newItem = action.payload;
-            const item = state.value.filter(
+            const oldItem = state.value.filter(
                 (e) => e.slug === newItem.slug && e.color === newItem.color && e.size === newItem.size,
             );
-            if (item.length > 0) {
+            if (oldItem.length > 0) {
                 state.value = state.value.filter(
                     (e) => e.slug !== newItem.slug || e.color !== newItem.color || e.size !== newItem.size,
                 );
@@ -63,16 +77,20 @@ export const cartItemsSlice = createSlice({
                 state.value = [
                     ...state.value,
                     {
-                        id: item[0].id,
+                        id: oldItem[0].id,
                         img: newItem.img,
-                        title: newItem.title,
-                        discount: newItem.discount,
+                        name: newItem.name,
                         slug: newItem.slug,
-                        color: newItem.color,
-                        size: newItem.size,
-                        price: newItem.price,
-                        brand: newItem.brand,
-                        category: newItem.category,
+                        availableQuantity: newItem.availableQuantity,
+                        soldQuantity: newItem.soldQuantity,
+                        originPrice: newItem.originPrice,
+                        salePrice: newItem.salePrice,
+                        sale: newItem.sale,
+                        authors: newItem.authors,
+                        star: newItem.star,
+                        totalVote: newItem.totalVote,
+                        categoryName: newItem.categoryName,
+                        categorySlug: newItem.categorySlug,
                         quantity: newItem.quantity,
                     },
                 ];
@@ -85,7 +103,7 @@ export const cartItemsSlice = createSlice({
         removeItem: (state, action) => {
             const item = action.payload;
             state.value = state.value.filter(
-                (e) => e.slug !== item.slug || e.color !== item.color || e.size !== item.size,
+                (e) => e.id !== item.id,
             );
 
             localStorage.setItem(

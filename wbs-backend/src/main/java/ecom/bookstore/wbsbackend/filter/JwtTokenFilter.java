@@ -39,41 +39,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
   // This is to be replaced with a list of domains allowed to access the server
   //You can include more than one origin here
-  private final List<String> allowedOrigins = Arrays.asList("http://localhost:8080");
+//  private final List<String> allowedOrigins = Arrays.asList("http://127.0.0.1:5173", "http://127.0.0.1:5000");
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-//    response.setHeader("Access-control-Allow-Origin", "*");
-//    response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
-//    response.setHeader("Access-Control-Allow-Headers", "x-requested-with, x-auth-token");
-//    response.setHeader("Access-Control-Max-Age", "3600");
-//    response.setHeader("Access-Control-Allow-Credentials", "true");
-
-//    // Lets make sure that we are working with HTTP (that is, against HttpServletRequest and HttpServletResponse objects)
-//    if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-//      HttpServletRequest req = (HttpServletRequest) request;
-//      HttpServletResponse res = (HttpServletResponse) response;
-//
-//      // Access-Control-Allow-Origin
-//      String origin = req.getHeader("Origin");
-//      res.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(origin) ? origin : "");
-//      res.setHeader("Vary", "Origin");
-//
-//      // Access-Control-Max-Age
-//      res.setHeader("Access-Control-Max-Age", "3600");
-//
-//      // Access-Control-Allow-Credentials
-//      res.setHeader("Access-Control-Allow-Credentials", "true");
-//
-//      // Access-Control-Allow-Methods
-//      res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-//
-//      // Access-Control-Allow-Headers
-//      res.setHeader("Access-Control-Allow-Headers",
-//          "Origin, X-Requested-With, Content-Type, Accept, " + "X-CSRF-TOKEN");
-//    }
-
 
     //If the Authorization header of the request doesn’t contain a Bearer token,
     //it continues the filter chain without updating authentication context.

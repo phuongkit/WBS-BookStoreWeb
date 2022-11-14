@@ -7,6 +7,7 @@ import ecom.bookstore.wbsbackend.entities.User;
 import ecom.bookstore.wbsbackend.mapper.AddressMapper;
 import ecom.bookstore.wbsbackend.mapper.UserMapper;
 import ecom.bookstore.wbsbackend.models.enums.ERole;
+import ecom.bookstore.wbsbackend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,13 +36,14 @@ public class UserMapperImpl implements UserMapper {
 //    responseDTO.setChangedUsername(entity.isChangedUsername());
     responseDTO.setFirstName(entity.getFirstName());
     responseDTO.setLastName(entity.getLastName());
+    responseDTO.setFullName(Utils.getFullNameFromLastNameAndFirstName(entity.getLastName(), entity.getFirstName()));
     responseDTO.setEmail(entity.getEmail());
     responseDTO.setEmailVerified(entity.isEmailVerified());
     responseDTO.setPhone(entity.getPhone());
     responseDTO.setPhoneVerified(entity.isPhoneVerified());
     responseDTO.setIdentityCard(entity.getIdentityCard());
     responseDTO.setBirthDate(entity.getBirthDate());
-    responseDTO.setGender(entity.getGender());
+    responseDTO.setGender(entity.getGender().ordinal());
 
     if (entity.getAddresses() != null && entity.getAddresses().size() > 0) {
       Address defaultAddress = null;
@@ -80,15 +82,7 @@ public class UserMapperImpl implements UserMapper {
     UserSimpleResponseDTO responseDTO = new UserSimpleResponseDTO();
     responseDTO.setId(entity.getId());
     responseDTO.setUsername(entity.getUsername());
-    String fullName = entity.getLastName() == null ? "" : entity.getLastName();
-    if (Objects.equals(fullName, "")) {
-      fullName = entity.getFirstName() == null ? "" : entity.getFirstName();
-    }
-    else {
-      fullName += (entity.getFirstName() == null ? "" : " " + entity.getFirstName());
-    }
-
-    responseDTO.setFullName(fullName);
+    responseDTO.setFullName(Utils.getFullNameFromLastNameAndFirstName(entity.getLastName(), entity.getFirstName()));
     responseDTO.setEmail(entity.getEmail());
     responseDTO.setPhone(entity.getPhone());
     if (entity.getAvatar() != null) {

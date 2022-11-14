@@ -1,9 +1,12 @@
 package ecom.bookstore.wbsbackend.utils;
 
 import ecom.bookstore.wbsbackend.entities.User;
+import ecom.bookstore.wbsbackend.exceptions.AccessTokenNotValidException;
+import ecom.bookstore.wbsbackend.services.UserService;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +19,6 @@ import java.util.Date;
  */
 @Component
 public class JwtTokenUtil {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
 
   @Value("${app.jwt.jwtExpirationInMs}")
@@ -28,9 +30,13 @@ public class JwtTokenUtil {
   @Value("${app.jwt.secret}")
   private String SECRET_KEY;
 
+  @Autowired
+  private UserService userService;
+
   public String generateAccessToken(User userPrincipal) {
     return Jwts.builder()
-        .setSubject(String.format("%s,%s", userPrincipal.getId(), userPrincipal.getEmail()))
+        .setSubject(String.format("%s,%s", userPrincipal.getId(),
+                                  userPrincipal.getPhone() != null ? userPrincipal.getPhone() : userPrincipal.getEmail()))
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
         .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
@@ -76,19 +82,28 @@ public class JwtTokenUtil {
     String token = null;
     try {
       String header = request.getHeader("Authorization");
+      if (header == null) return null;
       token = header.split(" ")[1].trim();
-    } catch(ArrayIndexOutOfBoundsException ex){
+    } catch (ArrayIndexOutOfBoundsException ex) {
       LOGGER.error("Bearer is null", ex.getMessage());
     }
     return token;
   }
 
-  public String getUserNameFromJwtToken(HttpServletRequest request) {
+  public String getUserNameFromJwtToken(String accessToken) {
+    if (this.validateAccessToken(accessToken)) {
+      return this.getSubject(accessToken).split(",")[1];
+    }
+    throw new AccessTokenNotValidException();
+  }
+
+  public String getUserNameFromRequest(HttpServletRequest request) {
     return this.getSubject(getAccessToken(request)).split(",")[1];
   }
 
   public String setExpiredJwtToken(String token) {
-    return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().setExpiration(new Date()).getSubject();
+    return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().setExpiration(new Date())
+        .getSubject();
   }
 
   public String refreshToken(String token) {

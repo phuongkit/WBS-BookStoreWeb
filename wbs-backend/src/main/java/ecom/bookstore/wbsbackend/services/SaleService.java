@@ -1,12 +1,10 @@
 package ecom.bookstore.wbsbackend.services;
 
 import ecom.bookstore.wbsbackend.dto.request.SaleCreationDTO;
-import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import ecom.bookstore.wbsbackend.dto.response.SaleResponseDTO;
-import ecom.bookstore.wbsbackend.entities.Sales;
+import ecom.bookstore.wbsbackend.entities.Sale;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
@@ -23,7 +21,7 @@ public interface SaleService {
 
   SaleResponseDTO getSaleById(Long id, boolean isHasChild);
 
-  Sales getMostOptimalSaleByProduct(Long productId);
+  Sale getMostOptimalSaleByProduct(Long productId);
 
   SaleResponseDTO createSale(SaleCreationDTO creationDTO, MultipartFile thumbnailFile);
 

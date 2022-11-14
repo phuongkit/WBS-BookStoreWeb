@@ -1,5 +1,5 @@
-import { commentService, productService, ratingService } from '~/services';
-import { getAllProducts, getOneProduct, handleFilter,getLocationProduct, getProductDetail,updateAllProduct} from './productsSlice'
+import { commentService, productService, ratingService } from '../../services';
+import { getAllProducts, getPageProduct, getOneProduct, handleFilter,getLocationProduct, getProductDetail,updateAllProduct} from './productsSlice'
 
 // export const getProducts = async(dispatch,id)=>{
 //     let res = await commentService.getCommentByProductId(id)
@@ -18,17 +18,9 @@ export const getAllProductByCategory = async (dispatch, category) => {
     let res = await productService.getProductByCategory(category);
     dispatch(getAllProducts(res));
 };
-export const getAllProductByCategoryId = async (dispatch, categoryId) => {
-    let res = await productService.getProductByCategoryId(categoryId);
-    dispatch(getAllProducts(res));
-};
-export const getAllProductByBrandId = async (dispatch, brandId) => {
-    let res = await productService.getProductByBrandId(brandId);
-    dispatch(getAllProducts(res));
-};
-export const getAllProductByCategoryIdAndBrandId = async (dispatch, categoryId, brandId) => {
-    let res = await productService.getProductByCategoryIdAndBrandId(categoryId, brandId);
-    dispatch(getAllProducts(res));
+export const getAllProductByCategoryIdApi = async (dispatch, categoryId, params= {}) => {
+    let res = await productService.getProductByCategoryId(categoryId, params);
+    dispatch(getPageProduct(res.data));
 };
 export const getAllProductByOptionApi = async (dispatch, homeOptionId) => {
     let res = await productService.getAllProductsByOption(homeOptionId);

@@ -1,5 +1,6 @@
 import { getAllCategories, getAllCategoriesHierarchy, getOneCategory } from './categoriesSlice';
-import { categoryService } from '~/services';
+import { categoryService } from '../../services';
+import { getAllProductByCategoryId } from '../product/productsApi';
 
 export const getAllCategoriesApi = async (dispatch) => {
     let res = await categoryService.getAllCategories();
@@ -11,5 +12,5 @@ export const getAllCategoriesHierarchyApi = async (dispatch) => {
 };
 export const getOneCategoryBySlugApi = async (dispatch, slug) => {
     let res =  await categoryService.getCategoryBySlug(slug);
-    dispatch(getOneCategory(res));
+    dispatch(getOneCategory(res.data));
 };

@@ -17,7 +17,7 @@ module.exports = {
       },
       {
         test: /\.css$|\.scss$/, // Sử dụng style-loader, css-loader cho file .css
-        use: ["style-loader", "css-loader", "sass-loader"]
+        use: ["style-loader", "css-loader", "sass-loader", "postcss-loader"]
       }
     ]
   },
@@ -33,7 +33,7 @@ module.exports = {
   plugins: [
 	new HtmlWebpackPlugin({
       template: "./public/index.html"
-    })
+    }),
   ],
   devServer: {
     host: 'localhost',

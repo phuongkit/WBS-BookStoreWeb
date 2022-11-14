@@ -4,6 +4,7 @@ import ecom.bookstore.wbsbackend.dto.request.AuthRequest;
 import ecom.bookstore.wbsbackend.dto.request.UserCreationDTO;
 import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import ecom.bookstore.wbsbackend.dto.response.UserResponseDTO;
+import ecom.bookstore.wbsbackend.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,15 @@ public interface UserService extends UserDetailsService {
 
   UserResponseDTO getUserById(Integer id);
 
-  ResponseEntity<ResponseObject> registerUser(AuthRequest auth);
+  UserResponseDTO getUserByAccessToken(String accessToken);
 
-  ResponseEntity<ResponseObject> createUser(UserCreationDTO creationDTO, MultipartFile imageFile);
+  User getUserByLoginKey(String loginKey);
 
-  ResponseEntity<ResponseObject> updateUser(Integer id, UserCreationDTO creationDTO, MultipartFile imageFile);
+  UserResponseDTO registerUser(AuthRequest auth, boolean isSeller);
 
-  ResponseEntity<ResponseObject> deleteUserById(Integer id);
+  UserResponseDTO createUser(UserCreationDTO creationDTO, MultipartFile imageFile);
+
+  UserResponseDTO updateUser(Integer id, UserCreationDTO creationDTO, MultipartFile imageFile);
+
+  UserResponseDTO deleteUserById(Integer id);
 }

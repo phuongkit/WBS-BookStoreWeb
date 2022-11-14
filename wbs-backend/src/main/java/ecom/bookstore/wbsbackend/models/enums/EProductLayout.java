@@ -11,8 +11,8 @@ public enum EProductLayout {
   BOOK_WITH_CD(Names.BOOK_WITH_CD);
 
   public static class Names {
-    public static final String PAPERBACK = "Bìa cứng";
-    public static final String HARDBACK = "Bìa mềm";
+    public static final String HARDBACK = "Bìa cứng";
+    public static final String PAPERBACK = "Bìa mềm";
     public static final String BOX_SET = "Bộ hộp";
     public static final String BOOK_WITH_CD = "Sách Kèm Đĩa";
   }

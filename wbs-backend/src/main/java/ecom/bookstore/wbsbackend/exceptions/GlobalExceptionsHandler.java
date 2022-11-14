@@ -172,6 +172,14 @@ public class GlobalExceptionsHandler {
     return new ResponseObject<>(HttpStatus.OK, exception.getMessage());
   }
 
+  @ExceptionHandler({AccessTokenNotValidException.class})
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  protected ResponseObject<?> handleAccessTokenNotValidException(
+      RuntimeException exception) {
+    return new ResponseObject<>(HttpStatus.UNAUTHORIZED, exception.getMessage());
+  }
+
 //  @ExceptionHandler({MissingServletRequestPartException.class, BindException.class})
 //  @ResponseStatus(HttpStatus.OK)
 //  @ResponseBody

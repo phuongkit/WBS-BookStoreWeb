@@ -137,7 +137,7 @@ public class Product {
       name = "tbl_sale_products",
       joinColumns = @JoinColumn(name = "product_id"),
       inverseJoinColumns = @JoinColumn(name = "sale_id"))
-  private Set<Sales> saleGallery = new HashSet<>();
+  private Set<Sale> saleGallery = new HashSet<>();
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "thumbnail")

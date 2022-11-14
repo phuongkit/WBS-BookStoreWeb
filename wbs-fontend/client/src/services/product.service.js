@@ -1,6 +1,6 @@
 import { axiosClient } from '~/api';
 
-const branch_api = "/products";
+const branch_api = '/products';
 
 export const productService = {
     getProducts(page, limit) {
@@ -19,20 +19,20 @@ export const productService = {
     getProductByName(name) {
         return axiosClient.get(`${branch_api}/${name}`);
     },
-    getProductByBrand(category, brand) {
-        return axiosClient.get(`${branch_api}?category=${category}&brand=${brand}`);
-    },
-    getProductByCategoryBrandSex(category, brand, sex) {
-        return axiosClient.get(`${branch_api}?category=${category}&brand=${brand}&sex=${sex}`);
-    },
-    getProductByCategorySex(category, sex) {
-        return axiosClient.get(`${branch_api}?category=${category}&sex=${sex}`);
-    },
     getProductByCategory(category) {
         return axiosClient.get(`${branch_api}?category=${category}`);
     },
-    getProductByCategoryId(categoryId) {
-        return axiosClient.get(`${branch_api}/categoryId/${categoryId}`);
+    getProductByCategoryId(categoryId, { page = null, limit = null, location = null }) {
+        const params = {
+            'page': page,
+            'limit': limit,
+            'location': location,
+        };
+        const query = Object.keys(params).reduce((acc, key) => {
+            const value = params[key];
+            return value ? acc + `${key}=${params[key]}&` : acc;
+        }, '');
+        return axiosClient.get(`${branch_api}/categoryId/${categoryId}?${query}`);
     },
     getProductByBrandId(brandId) {
         return axiosClient.get(`${branch_api}/brandId/${brandId}`);
@@ -58,11 +58,13 @@ export const productService = {
         return axiosClient.get(`${branch_api}?${query}`);
     },
     queryProductWatch(string) {
-        const query = string.map((e) => {
-                const key = Object.keys(e)
-                const value = Object.values(e)
+        const query = string
+            .map((e) => {
+                const key = Object.keys(e);
+                const value = Object.values(e);
                 return `${key[0]}=${value[0]}`;
-            }).join('&');
+            })
+            .join('&');
         return axiosClient.get(`${branch_api}?category=watch&${query}`);
     },
     // queryProduct(["brand", "nokia"], ["title", "Nokia 500"])

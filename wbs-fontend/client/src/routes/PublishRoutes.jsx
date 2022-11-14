@@ -1,14 +1,34 @@
 import React, { lazy, Suspense } from 'react';
-import Loading from '@Components/Loading';
+import Loading from '../components/Loading';
+const Account = lazy(() => import('../pages/User/Account'));
+const Category = lazy(() => import('../pages/User/Category'));
+const Cart = lazy(() => import('../pages/User/Cart'));
 const Home = lazy(() => import('../pages/User/Home'));
 const ProductDetail = lazy(() => import('../pages/User/ProductDetail'));
+const Search = lazy(() => import('../pages/User/Search'));
 import { ProductDetailProvider } from '../context/ProductDetailContext';
 export const publishRoutes = [
     {
         index: true,
         element: (
             <Suspense fallback={<Loading />}>
-                <Home title="Thegioididong.com - Điện thoại, Laptop, Phụ kiện, Đồng hồ chính hãng" />
+                <Home title="DealBook - Cửa hàng sách" />
+            </Suspense>
+        ),
+    },
+    {
+        path: 'cart',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Cart title="Giỏ hàng - DealBook.com" />
+            </Suspense>
+        ),
+    },
+    {
+        path: 'account',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Account title="Tài khoản - DealBook.com" />
             </Suspense>
         ),
     },
@@ -22,4 +42,33 @@ export const publishRoutes = [
             </Suspense>
         ),
     },
+    {
+        path: 'search',
+        // path: 'tim-kiem',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Search title="Tìm kiếm | Thegioididong.com" />
+            </Suspense>
+        ),
+        children: [
+            {
+                path: '?keyword=:keyword',
+                index: true,
+                // path: 'tim-kiem',
+                element: (
+                    <Suspense fallback={<Loading />}>
+                        <Search title="Tìm kiếm | Thegioididong.com" />
+                    </Suspense>
+                ),
+            },
+        ],
+    },
+    {
+        path: ':categorySlug',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Category title="Tìm kiếm | Thegioididong.com" />
+            </Suspense>
+        ),
+    }
 ];

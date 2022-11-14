@@ -44,7 +44,7 @@ public class ProductController {
   }
 
   @GetMapping("")
-  public ResponseObject<List<ProductResponseDTO>> getAllProduc(
+  public ResponseObject<Page<ProductResponseDTO>> getAllProduc(
       @RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE) Integer page,
       @RequestParam(name = "limit", required = false, defaultValue = PRODUCT_PER_PAGE) Integer size,
       @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
@@ -53,11 +53,11 @@ public class ProductController {
     sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
     Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size, sort);
     return new ResponseObject<>(
-        HttpStatus.OK, "", this.productService.getAllProduct(pageable).toList());
+        HttpStatus.OK, "", this.productService.getAllProduct(pageable));
   }
 
   @GetMapping("/filter")
-  public ResponseObject<List<ProductResponseDTO>> getAllProduct(
+  public ResponseObject<Page<ProductResponseDTO>> getAllProduct(
       @RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE) Integer page,
       @RequestParam(name = "limit", required = false, defaultValue = PRODUCT_PER_PAGE) Integer size,
       @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
@@ -74,7 +74,7 @@ public class ProductController {
     Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size, sort);
     return new ResponseObject<>(
         HttpStatus.OK, "", this.productService.filterProduct(
-        keyword, categoryName, locationString, minPrice, maxPrice, pageable).toList());
+        keyword, categoryName, locationString, minPrice, maxPrice, pageable));
   }
 
   @GetMapping("/categoryId/{categoryId}")
@@ -139,7 +139,7 @@ public class ProductController {
   }
 
   @GetMapping("/search")
-  public ResponseObject<List<ProductGalleryDTO>> getAllProductByKeyword(
+  public ResponseObject<Page<ProductGalleryDTO>> getAllProductByKeyword(
       @RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE) Integer page,
       @RequestParam(name = "limit", required = false, defaultValue = PRODUCT_PER_PAGE) Integer size,
       @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
@@ -157,8 +157,7 @@ public class ProductController {
     Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size, sort);
     return new ResponseObject<>(
         HttpStatus.OK, "",
-        this.productService.filterProductByKeyword(keyword, locationString, sortOption, minPrice, maxPrice, pageable)
-            .toList());
+        this.productService.filterProductByKeyword(keyword, locationString, sortOption, minPrice, maxPrice, pageable));
   }
 
   @GetMapping("/trading")

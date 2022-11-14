@@ -1,4 +1,10 @@
 import axios from 'axios';
+// import { useNavigate } from 'react-router-dom';
+import { handleLogout, postLogout } from '../redux/user/userApi';
+
+//const apiProduction = 'https://json-kali.onrender.com';
+// const apiProduction = 'https://jsonserv.glitch.me';
+// const apiDev = 'https://jsonserv.glitch.me';
 
 const apiProduction = 'http://localhost:8080/api/v1';
 const apiDev = 'http://localhost:8080/api/v1';
@@ -13,16 +19,32 @@ const axiosClient = axios.create({
     },
 });
 
+const createError = (httpStatusCode, statusCode, errorMessage, problems, errorCode = '') => {
+    const error = new Error();
+    error.httpStatusCode = httpStatusCode;
+    error.statusCode = statusCode;
+    error.errorMessage = errorMessage;
+    error.problems = problems;
+    error.errorCode = errorCode + '';
+    return error;
+};
+
+// const navigate = useNavigate();
+
 axiosClient.interceptors.request.use(
     function (req) {
-        // const token = JSON.parse(localStorage.getItem('token'));
-        const token = 'Bearer ' + JSON.parse(localStorage.getItem('access'));
-        // if (token) req.headers['auth-token'] = token;
-        if (token) req.headers['Authorization'] = token;
+        const token = localStorage.getItem('token');
+        if (token && typeof token === 'string') {
+            const token = 'Bearer ' + JSON.parse(localStorage.getItem('token'));
+            // if (token) req.headers['auth-token'] = token;
+            if (token) req.headers['Authorization'] = token;
+        }
         return req;
     },
 
     function (error) {
+        alert('Vui lòng đăng nhập lại');
+        postLogout();
         return Promise.reject(error);
     },
 );
@@ -32,7 +54,17 @@ axiosClient.interceptors.response.use(
     },
 
     function (error) {
-        return Promise.reject(error);
+        const { response } = error;
+        console.log(error);
+        // const { data } = error.response;
+        if (response.status === 401) {
+            alert('Vui lòng đăng nhập để thực hiện chức năng này');
+            postLogout();
+        }
+        // if (error.hasOwnProperty('code') && data.hasOwnProperty('message')) {
+        //     return Promise.reject(createError(response.status, data['status'], data['message'], "error occurred"));
+        // }
+        return Promise.reject(error.response.data);
     },
 );
 export default axiosClient;

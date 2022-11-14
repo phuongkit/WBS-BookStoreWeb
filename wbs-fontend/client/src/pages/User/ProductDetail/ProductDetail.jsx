@@ -2,25 +2,27 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import $ from 'jquery';
 import validate from 'jquery-validation';
-import Popper from 'popper.js';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
-import { Link } from 'react-router-dom';
 import './ProductDetail.scss';
 import { ProductBlock } from '@Components/ProductBlock';
 import { EHomeOption } from '~/utils';
+import Parameter from './Parameter';
+import { getNameBook } from '../../../utils';
+import { EBookLayout } from '../../../utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { addItem } from '../../../redux/shopping-cart/cartItemsSlide';
+import { useState } from 'react';
 
 var jQueryBridget = require('jquery-bridget');
 var Isotope = require('isotope-layout');
 jQueryBridget('isotope', Isotope, $);
 
 function ProductDetail(props) {
+    const dispatch = useDispatch();
+    const [quantity, setQuantity] = useState(1);
     // thumb-img
     $('.thumb-img.thumb1').addClass('vienvang');
-    $('.thumb-img').click(function (e) {
+    $('.thumb-img').on("click", function (e) {
         $('.product-image').attr('src', this.src);
     });
 
@@ -30,6 +32,21 @@ function ProductDetail(props) {
         price: parseFloat($('.gia span.giamoi').text()),
         old_price: parseFloat($('.gia span.giacu').text()),
         inCart: 0,
+    };
+
+    const handletAddToCart = async () => {
+        let result = document.getElementById('result');
+        let status = document.getElementById('status');
+        result.style.display = 'block';
+        status.classList.add('success');
+        let quantity = document.getElementById('quantity').value || 0;
+        if (!localStorage.getItem('accessToken')) {
+            const data = { ...initialProductDetail, quantity: Number.parseInt(quantity) };
+            dispatch(addItem(data));
+        }
+        setTimeout(function () {
+            result.style.display = 'none';
+        }, 1500);
     };
 
     const initialProductDetail = useSelector((state) => state.products.productDetail.data);
@@ -71,7 +88,12 @@ function ProductDetail(props) {
                                     />
                                     {initialProductDetail.gallery &&
                                         initialProductDetail.gallery.map((item, index) => (
-                                            <img key={index} className="thumb-img thumb2 img-fluid" src={item} alt={item} />
+                                            <img
+                                                key={index}
+                                                className="thumb-img thumb2 img-fluid"
+                                                src={item}
+                                                alt={item}
+                                            />
                                         ))}
                                 </div>
                             </div>
@@ -79,7 +101,9 @@ function ProductDetail(props) {
                             <div className="col-md-7 khoithongtin">
                                 <div className="row">
                                     <div className="col-md-12 header">
-                                        <h4 className="ten">{initialProductDetail.name}</h4>
+                                        <h4 className="ten">
+                                            {getNameBook(initialProductDetail.name, initialProductDetail.reprintYear)}
+                                        </h4>
                                         <div className="rate">
                                             <i className="fa fa-star active"></i>
                                             <i className="fa fa-star active"></i>
@@ -92,16 +116,23 @@ function ProductDetail(props) {
                                     <div className="col-md-7">
                                         <div className="gia">
                                             <div className="giabia">
-                                                Giá bìa:<span className="giacu ml-2">{initialProductDetail.originPrice} ₫</span>
+                                                Giá bìa:
+                                                <span className="giacu ml-2">{initialProductDetail.originPrice} ₫</span>
                                             </div>
                                             <div className="giaban">
                                                 Giá bán tại DealBooks:{' '}
-                                                <span className="giamoi font-weight-bold">{initialProductDetail.salePrice} </span>
+                                                <span className="giamoi font-weight-bold">
+                                                    {initialProductDetail.salePrice}{' '}
+                                                </span>
                                                 <span className="donvitien">₫</span>
                                             </div>
                                             <div className="tietkiem">
-                                                Tiết kiệm: <b>{initialProductDetail.originPrice - initialProductDetail.salePrice} ₫</b>{' '}
-                                                <span className="sale">-{initialProductDetail.sale || 0}%</span>
+                                                Tiết kiệm:{' '}
+                                                <b>
+                                                    {initialProductDetail.originPrice - initialProductDetail.salePrice}{' '}
+                                                    ₫
+                                                </b>{' '}
+                                                <span className="sale">-{initialProductDetail?.sale*100 || 0}%</span>
                                             </div>
                                         </div>
                                         <div className="uudai my-3">
@@ -124,16 +155,50 @@ function ProductDetail(props) {
                                         <div className="soluong d-flex">
                                             <label className="font-weight-bold">Số lượng: </label>
                                             <div className="input-number input-group mb-3">
-                                                <div className="input-group-prepend">
+                                                <div className="input-group-prepend" onClick={() => setQuantity(prev => prev > 1 ? prev - 1 : 1)}>
                                                     <span className="input-group-text btn-spin btn-dec">-</span>
                                                 </div>
-                                                <input type="text" value="1" className="soluongsp  text-center" />
-                                                <div className="input-group-append">
+                                                <input
+                                                    id="quantity"
+                                                    type="text"
+                                                    value={quantity}
+                                                    className="soluongsp text-center"
+                                                />
+                                                <div className="input-group-append" onClick={() => setQuantity(prev => prev < initialProductDetail.availableQuantity ? prev + 1 : prev)}>
                                                     <span className="input-group-text btn-spin btn-inc">+</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="nutmua btn w-100 text-uppercase">Chọn mua</div>
+                                        <div
+                                            className="nutmua btn w-10 text-uppercase tw-mr-[10px]"
+                                            onClick={() => handletAddToCart()}
+                                        >
+                                            Thêm vào giỏ hàng
+                                        </div>
+                                        <div className="nutmua btn w-10 text-uppercase">Chọn mua</div>
+                                        <div
+                                            id="result"
+                                            style={{
+                                                display: 'none',
+                                                bottom: '-70px',
+                                                width: '340px',
+                                                textAlign: 'center',
+                                                height: '180px',
+                                                backgroundColor: '#000',
+                                                opacity: '0.6',
+                                                position: 'absolute',
+                                                paddingTop: '32px',
+                                            }}
+                                        >
+                                            <a id="status" className="ti-arrow-circle-down"></a>
+                                            <FontAwesomeIcon
+                                                icon={faCheck}
+                                                style={{ color: 'green', fontSize: '30px' }}
+                                            />
+                                            <h3 style={{ color: '#fff', paddingTop: '8px', fontSize: '20px' }}>
+                                                Thêm vào giỏ hàng
+                                            </h3>
+                                        </div>
                                         <a className="huongdanmuahang text-decoration-none" href="#">
                                             (Vui lòng xem hướng dẫn mua hàng)
                                         </a>
@@ -152,29 +217,31 @@ function ProductDetail(props) {
                                     <div className="col-md-5">
                                         <div className="thongtinsach">
                                             <ul>
+                                                {initialProductDetail.authors && (
+                                                    <li>
+                                                        Tác giả:{' '}
+                                                        <a href="#" className="tacgia">
+                                                            {initialProductDetail.authors.toString()}
+                                                        </a>
+                                                    </li>
+                                                )}
+                                                <li>Nhà xuất bản: {initialProductDetail.publisher}</li>
+                                                <li>Nhà cung cấp: {initialProductDetail.supplier}</li>
                                                 <li>
-                                                    Tác giả:{' '}
-                                                    <a href="#" className="tacgia">
-                                                        {initialProductDetail.authors.toString()}
-                                                    </a>
+                                                    Hình thức bìa:{' '}
+                                                    {EBookLayout.getNameFromIndex(initialProductDetail.layout)}
                                                 </li>
-                                                <li>
-                                                    Ngày xuất bản: <b>04-2020</b>
-                                                </li>
-                                                <li>
-                                                    Kích thước: <b>20.5 x 13.5 cm</b>
-                                                </li>
-                                                <li>Dịch giả: Skye Phan;</li>
-                                                <li>Nhà xuất bản: Nhà Xuất Bản Thanh Niên</li>
-                                                <li>
-                                                    Hình thức bìa: <b>Bìa mềm</b>
-                                                </li>
-                                                <li>
-                                                    Số trang: <b>336</b>
-                                                </li>
-                                                <li>
-                                                    Cân nặng: <b>0</b>
-                                                </li>
+                                                {initialProductDetail.series && (
+                                                    <li>
+                                                        Bộ:{' '}
+                                                        <a
+                                                            href={`series/${initialProductDetail.series.slug}`}
+                                                            className="tacgia"
+                                                        >
+                                                            {initialProductDetail.series.name}
+                                                        </a>
+                                                    </li>
+                                                )}
                                             </ul>
                                         </div>
                                     </div>
@@ -218,8 +285,9 @@ function ProductDetail(props) {
                                         role="tabpanel"
                                         aria-labelledby="nav-gioithieu-tab"
                                     >
+                                        <Parameter />
                                         <h6 className="tieude font-weight-bold">{initialProductDetail.name}</h6>
-                                        <Description/>
+                                        <Description />
                                     </div>
                                     <div
                                         className="tab-pane fade"

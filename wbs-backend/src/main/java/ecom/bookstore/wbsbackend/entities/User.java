@@ -57,7 +57,7 @@ public class User implements UserDetails {
 
   @Column(name = "email", length = 320, unique = true, nullable = false)
   @Size(message = "Invalid email size.", max = 320, min = 10)
-  @NotNull(message = "An email is required!")
+//  @NotNull(message = "An email is required!")
   @Pattern(regexp = (Utils.REGEX_EMAIL), message = "Invalid email")
   private String email;
 
@@ -88,7 +88,7 @@ public class User implements UserDetails {
   @NotNull(message = "An gender is required!")
   private EGender gender;
 
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Address> addresses = new HashSet<>();
 
   public void addAddress(Address address) {

@@ -1,8 +1,7 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import './Banner.scss';
 
-function Menu() {
+function Banner() {
     return (
         <>
             {/* <!-- banner slider  --> */}
@@ -61,4 +60,4 @@ function Menu() {
     );
 }
 
-export default Menu;
+export default Banner;

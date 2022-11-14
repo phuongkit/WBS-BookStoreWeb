@@ -2,7 +2,6 @@ package ecom.bookstore.wbsbackend.services.impls;
 
 import ecom.bookstore.wbsbackend.dto.request.AuthRequest;
 import ecom.bookstore.wbsbackend.dto.request.UserCreationDTO;
-import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import ecom.bookstore.wbsbackend.dto.response.UserResponseDTO;
 import ecom.bookstore.wbsbackend.entities.*;
 import ecom.bookstore.wbsbackend.entities.keys.AddressKey;
@@ -10,9 +9,7 @@ import ecom.bookstore.wbsbackend.exceptions.InvalidFieldException;
 import ecom.bookstore.wbsbackend.exceptions.ResourceAlreadyExistsException;
 import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
 import ecom.bookstore.wbsbackend.mapper.UserMapper;
-import ecom.bookstore.wbsbackend.models.enums.EAddressType;
-import ecom.bookstore.wbsbackend.models.enums.EImageType;
-import ecom.bookstore.wbsbackend.models.enums.ERole;
+import ecom.bookstore.wbsbackend.models.enums.*;
 import ecom.bookstore.wbsbackend.repositories.RoleRepo;
 import ecom.bookstore.wbsbackend.repositories.UserRepo;
 import ecom.bookstore.wbsbackend.services.AddressService;
@@ -21,14 +18,13 @@ import ecom.bookstore.wbsbackend.services.LocationService;
 import ecom.bookstore.wbsbackend.services.UserService;
 import ecom.bookstore.wbsbackend.utils.CodeConfig;
 import ecom.bookstore.wbsbackend.utils.GenerateUtil;
+import ecom.bookstore.wbsbackend.utils.JwtTokenUtil;
 import ecom.bookstore.wbsbackend.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,6 +44,7 @@ import java.util.Optional;
 @Transactional
 public class UserServiceImpl implements UserService {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  public static final String branchName = User.class.getSimpleName();
 
   private AddressService addressService;
 
@@ -59,6 +56,12 @@ public class UserServiceImpl implements UserService {
 
   @Autowired public void ImageService(ImageService imageService) {
     this.imageService = imageService;
+  }
+
+  private JwtTokenUtil jwtTokenUtil;
+
+  @Autowired public void JwtTokenUtil(JwtTokenUtil jwtTokenUtil) {
+    this.jwtTokenUtil = jwtTokenUtil;
   }
 
   private LocationService locationService;
@@ -78,7 +81,6 @@ public class UserServiceImpl implements UserService {
   @Autowired public void RoleRepo(RoleRepo roleRepo) {
     this.roleRepo = roleRepo;
   }
-
   private UserMapper userMapper;
 
   @Autowired public void UserMapper(UserMapper userMapper) {
@@ -87,72 +89,143 @@ public class UserServiceImpl implements UserService {
 
   private UserRepo userRepo;
 
-  @Autowired public void UserRepository(UserRepo userRepo) {
+  @Autowired public void UserRepo(UserRepo userRepo) {
     this.userRepo = userRepo;
   }
 
-  @Override public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    return this.userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not present"));
+  @Override public UserDetails loadUserByUsername(String loginKey) throws UsernameNotFoundException {
+    if (Utils.isPattern(loginKey) == EPattern.PHONE) {
+      return this.userRepo.findByPhone(loginKey)
+          .orElseThrow(() -> new UsernameNotFoundException(Utils.USER_NOT_PRESENT));
+    } else {
+      return this.userRepo.findByEmail(loginKey)
+          .orElseThrow(() -> new UsernameNotFoundException(Utils.USER_NOT_PRESENT));
+    }
   }
 
   @Override public Page<UserResponseDTO> getAllUsers(String keyword, Pageable pageable) {
     this.LOGGER.info(
-        String.format(Utils.LOG_GET_ALL_OBJECT_BY_FIELD, User.class.getSimpleName(), "Keyword", keyword));
+        String.format(Utils.LOG_GET_ALL_OBJECT_BY_FIELD, branchName, "Keyword", keyword));
     Page<User> users = this.userRepo.findAll(keyword, pageable);
     if (users.getContent().size() < 1) {
-      throw new ResourceNotFoundException(String.format(Utils.OBJECT_NOT_FOUND, User.class.getSimpleName()));
+      throw new ResourceNotFoundException(String.format(Utils.OBJECT_NOT_FOUND, branchName));
     }
     return users.map(user -> this.userMapper.userToUserResponseDTO(user));
   }
 
   @Override public UserResponseDTO getUserById(Integer id) {
-    this.LOGGER.info(String.format(Utils.LOG_GET_OBJECT, User.class.getSimpleName(), "ID", id));
+    this.LOGGER.info(String.format(Utils.LOG_GET_OBJECT, branchName, "ID", id));
     return this.userMapper.userToUserResponseDTO(this.userRepo.findById(id).orElseThrow(
         () -> new ResourceNotFoundException(
-            String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, User.class.getSimpleName(), "ID", id))));
+            String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id))));
   }
 
-  @Override public ResponseEntity<ResponseObject> registerUser(AuthRequest auth) {
-    this.LOGGER.info(String.format(Utils.LOG_REGISTER_OBJECT, User.class.getSimpleName(), "Phone", auth.getPhone()));
-    if (auth.getEmail() == null) {
-      throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Email"));
+  @Override public UserResponseDTO getUserByAccessToken(String accessToken) {
+    this.LOGGER.info(String.format(Utils.LOG_GET_OBJECT, branchName, "accessToken", accessToken));
+    String loginKey = jwtTokenUtil.getUserNameFromJwtToken(accessToken);
+    User entityFound;
+    if (Utils.isPattern(loginKey) == EPattern.PHONE) {
+      entityFound = this.userRepo
+          .findByPhone(loginKey)
+          .orElseThrow(
+              () ->
+                  new ResourceNotFoundException(
+                      String.format(
+                          Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                          User.class.getSimpleName(),
+                          "accessToken",
+                          accessToken)));
+    } else {
+      entityFound = this.userRepo
+          .findByEmail(loginKey)
+          .orElseThrow(
+              () ->
+                  new ResourceNotFoundException(
+                      String.format(
+                          Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                          User.class.getSimpleName(),
+                          "accessToken",
+                          accessToken)));
     }
-    if (auth.getPassword() == null) {
-      throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Password"));
+    return this.userMapper.userToUserResponseDTO(entityFound);
+  }
+
+  @Override public User getUserByLoginKey(String loginKey) {
+    User userFound = null;
+    if (Utils.isPattern(loginKey) == EPattern.PHONE) {
+      userFound = this.userRepo
+          .findByPhone(loginKey)
+          .orElseThrow(
+              () ->
+                  new ResourceNotFoundException(
+                      Utils.USER_NOT_PRESENT));
+    } else {
+      userFound = this.userRepo
+          .findByEmail(loginKey)
+          .orElseThrow(
+              () ->
+                  new ResourceNotFoundException(
+                      Utils.USER_NOT_PRESENT));
     }
-    if (auth.getPhone() != null && !isPhoneUnique(auth.getPhone(), true)) {
-      throw new ResourceAlreadyExistsException(String.format(Utils.OBJECT_EXISTED, "Phone"));
-    }
-    if (auth.getEmail() != null && !isEmailUnique(auth.getEmail(), true)) {
-      throw new ResourceAlreadyExistsException(String.format(Utils.OBJECT_EXISTED, "Email"));
+    return userFound;
+  }
+
+  @Override public UserResponseDTO registerUser(AuthRequest auth, boolean isSeller) {
+    this.LOGGER.info(String.format(Utils.LOG_REGISTER_OBJECT, branchName, "Phone", auth.getPhone()));
+    if (auth.getEmail() == null && auth.getPhone() == null) {
+      throw new InvalidFieldException(String.format(Utils.BOTH_FIELDS_NOT_BLANK, "Phone", "Email"));
+    } else if (auth.isOtp()) {
+      if (auth.getPhone() == null) {
+        throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Phone"));
+      }
+      if (Utils.isPattern(auth.getPhone()) != EPattern.PHONE) {
+        throw new InvalidFieldException(String.format(Utils.FIELD_NOT_VALID, "Phone"));
+      }
+      if (auth.getPhone() != null && !isPhoneUnique(auth.getPhone(), true)) {
+        throw new ResourceAlreadyExistsException(String.format(Utils.OBJECT_EXISTED, "Phone"));
+      }
+    } else {
+      if (auth.getEmail() == null) {
+        throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Email"));
+      }
+      if (Utils.isPattern(auth.getEmail()) != EPattern.EMAIl) {
+        throw new InvalidFieldException(String.format(Utils.FIELD_NOT_VALID, "Email"));
+      }
+      if (auth.getPassword() == null) {
+        throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Password"));
+      }
+      if (auth.getEmail() != null && !isEmailUnique(auth.getEmail(), true)) {
+        throw new ResourceAlreadyExistsException(String.format(Utils.OBJECT_EXISTED, "Email"));
+      }
     }
     User user = new User();
     user.setPhone(auth.getPhone());
-    if (auth.getEmail() != null) {
-      user.setEmail(auth.getEmail());
+    user.setEmail(auth.getEmail());
+    if (auth.getPassword() != null) {
+      user.setPassword(encodePassword(auth.getPassword()));
+    } else {
+      user.setPassword(encodePassword(Utils.DEFAULT_PASSWORD));
     }
-    user.setPassword(encodePassword(auth.getPassword()));
     String usernameGenerate;
     do {
       usernameGenerate = GenerateUtil.generate(CodeConfig.length(Utils.LENGTH_USERNAME_GENERATE));
     } while (!isUsernameUnique(usernameGenerate, true));
     user.setUsername(usernameGenerate);
 //      user.setChangedUsername(false);
-    user.setPhoneVerified(false);
+    user.setPhoneVerified(auth.isOtp());
     user.setEmailVerified(false);
     user.setEnabled(true);
-    Optional<Role> roleFound = this.roleRepo.findByName(ERole.ROLE_CUSTOMER);
+    user.setGender(EGender.UNKNOWN);
+    Optional<Role> roleFound = this.roleRepo.findByName(isSeller ? ERole.ROLE_SELLER : ERole.ROLE_CUSTOMER);
 
     roleFound.ifPresent(user::setRole);
 
-    return ResponseEntity.status(HttpStatus.OK).body(
-        new ResponseObject(HttpStatus.OK, String.format(Utils.REGISTER_USER_SUCCESSFULLY, auth.getPhone()),
-            this.userMapper.userToUserResponseDTO(this.userRepo.save(user))));
+    return this.userMapper.userToUserResponseDTO(this.userRepo.save(user));
   }
 
-  @Override public ResponseEntity<ResponseObject> createUser(UserCreationDTO creationDTO, MultipartFile imageFile) {
+  @Override public UserResponseDTO createUser(UserCreationDTO creationDTO, MultipartFile imageFile) {
     this.LOGGER.info(
-        String.format(Utils.LOG_CREATE_OBJECT, User.class.getSimpleName(), "Email", creationDTO.getEmail()));
+        String.format(Utils.LOG_CREATE_OBJECT, branchName, "Email", creationDTO.getEmail()));
 
     if (creationDTO.getEmail() == null) {
       throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Email"));
@@ -228,16 +301,16 @@ public class UserServiceImpl implements UserService {
       }
     }
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseObject(HttpStatus.CREATED,
-        String.format(Utils.CREATE_OBJECT_SUCCESSFULLY, User.class.getSimpleName()),
-        this.userMapper.userToUserResponseDTO(savedUser)));
+    return this.userMapper.userToUserResponseDTO(savedUser);
   }
 
-  @Override public ResponseEntity<ResponseObject> updateUser(Integer id, UserCreationDTO creationDTO,
-                                                             MultipartFile imageFile) {
-    this.LOGGER.info(String.format(Utils.LOG_UPDATE_OBJECT, User.class.getSimpleName(), "ID", id));
+  @Override public UserResponseDTO updateUser(
+      Integer id, UserCreationDTO creationDTO,
+      MultipartFile imageFile
+  ) {
+    this.LOGGER.info(String.format(Utils.LOG_UPDATE_OBJECT, branchName, "ID", id));
     User userFound = this.userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(
-        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, User.class.getSimpleName(), "ID", id)));
+        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
 
     if (creationDTO.getPassword() == null) {
       throw new InvalidFieldException(String.format(Utils.FIELD_NOT_BLANK, "Password"));
@@ -302,16 +375,14 @@ public class UserServiceImpl implements UserService {
       userFound.setAvatar(avatar);
     }
 
-    return ResponseEntity.status(HttpStatus.OK).body(
-        new ResponseObject(HttpStatus.OK, String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, User.class.getSimpleName()),
-            this.userMapper.userToUserResponseDTO(this.userRepo.save(userFound))));
+    return this.userMapper.userToUserResponseDTO(this.userRepo.save(userFound));
 
   }
 
-  @Override public ResponseEntity<ResponseObject> deleteUserById(Integer id) {
-    this.LOGGER.info(String.format(Utils.LOG_DELETE_OBJECT, User.class.getSimpleName(), "ID", id));
+  @Override public UserResponseDTO deleteUserById(Integer id) {
+    this.LOGGER.info(String.format(Utils.LOG_DELETE_OBJECT, branchName, "ID", id));
     User userFound = this.userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(
-        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, User.class.getSimpleName(), "ID", id)));
+        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
     // delete image
     Image avatar = userFound.getAvatar();
     if (avatar != null) {
@@ -320,9 +391,7 @@ public class UserServiceImpl implements UserService {
 
     // delete User
     this.userRepo.deleteById(id);
-    return ResponseEntity.status(HttpStatus.OK).body(
-        new ResponseObject(HttpStatus.OK, String.format(Utils.DELETE_OBJECT_SUCCESSFULLY, User.class.getSimpleName()),
-            null));
+    return null;
   }
 
 //  private Set<Role> getRolesByRoleName(ERole[] roleNames) {

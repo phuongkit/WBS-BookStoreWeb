@@ -20,7 +20,8 @@ public class ProductGalleryDTO {
   private String img;
   private String name;
   private String slug;
-  private Integer quantity;
+  private Integer availableQuantity;
+  private Integer soldQuantity;
   private BigDecimal originPrice;
   private BigDecimal salePrice;
   private double sale;

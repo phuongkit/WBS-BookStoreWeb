@@ -1,15 +1,23 @@
 package ecom.bookstore.wbsbackend.utils;
 
+import ecom.bookstore.wbsbackend.dto.request.AuthRequest;
+import ecom.bookstore.wbsbackend.dto.request.OrderCreationDTO;
+import ecom.bookstore.wbsbackend.dto.request.OrderDetailCreationDTO;
 import ecom.bookstore.wbsbackend.entities.*;
+import ecom.bookstore.wbsbackend.models.clazzs.FullAddress;
 import ecom.bookstore.wbsbackend.models.enums.*;
 import ecom.bookstore.wbsbackend.repositories.*;
+import ecom.bookstore.wbsbackend.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author minh phuong
@@ -17,7 +25,12 @@ import java.util.*;
  */
 @Component
 public class InitData {
-  private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  private final Logger LOGGER = LoggerFactory.getLogger(InitData.class);
+  private final Random generator = new Random();
+  private AddressService addressService;
+  @Autowired public void AddressService(AddressService addressService) {
+    this.addressService =addressService;
+  }
   private AuthorRepo authorRepo;
 
   @Autowired
@@ -37,6 +50,13 @@ public class InitData {
   @Autowired
   public void CategoryRepo(CategoryRepo categoryRepo) {
     this.categoryRepo = categoryRepo;
+  }
+
+  private CommentRepo commentRepo;
+
+  @Autowired
+  public void CommentRepo(CommentRepo commentRepo) {
+    this.commentRepo = commentRepo;
   }
 
   private GenreRepo genreRepo;
@@ -60,6 +80,22 @@ public class InitData {
     this.languageRepo = languageRepo;
   }
 
+  private LocationService locationService;
+  @Autowired public void
+  LocationService(LocationService locationService) {
+    this.locationService = locationService;
+  }
+private OrderService orderService;
+  @Autowired public void OrderService(OrderService orderService) {
+    this.orderService = orderService;
+  }
+  private PaymentRepo paymentRepo;
+
+  @Autowired
+  public void PaymentRepo(PaymentRepo paymentRepo) {
+    this.paymentRepo = paymentRepo;
+  }
+
   private PublisherRepo publisherRepo;
 
   @Autowired
@@ -74,11 +110,32 @@ public class InitData {
     this.translatorRepo = translatorRepo;
   }
 
+  private ReviewRepo reviewRepo;
+
+  @Autowired
+  public void ReviewRepo(ReviewRepo reviewRepo) {
+    this.reviewRepo = reviewRepo;
+  }
+private RoleService roleService;
+  @Autowired public void RoleService(RoleService roleService) {
+    this.roleService = roleService;
+  }
+  private SaleRepo saleRepo;
+  @Autowired public void SaleRepo(SaleRepo saleRepo) {
+    this.saleRepo = saleRepo;
+  }
   private SeriesRepo seriesRepo;
 
   @Autowired
   public void SeriesRepo(SeriesRepo seriesRepo) {
     this.seriesRepo = seriesRepo;
+  }
+
+  private ShippingMethodRepo shippingMethodRepo;
+
+  @Autowired
+  public void ShippingMethodRepo(ShippingMethodRepo shippingMethodRepo) {
+    this.shippingMethodRepo = shippingMethodRepo;
   }
 
   private SupplierRepo supplierRepo;
@@ -88,12 +145,39 @@ public class InitData {
     this.supplierRepo = supplierRepo;
   }
 
+  private UserRepo userRepo;
+  @Autowired public void UserRepo (UserRepo userRepo) {
+    this.userRepo = userRepo;
+  }
+
+  private UserService userService;
+
+  @Autowired
+  public void UserService(UserService userService) {
+    this.userService = userService;
+  }
+
   public void init() {
 
     this.LOGGER.info("Start init data to database");
 
-    LanguageVariable lv = new LanguageVariable();
-    createLanguage(lv);
+    Pageable pageable = PageRequest.of(0, 1000);
+    Date currentDate = new Date();
+    long hourTime = 1000 * 3600;
+    long dayTime = hourTime * 24;
+    long monthTime = dayTime * 30;
+
+    RoleVariable rv = new RoleVariable();
+    createRole(rv);
+
+    LocationVariable lv = new LocationVariable();
+    createLocation(lv);
+
+    UserVariable uv = new UserVariable();
+    createUser(uv, rv, lv);
+
+    LanguageVariable lgv = new LanguageVariable();
+    createLanguage(lgv);
 
     CategoryVariable cv = new CategoryVariable();
     createCategory(cv);
@@ -117,9 +201,2728 @@ public class InitData {
     createSeries(srv, av, sv, pv);
 
     Product[] products = new Product[500];
-    int maxIndexBook = createBook(products, lv, cv, gv, sv, pv, av, tv, srv);
+    int maxIndexProduct = createBook(products, lgv, cv, gv, sv, pv, av, tv, srv);
+
+    Sale[] sales = new Sale[100];
+    int maxIndexSale =
+        createSale(sales, products, maxIndexProduct, uv.customers, uv.maxIndexCustomer, currentDate, dayTime, monthTime,
+                   pageable, cv);
+
+    Review[] mainFeedbacks = new Review[500];
+    int maxIndexMainFeedback =
+        createMainReviews(
+            mainFeedbacks, products, maxIndexProduct, uv.customers, uv.maxIndexCustomer);
+
+    Comment[] childReviews = new Comment[500];
+    int maxChildReview =
+        createChildReviews(
+            childReviews, mainFeedbacks, maxIndexMainFeedback, uv.customers, uv.maxIndexCustomer);
+
+    Payment paymentCash = new Payment(EPayment.CASH, "", "");
+    paymentCash = this.paymentRepo.save(paymentCash);
+
+    Payment paymentMoMo = new Payment(EPayment.MOMO, "", "");
+    paymentMoMo = this.paymentRepo.save(paymentMoMo);
+
+    ShippingMethod shippingMethodGHN = new ShippingMethod(EShippingMethod.GHN_EXPRESS, "", "");
+    shippingMethodGHN = this.shippingMethodRepo.save(shippingMethodGHN);
+
+    ShippingMethod shippingMethodGHTK =
+        new ShippingMethod(EShippingMethod.GIAOHANGTIETKIEM, "", "");
+    shippingMethodGHTK = this.shippingMethodRepo.save(shippingMethodGHTK);
+
+    createOrder(products, maxIndexProduct, uv.customers, uv.maxIndexCustomer);
 
     this.LOGGER.info("Init data to database is done!");
+  }
+
+  private void createOrder(Product[] products, int maxIndexProduct, User[] customers, int maxIndexCustomer) {
+    OrderCreationDTO[] orders = new OrderCreationDTO[500];
+    List<OrderDetailCreationDTO> orderItems;
+    int countOrder = 50;
+    int maxProductOrder = 5;
+    int maxQuantityProduct = 3;
+    for (int i = 0; i < countOrder; i++) {
+      orderItems = new ArrayList<>();
+      int rand = generator.nextInt(maxProductOrder) + 1;
+      for (int j = 0; j < rand; j++) {
+        orderItems.add(new OrderDetailCreationDTO(products[generator.nextInt(maxIndexProduct + 1)],
+                                                  generator.nextInt(maxQuantityProduct) + 1));
+      }
+      User user = customers[generator.nextInt(maxIndexCustomer + 1)];
+      orders[i] = new OrderCreationDTO(user, orderItems);
+      this.orderService.createOrder(user.getPhone() != null ? user.getPhone() : user.getEmail(), orders[i]);
+    }
+  }
+
+  private int createMainReviews(
+      Review[] mainReviews,
+      Product[] products,
+      int maxIndexProduct,
+      User[] customers,
+      int maxIndexCustomer) {
+    int i = 0;
+
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I got it",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "No way!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "This is too good to be true!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I can't say for sure.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "There's no way to know.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I guess so.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You better believe it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Of course!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Definitely!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Absolutely!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[0],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "How come?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Is that so?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "It's none of your business.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I was just daydreaming.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I was just thinking.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What's on your mind?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Nothing much.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What have you been doing?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Right on!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I did it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Got a minute?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "About when",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I won't take but a minute",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Speak up!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Seen Melissa?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "So we've met again, eh?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Come here.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Come over.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don't go yet.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Please go first. After you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Thanks for letting me go first.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Speak up!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Seen Melissa?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "So we’ve met again, eh?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Come here.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Come over.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don’t go yet.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Please go first. After you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Thanks for letting me go first.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What a relief.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What the hell are you doing?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You’re a lifesaver.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I know I can count on you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Get your head out of your ass!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "That’s a lie!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Do as I say.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "This is the limit!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Explain to me why.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Ask for it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "In the nick of time.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "No litter.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Go for it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What a jerk!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "How cute!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "None of your business.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don’t peep!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Say cheese!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Be good !",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Bottom up!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Me? Not likely!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Scratch one’s head",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Take it or leave it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Hell with haggling!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Mark my words!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Bored to death!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What a relief!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Enjoy your meal!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "It serves you right!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "The more, the merrier!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Beggars can’t be choosers!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Boys will be boys!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Good job!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Well done!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Just for fun!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Try your best!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Make some noise!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Congratulations!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Rain cats and dogs.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Love me love my dog.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Always the same.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Hit it off.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Hit or miss.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Add fuel to the fire.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "To eat well and can dress beautifully.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don’t mention it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You’re welcome",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "That’s all right!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Just kidding.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Enjoy your meal!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "No, not a bit.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Nothing particular!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "After you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Have I got your word on that?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "The same as usual!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Almost!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You‘ll have to step on it.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I’m in a hurry.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What the hell is going on?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Sorry for bothering!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Give me a certain time!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "It’s a kind of once-in-life!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Out of sight, out of mind!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "The God knows!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Women love through ears, while men love through eyes!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Poor you/me/him/her…!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Go away!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Let me see.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "None your business.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Mark my words!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Help yourself!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Absolutely!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What have you been doing?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Nothing much.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What's on your mind?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I was just thinking.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I was just daydreaming.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "It's none of your business.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Is that so?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "How come?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "How's it going?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Definitely!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Of course!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I guess so.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "There's no way to know.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I can't say for sure.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "This is too good to be true!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "No way!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Stop joking!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I got it.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Right on!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "(Great!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I did it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I made it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Got a minute?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "About when?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Speak up!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Seen Melissa?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "So we've met again, eh?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Come here.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don't go yet.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Please go first. After you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Thanks for letting me go first.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What the hell are you doing?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You're a life saver.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I know I can count on you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Get your head out of your ass!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "That's a lie!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Do as I say.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "This is the limit!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Explain to me why.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Ask for it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "In the nick of time.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "No litter.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Go for it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What a jerk!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "How cute!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "None of your business!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don't peep!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Stop it right away!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "A wise guy, eh?!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You'd better stop dawdling.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Say cheese!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Be good!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Bottoms up!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Me? Not likely!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Scratchăone’săhead.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Take it or leave it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Mark my words!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "What a relief!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Enjoy your meal!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "It serves you right!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "The more, the merrier!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Boys will be boys!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Good job!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Well done!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Just for fun!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Try your best!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Make some noise!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Rain cats and dogs.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Love you love your dog.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Strike it",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Always the same.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Hit it off",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Hit or miss.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Add fuel to the fire.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Don't mention it!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Not at all.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Just kidding!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "No, not a bit.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Nothing particular!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Have I got your word on that?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "The same as usual",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Almost!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "I'm in a hurry.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Sorry for bothering!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Give me a certain time!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Provincial!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Discourages me much!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "It's a kind of once-in-life!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "The God knows!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Poor you",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Got a minute?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "to argue hot and long",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "After you.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Is that so?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Brilliant idea!",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "Do you really mean it?",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    i++;
+    mainReviews[i] =
+        new Review(
+            products[generator.nextInt(maxIndexProduct + 1)],
+            customers[generator.nextInt(maxIndexCustomer + 1)],
+            "You are a great help.",
+            (int) (Math.random() * 5 + 1));
+    mainReviews[i] = this.reviewRepo.save(mainReviews[i]);
+
+    return i;
+  }
+
+  private int createChildReviews(
+      Comment[] childReviews,
+      Review[] mainReviews,
+      int maxIndexMainReview,
+      User[] customers,
+      int maxIndexCustomer) {
+    int i = 0;
+
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0], customers[generator.nextInt(maxIndexCustomer + 1)], "What a relief.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What the hell are you doing?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0], customers[generator.nextInt(maxIndexCustomer + 1)], "You're a life saver.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I know I can count on you");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Get your head out of your ass!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0], customers[generator.nextInt(maxIndexCustomer + 1)], "That's a lie!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[0], customers[generator.nextInt(maxIndexCustomer + 1)], "Do as I say.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "This is the limit!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Explain to me why.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Ask for it!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "In the nick of time");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "No litter.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Go for it!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What a jerk!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "How cute!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "None of your business");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Don't peep!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Say cheese!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Be good !");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Bottom up!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Me? Not likely!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Scratch one’s head");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Take it or leave it!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Hell with haggling!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Mark my words!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Bored to death!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What a relief!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Enjoy your meal!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "It serves you right!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "The more, the merrier!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Beggars can’t be choosers!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Boys will be boys!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Good job!= well done!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Just for fun!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Try your best!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Make some noise!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Congratulations!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Rain cats and dogs");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Love me love my dog.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Always the same.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Hit it off.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Hit or miss.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Add fuel to the fire.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "To eat well and can dress beautifully.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Don’t mention it! = You’re welcome = That’s all right!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Just kidding.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Enjoy your meal!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "No, not a bit.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Nothing particular!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "After you.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Have I got your word on that?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "The same as usual!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Almost!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "You‘ll have to step on it.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I’m in a hurry.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What the hell is going on?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Sorry for bothering!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Give me a certain time!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "It’s a kind of once-in-life!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Out of sight, out of mind!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "The God knows!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Women love through ears, while men love through eyes!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Poor you/me/him/her…!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Go away!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Let me see.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "None your business.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Mark my words!  ");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What’s up?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "How’s it going?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What have you been doing?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Nothing much.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "What’s on your mind?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I was just thinking.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I was just daydreaming.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "It’s none of your business.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Is that so?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "How come?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Absolutely!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Definitely!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Of course!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "You better believe it!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I guess so");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "There’s no way to know.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I can’t say for sure.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "This is too good to be true!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "No way!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I got it.");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Right on!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "I did it!");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "Got a minute?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "About when?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    i++;
+    childReviews[i] = new Comment();
+    childReviews[i].setChildReview(
+        mainReviews[generator.nextInt(maxIndexMainReview + 1)],
+        customers[generator.nextInt(maxIndexCustomer + 1)],
+        "About when?");
+    childReviews[i] = this.commentRepo.save(childReviews[i]);
+
+    return i;
+  }
+
+  private int createSale(Sale[] sales, Product[] products, int maxIndexProduct, User[] customers, int maxIndexCustomer,
+                         Date currentDate, long dayTime, long monthTime, Pageable pageable, CategoryVariable cv) {
+    int i = 0;
+    Set<Product> productSet1 = new HashSet<>(this.productRepo.findAll());
+
+    sales[i] =
+        new Sale("Sinh nhật", "", 0.2, productSet1, customers[generator.nextInt(maxIndexCustomer + 1)], currentDate,
+                 new Date(currentDate.getTime() + 5 * dayTime));
+    sales[i] = this.saleRepo.save(sales[i]);
+
+    Set<Product> productSet2 =
+        this.productRepo.findAllByCategory(cv.categoryTamLy, pageable).stream().collect(Collectors.toSet());
+    productSet2.addAll(
+        this.productRepo.findAllByCategory(cv.categorySachChoTuoiMoiLon, pageable).stream().collect(Collectors.toSet()));
+    productSet2.addAll(
+        this.productRepo.findAllByCategory(cv.categoryTruyenThieuNhi, pageable).stream().collect(Collectors.toSet()));
+    i++;
+    sales[i] =
+        new Sale("Giảm sốc", "", 0.35, productSet2, customers[generator.nextInt(maxIndexCustomer + 1)], currentDate,
+                 new Date(currentDate.getTime() + 10 * dayTime));
+    sales[i] = this.saleRepo.save(sales[i]);
+
+    Set<Product> productSet3 =
+        this.productRepo.findAllByCategory(cv.categoryTruyenNganTanVan, pageable).stream().collect(Collectors.toSet());
+    productSet3.addAll(
+        this.productRepo.findAllByCategory(cv.categoryNgheThuatGiaiTri, pageable).stream().collect(Collectors.toSet()));
+
+    i++;
+    sales[i] = new Sale("Giá sốc cuối tuần", "", 0.23, productSet3, customers[generator.nextInt(maxIndexCustomer + 1)],
+                        currentDate, new Date(currentDate.getTime() + 30 * 24 * 3600));
+    sales[i] = this.saleRepo.save(sales[i]);
+
+    Set<Product> productSet4 =
+        this.productRepo.findAllByCategory(cv.categoryCauChuyenCuocDoi, pageable).stream().collect(Collectors.toSet());
+    i++;
+    sales[i] = new Sale("Gói Samsung care+", "", 0.08, productSet4, customers[generator.nextInt(maxIndexCustomer + 1)],
+                        currentDate, new Date(currentDate.getTime() + monthTime));
+    sales[i] = this.saleRepo.save(sales[i]);
+
+    Set<Product> productSet5 =
+        this.productRepo.findAllByCategory(cv.categoryDaiHoc, pageable).stream().collect(Collectors.toSet());
+    i++;
+    sales[i] =
+        new Sale("Intel gen 12", "", 0.15, productSet5, customers[generator.nextInt(maxIndexCustomer + 1)], currentDate,
+                 new Date(currentDate.getTime() + monthTime));
+    sales[i] = this.saleRepo.save(sales[i]);
+
+    return i;
   }
 
   private int createBook(
@@ -2959,11 +5762,7 @@ public class InitData {
                 + "\t\t</div>");
     products[i] = this.productRepo.save(products[i]);
     products[i].setImageGallery(
-        new HashSet<>(
-            this.imageRepo.saveAllAndFlush(
-                Image.createBookGallery(
-                    new String[] {
-                    }))));
+        new HashSet<>(this.imageRepo.saveAllAndFlush(Image.createBookGallery(new String[] {}))));
     products[i] = this.productRepo.save(products[i]);
 
     //    i++;
@@ -5023,5 +7822,313 @@ public class InitData {
 
     lv.languageEN = new Language(ELanguage.EN, "en");
     lv.languageEN = this.languageRepo.save(lv.languageEN);
+  }
+
+  private int createCustomer(AuthRequest[] authRequestCustomers, User[] customers) {
+    int i = 0;
+
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 15", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 2/9 Tú Mỡ");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 02", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 108 Lê Tự Tài");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 01", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Đường Số 1");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 03", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 119/7 Đường Số 7");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 17", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 7");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 21", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 15/13 Nguyễn Du");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 22", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 47 Bùi Đình Túy");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 19", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 456/31 Cao Thắng");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    i++;
+    authRequestCustomers[i] = new AuthRequest("039500011" + i, "customer" + i + "@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authRequestCustomers[i], false);
+    customers[i] = this.userRepo.findUserByPhone(authRequestCustomers[i].getPhone()).orElse(null);
+    if (customers[i] != null) {
+      Location location = new Location("Phường 28", "Quận Bình Thạnh", "Hồ Chí Minh");
+      location = this.locationService.saveLocation(location);
+      Address address = new Address(customers[i], location, "Hẻm 6 Nguyễn Trung Trực");
+      address = this.addressService.saveAddress(address);
+      customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
+    }
+
+    return i;
+  }
+
+  public int createFullAddress(FullAddress[] fullAddresses) {
+    Location[] locations = new Location[500];
+    int i = 0;
+    locations[i] = new Location("Phường Hiệp Phú", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] =
+        new FullAddress("Trường Đại học Sư phạm Kỹ thuật Tp. Hồ Chí Minh", locations[i]);
+
+    i++;
+    locations[i] =
+        new Location("Phường Phước Long A", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("Trường Tư Thục Ngô Thời Nhiệm", locations[i]);
+
+    i++;
+    locations[i] =
+        new Location("Phường Phước Long B", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("Trường Cao Đẳng Công Thương TP.HCM", locations[i]);
+
+    i++;
+    locations[i] = new Location("Phường Thảo Điền", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("BIS HCMC, Early Years and Infant Campus", locations[i]);
+
+    i++;
+    locations[i] = new Location("Phường Phú Hữu", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("949-939 Đ. Nguyễn Duy Trinh\n", locations[i]);
+
+    i++;
+    locations[i] = new Location("Phường Phước Bình", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("Trường Cao đẳng Kinh tế Đối ngoại", locations[i]);
+
+    i++;
+    locations[i] = new Location("Phường Long Trường", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("6-32 Đường 7", locations[i]);
+
+    i++;
+    locations[i] =
+        new Location("Phường Tăng Nhơn Phú A", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] =
+        new FullAddress("Trường Đại học Tài chính - Marketing Cơ sở Thủ Đức", locations[i]);
+
+    i++;
+    locations[i] =
+        new Location("Phường Tăng Nhơn Phú B", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("Nhà Máy SAMSUNG Khu Công Nghệ Cao", locations[i]);
+
+    i++;
+    locations[i] =
+        new Location("Phường Long Thạnh Mỹ", "Thành Phố Thủ Đức", "Thành phố Hồ Chí Minh");
+    locations[i] = this.locationService.saveLocation(locations[i]);
+    fullAddresses[i] = new FullAddress("Nghĩa Trang Phúc An Viên", locations[i]);
+
+    return i;
+  }
+
+  static class LocationVariable {
+    public LocationVariable() {}
+
+    Location locationHCM;
+    Location locationHaNoi;
+    Location locationCanTho;
+    Location locationDaNang;
+    Location locationHaiPhong;
+    Location locationAnGiang;
+    Location locationLongAn;
+    Location locationCaMau;
+    Location locationVinhLong;
+    Location locationBenTre;
+    Location locationDongThap;
+  }
+
+  public void createLocation(LocationVariable lv) {
+    lv.locationHCM = new Location("Hồ Chí Minh");
+    lv.locationHCM = this.locationService.saveLocation(lv.locationHCM);
+
+    lv.locationHaNoi = new Location("Hà Nội");
+    lv.locationHaNoi = this.locationService.saveLocation(lv.locationHaNoi);
+
+    lv.locationCanTho = new Location("Cần Thơ");
+    lv.locationCanTho = this.locationService.saveLocation(lv.locationCanTho);
+
+    lv.locationDaNang = new Location("Đà Nẵng");
+    lv.locationDaNang = this.locationService.saveLocation(lv.locationDaNang);
+
+    lv.locationHaiPhong = new Location("Hải Phòng");
+    lv.locationHaiPhong = this.locationService.saveLocation(lv.locationHaiPhong);
+
+    lv.locationAnGiang = new Location("An Giang");
+    lv.locationAnGiang = this.locationService.saveLocation(lv.locationAnGiang);
+
+    lv.locationLongAn = new Location("Long An");
+    lv.locationLongAn = this.locationService.saveLocation(lv.locationLongAn);
+
+    lv.locationCaMau = new Location("Cà Mau");
+    lv.locationCaMau = this.locationService.saveLocation(lv.locationCaMau);
+
+    lv.locationVinhLong = new Location("Vĩnh Long");
+    lv.locationVinhLong = this.locationService.saveLocation(lv.locationVinhLong);
+
+    lv.locationBenTre = new Location("Bến Tre");
+    lv.locationBenTre = this.locationService.saveLocation(lv.locationBenTre);
+
+    lv.locationDongThap = new Location("Đồng Tháp");
+    lv.locationDongThap = this.locationService.saveLocation(lv.locationDongThap);
+  }
+
+  static class UserVariable {
+    public UserVariable() {}
+
+    User admin;
+    User admin1;
+    User seller;
+    User seller1;
+    User seller2;
+    User[] customers;
+    int maxIndexCustomer;
+  }
+
+  public void createUser(UserVariable uv, RoleVariable rv, LocationVariable lv) {
+    AuthRequest authAdmin1 =
+        new AuthRequest("0375189189", "admin@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authAdmin1, false);
+    uv.admin = this.userRepo.findUserByPhone(authAdmin1.getPhone()).orElse(null);
+    if (uv.admin != null) {
+      uv.admin.setRole(rv.roleAdmin);
+      uv.admin = this.userRepo.save(uv.admin);
+      Address addressAdmin = new Address(uv.admin, lv.locationLongAn, "Nguyễn Trung");
+      addressAdmin = this.addressService.saveAddress(addressAdmin);
+    }
+
+    AuthRequest authAdmin2 =
+        new AuthRequest("0976080909", "admin1@gmail.com", Utils.DEFAULT_PASSWORD);
+    this.userService.registerUser(authAdmin2, false);
+    uv.admin1 = this.userRepo.findUserByPhone(authAdmin2.getPhone()).orElse(null);
+    if (uv.admin1 != null) {
+      uv.admin1.setRole(rv.roleAdmin);
+      uv.admin1 = this.userRepo.save(uv.admin1);
+    }
+
+    AuthRequest[] authRequestCustomers = new AuthRequest[500];
+    uv.customers = new User[500];
+
+    uv.maxIndexCustomer = createCustomer(authRequestCustomers, uv.customers);
+  }
+
+  static class RoleVariable {
+    public RoleVariable() {}
+
+    Role roleAdmin;
+    Role roleSeller;
+    Role roleCustomer;
+    Role roleAssistant;
+    Role roleEditor;
+    Role roleShipper;
+    Role roleSalesPerson;
+  }
+
+  public void createRole(RoleVariable rv) {
+    rv.roleAdmin = new Role(ERole.ROLE_ADMIN, "Admin role is the administrator's role");
+    rv.roleAdmin = this.roleService.createRole(rv.roleAdmin);
+
+    rv.roleSeller = new Role(ERole.ROLE_SELLER, "Seller is a person who sells goods to consumers.");
+    rv.roleSeller = this.roleService.createRole(rv.roleSeller);
+
+    rv.roleCustomer =
+        new Role(
+            ERole.ROLE_CUSTOMER,
+            "Customers are the people who have the conditions to make purchasing decisions. They are the beneficiaries of the characteristics and quality of the product or service.");
+    rv.roleCustomer = this.roleService.createRole(rv.roleCustomer);
+
+    rv.roleAssistant = new Role(ERole.ROLE_ASSISTANT, "Manage questions and reviews");
+    rv.roleAssistant = this.roleService.createRole(rv.roleAssistant);
+
+    rv.roleEditor =
+        new Role(ERole.ROLE_EDITOR, "Manage categories, bv.brands, products, articles and menus");
+    rv.roleEditor = this.roleService.createRole(rv.roleEditor);
+
+    rv.roleShipper =
+        new Role(ERole.ROLE_SHIPPER, "View products, view orders and update order status");
+    rv.roleShipper = this.roleService.createRole(rv.roleShipper);
+
+    rv.roleSalesPerson =
+        new Role(
+            ERole.ROLE_SALESPERSON,
+            "Manage product price, customers, shipping, orders and sales report");
+    rv.roleSalesPerson = this.roleService.createRole(rv.roleSalesPerson);
   }
 }

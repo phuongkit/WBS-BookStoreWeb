@@ -1,0 +1,116 @@
+/* css cho header formdangnhap dangky  */
+.modal-header {
+    padding-bottom: 0;
+}
+
+ul.tabs {
+    width: 100%;
+    height: 100%;
+    li.tab a {
+        font-size: 18px;
+        color: #646464;
+        transition: 0.2s;
+    }
+
+    li:hover {
+        cursor: pointer;
+        a {
+            color: #f5a623;
+        }
+        hr {
+            visibility: visible;
+            border-top: 2px solid #f5a623;
+            width: 100%;
+            left: 0;
+        }
+    }
+    
+    li {
+        width: 40%;
+        height: 100%;
+        hr {
+            position: relative;
+            width: 50%;
+            top: 0px;
+            left: 25%;
+            visibility: hidden;
+            border-top: 2px solid #f5a623;
+            transition: 0.2s;
+        }
+    }
+
+    li.active {
+        a {
+            color: #f5a623;
+        }
+        hr {
+            visibility: visible;
+            border-top: 2px solid #f5a623;
+            width: 100%;
+            left: 0;
+        }
+    }
+}
+/* het css cho header form dangnhap dangky  */
+
+/* css cho formdangnhap dangky*/
+.form-signin {
+    width: 100%;
+    .btn {
+        font-size: 80%;
+        letter-spacing: 0.1rem;
+        font-weight: bold;
+        padding: 1rem;
+        transition: all 0.2s;
+    }
+
+    .btn-signin:hover {
+        color: black !important;
+    }
+}
+
+.modal-body {
+    hr {
+        position: relative;
+        top: 1px;
+    }
+    .form-label-group {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .btn-google {
+        color: white;
+        background-color: #ea4335;
+    }
+
+    .btn-facebook {
+        color: white;
+        background-color: #3b5998;
+    }
+}
+
+#formdangky {
+    .form-signin {
+        p {
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+        a {
+            display: block;
+            font-size: 13px;
+        }
+    }
+}
+
+label.error {
+    display: inline-block;
+    color: red;
+    width: 300px;
+
+    margin-top: 5px;
+    margin-bottom: 0;
+    font-size: 13px;
+}
+
+/* het css cho form dang nhap dangky */

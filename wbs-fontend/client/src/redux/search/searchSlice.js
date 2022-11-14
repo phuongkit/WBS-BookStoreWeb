@@ -3,16 +3,16 @@ import { createSlice } from '@reduxjs/toolkit';
 export const searchSlice = createSlice({
     name: 'search',
     initialState: {
-        search: {
-            data: [],
+        pageSearch: {
+            data: {},
         },
     },
     reducers: {
         getResultSearch: (state, action) => {
-            state.search.data = action.payload;
+            state.pageSearch.data = action.payload;
         },
         removeResultSearch: (state) => {
-            state.search.data = [];
+            state.pageSearch.data = '';
         },
     },
 });

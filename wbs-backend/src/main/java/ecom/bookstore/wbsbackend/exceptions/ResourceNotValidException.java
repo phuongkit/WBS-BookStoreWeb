@@ -6,7 +6,6 @@ import lombok.Setter;
 /**
  * @author minh phuong
  * @created 08/10/2022 - 8:48 PM
- * @project gt-backend
  */
 @Getter
 @Setter

@@ -37,7 +37,6 @@ package ecom.bookstore.wbsbackend.exceptions;//package gt.electronic.ecommerce.e
 ///**
 // * @author minh phuong
 // * @created 11/09/2022 - 2:09 PM
-// * @project gt-backend
 // */
 //@ControllerAdvice
 //public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {

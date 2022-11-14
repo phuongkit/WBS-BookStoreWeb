@@ -21,6 +21,7 @@ public class UserResponseDTO {
 //  private boolean isChangedUsername;
   private String firstName;
   private String lastName;
+  private String fullName;
   private String email;
   private boolean isEmailVerified;
   private String phone;
@@ -28,7 +29,7 @@ public class UserResponseDTO {
   private String identityCard;
   @JsonFormat(pattern = "yyyy-MM-dd")
   private Date birthDate;
-  private EGender gender;
+  private int gender;
   private AddressResponseDTO address;
   private boolean enabled;
   private String avatar;

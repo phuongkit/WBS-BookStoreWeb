@@ -1,33 +1,22 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import $ from 'jquery';
 import validate from 'jquery-validation';
-import Popper from 'popper.js';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
-import { Link } from 'react-router-dom';
 import './Home.scss';
-import { TitleBar } from '@Components/TitleBar';
-import { getAllCategoriesHierarchyApi } from '~/redux/category/categoriesApi';
 import { ProductBlock} from '@Components/ProductBlock';
 import { EHomeOption } from '~/utils';
 
 var jQueryBridget = require('jquery-bridget');
 var Isotope = require('isotope-layout'); 
+var $ = require( "jquery" );
 jQueryBridget( 'isotope', Isotope, $ );
 
 function Home({ title }) {
-    const dispatch = useDispatch();
-    getAllCategoriesHierarchyApi(dispatch);
     //hieu ung header va nut backtotop
-    $('#backtotop').click(function () {
+    $('#backtotop').on("click", function () {
         $('html, body').animate({ scrollTop: 0 }, 400);
     });
 
-    $(window).scroll(function () {
+    $(window).on("scroll", function () {
         if ($('body,html').scrollTop() > 150) {
             $('.navbar').addClass('fixed-top');
         } else {
@@ -35,7 +24,7 @@ function Home({ title }) {
         }
     });
 
-    $(window).scroll(function () {
+    $(window).on("scroll", function () {
         if ($('body,html').scrollTop() > 500) {
             $('.nutcuonlen').addClass('hienthi');
         } else {
@@ -43,55 +32,13 @@ function Home({ title }) {
         }
     });
 
-    // header form dangnhap dangky
-    $('.nutdangnhap').click(function (e) {
-        $('ul.tabs .tab-dangnhap').addClass('active');
-    });
-    $('.nutdangky').click(function (e) {
-        $('ul.tabs .tab-dangky').addClass('active');
-    });
-
-    $('ul.tabs .tab-dangnhap').click(function (e) {
-        $('ul.tabs .tab-dangnhap').addClass('active');
-        $('ul.tabs .tab-dangky').removeClass('active');
-    });
-
-    $('ul.tabs .tab-dangky').click(function (e) {
-        $('ul.tabs .tab-dangky').addClass('active');
-        $('ul.tabs .tab-dangnhap').removeClass('active');
-    });
-
-    // form dangnhap dangky
-    $('.tab-dangky').click(function (e) {
-        $('#formdangnhap').removeClass('fade');
-        $('#formdangky').removeClass('fade');
-        $('#formdangnhap').modal('hide');
-        $('#formdangky').modal('show');
-    });
-    $('.tab-dangnhap').click(function (e) {
-        $('#formdangnhap').removeClass('fade');
-        $('#formdangky').removeClass('fade');
-        $('#formdangky').modal('hide');
-        $('#formdangnhap').modal('show');
-    });
-    $('.close').click(function (e) {
-        $('.modal').addClass('fade');
-        $('ul.tabs .tab-dangnhap').removeClass('active');
-        $('ul.tabs .tab-dangky').removeClass('active');
-    });
-
-    $('.thumb-img').click(function (e) {
-        $('.thumb-img:not(:hover)').removeClass('vienvang');
-        $(this).addClass('vienvang');
-    });
-
     //btn-spin
-    $('.btn-inc').click(function (e) {
+    $('.btn-inc').on("click", function (e) {
         var strval = $(this).parent().prev().val();
         var val = parseInt(strval) + 1;
         $(this).parent().prev().attr('value', val);
     });
-    $('.btn-dec').click(function (e) {
+    $('.btn-dec').on("click", function (e) {
         var strval = $(this).parent().next().val();
         var val = parseInt(strval) - 1;
         if (val < 1) {
@@ -103,35 +50,8 @@ function Home({ title }) {
 
     // gui danh gia
     $('.formdanhgia').hide(200);
-    $('.vietdanhgia').click(function (e) {
+    $('.vietdanhgia').on("click", function (e) {
         $('.formdanhgia').toggle(200);
-    });
-
-    //rotate chevron
-    $('#step1contentid').on('show.bs.collapse', function () {
-        $(this).prev().addClass('active');
-    });
-    $('#step1contentid').on('hide.bs.collapse', function () {
-        $(this).prev().removeClass('active');
-    });
-    $('#step2contentid').on('show.bs.collapse', function () {
-        $(this).prev().addClass('active');
-    });
-    $('#step2contentid').on('hide.bs.collapse', function () {
-        $(this).prev().removeClass('active');
-    });
-    $('#step3contentid').on('show.bs.collapse', function () {
-        $(this).prev().addClass('active');
-    });
-    $('#step3contentid').on('hide.bs.collapse', function () {
-        $(this).prev().removeClass('active');
-    });
-
-    // nut btn-shopping-without-signup
-    $('#step1contentid').toggle('show');
-    $('.btn-shopping-without-signup').click(function (e) {
-        $('#step1contentid').toggle('hide');
-        $('#step2contentid').toggle ('show');
     });
 
     // validate
@@ -187,7 +107,7 @@ function Home({ title }) {
         rules: {
             password: {
                 required: true,
-                minlength: 6,
+                minlength: 5,
             },
             email: {
                 required: true,
@@ -197,7 +117,7 @@ function Home({ title }) {
         messages: {
             password: {
                 required: 'Vui lòng nhập mật khẩu',
-                minlength: 'Vui lòng nhập ít nhất 6 kí tự',
+                minlength: 'Vui lòng nhập ít nhất 5 kí tự',
             },
             email: {
                 required: 'Vui lòng nhập email',
@@ -289,13 +209,6 @@ function Home({ title }) {
         });
     }
 
-    function onLoadCartNumbers() {
-        let productNumbers = localStorage.getItem('cartNumbers');
-        if (productNumbers) {
-            document.querySelector('.giohang .cart-amount').textContent = productNumbers;
-        }
-    }
-
     function cartNumbers(product) {
         let productNumbers = localStorage.getItem('cartNumbers');
         productNumbers = parseInt(productNumbers);
@@ -344,114 +257,17 @@ function Home({ title }) {
         }
     }
 
-    function displayCart() {
-        let cartItems = localStorage.getItem('productsInCart');
-        cartItems = JSON.parse(cartItems);
-        let cartContent = document.querySelector('.cart-content');
-        let cartCost = localStorage.getItem('totalCost');
-        let productNumbers = localStorage.getItem('cartNumbers');
-
-        if (cartItems == null) {
-            $('.cart-empty').removeClass('d-none');
-            $('.cart').addClass('d-none');
-            $('.cart-steps').addClass('d-none');
-        }
-        if (cartItems && cartContent) {
-            $('.cart-empty').addClass('d-none');
-            $('.cart').removeClass('d-none');
-            $('.cart-steps').removeClass('d-none');
-
-            cartContent.innerHTML = '';
-
-            cartContent.innerHTML += `
-            <h6 class="header-gio-hang">GIỎ HÀNG CỦA BẠN <span>(${productNumbers} sản phẩm)</span></h6>
-            <div class="cart-list-items">
-            `;
-            Object.values(cartItems).map((item) => {
-                cartContent.innerHTML += `
-                    <div class="cart-item d-flex">
-                        <a href="product-item.html" class="img">
-                            <img src="images/${item.tag}.jpg" class="img-fluid" alt="${item.tag}">
-                        </a>
-                        <div class="item-caption d-flex w-100">
-                            <div class="item-info ml-3">
-                                <a href="product-item.html" class="ten">${item.name}</a>
-                                <div class="soluong d-flex">
-                                    <div class="input-number input-group mb-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text btn-spin btn-dec">-</span>
-                                        </div>
-                                        <input type="text" value="${item.inCart}" class="soluongsp  text-center">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text btn-spin btn-inc">+</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="item-price ml-auto d-flex flex-column align-items-end">
-                                <div class="giamoi">${parseFloat(item.price).toFixed(3)} ₫</div>
-                                <div class="giacu">${parseFloat(item.old_price).toFixed(3)} ₫</div>
-                                <span class="remove mt-auto"><i class="far fa-trash-alt"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                `;
-            });
-
-            cartContent.innerHTML += `
-            </div>
-
-            <div class="row">
-                <div class="col-md-3">
-                    <a href="index.html" class="btn nutmuathem mb-3">Mua thêm</a>
-                </div>
-                <div class="col-md-5 offset-md-4">
-                    <div class="tonggiatien">
-                        <div class="group d-flex justify-content-between">
-                            <p class="label">Tạm tính:</p>
-                            <p class="tamtinh">${parseFloat(cartCost).toFixed(3)} ₫</p>
-                        </div>
-                        <div class="group d-flex justify-content-between">
-                            <p class="label">Giảm giá:</p>
-                            <p class="giamgia">0 ₫</p>
-                        </div>
-                        <div class="group d-flex justify-content-between">
-                            <p class="label">Phí vận chuyển:</p>
-                            <p class="phivanchuyen">0 ₫</p>
-                        </div>
-                        <div class="group d-flex justify-content-between">
-                            <p class="label">Phí dịch vụ:</p>
-                            <p class="phidicvu">0 ₫</p>
-                        </div>
-                        <div class="group d-flex justify-content-between align-items-center">
-                            <strong class="text-uppercase">Tổng cộng:</strong>
-                            <p class="tongcong">${parseFloat(cartCost).toFixed(3)} ₫</p>
-                        </div>
-                        <small class="note d-flex justify-content-end text-muted">
-                            (Giá đã bao gồm VAT)
-                        </small>
-                    </div>
-                </div>
-            </div>
-            `;
-        }
-    }
-
-    $('.btn-checkout').click(function (e) {
+    $('.btn-checkout').on("click", function (e) {
         localStorage.clear();
         location.reload(true);
         alert('cảm ơn đã mua hàng');
     });
 
-    onLoadCartNumbers();
-    displayCart();
-
     $('.items .row').isotope({
         itemSelector: '.item',
     });
 
-    $('.tag a').click(function (e) {
+    $('.tag a').on("click", function (e) {
         var tacgia = $(this).data('tacgia');
 
         if (tacgia == 'all') {
@@ -463,13 +279,12 @@ function Home({ title }) {
     });
 
     $('.thay-doi-mk').hide();
-    $('#changepass').click(function (e) {
+    $('#changepass').on("click", function (e) {
         $('.thay-doi-mk').toggle(200);
     });
 
     return (
         <>
-            <TitleBar isShowBanner/>
             <ProductBlock homeOption={EHomeOption.NEW}/>
             {/* <!-- khoi sach combo hot  --> */}
             <ProductBlock homeOption={EHomeOption.SALE}/>
@@ -636,20 +451,6 @@ function Home({ title }) {
                     <hr />
                 </div>
             </section>
-
-            
-
-            {/* <!-- nut cuon len dau trang --> */}
-            <div className="fixed-bottom">
-                <div
-                    className="btn btn-warning float-right rounded-circle nutcuonlen"
-                    id="backtotop"
-                    href="#"
-                    style={{ background: '#CF111A' }}
-                >
-                    <i className="fa fa-chevron-up text-white"></i>
-                </div>
-            </div>
         </>
     );
 }

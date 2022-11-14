@@ -1,21 +1,25 @@
 import React from 'react';
 import { useRoutes } from 'react-router-dom';
-import { CommonLayout } from '../components/Layout';
+import { CommonLayout, AdminLayout } from '../components/Layout';
 import NotFound from '../pages/User/NotFound';
+import { publishRoutesAdmin } from './admin/PublishRoutesAdmin';
 import { publishRoutes } from './PublishRoutes';
-// import { productDetailRoute } from './ProductDetailRoutes';
-// import { newsDetailRoutes } from './NewsDetailRoutes';
-import { Outlet } from 'react-router-dom';
+
 export default function Routes() {
     const routes = [
         {
-            path: '/',
+            path: '',
             element: <CommonLayout />,
             children: [
                 ...publishRoutes,
-                // ...productDetailRoutes,
-                // productDetailRoute,
-                // ...newsDetailRoutes,
+                { path: '*', element: <NotFound title="Not found" /> },
+            ],
+        },
+        {
+            path: 'admin',
+            element: <AdminLayout />,
+            children: [
+                ...publishRoutesAdmin,
                 { path: '*', element: <NotFound title="Not found" /> },
             ],
         },

@@ -1,8 +1,8 @@
 import { searchService } from '../../services/search.service';
 import { getResultSearch, removeResultSearch } from './searchSlice';
-export const getResult = async (dispatch, value) => {
-    let res = await searchService.getResultSearchApi(value);
-    dispatch(getResultSearch(res));
+export const getResult = async (dispatch, parameter) => {
+    let res = await searchService.getResultSearchApi(parameter);
+    dispatch(getResultSearch(res.data));
 };
 export const removeResult = (dispatch) => {
     dispatch(removeResultSearch());

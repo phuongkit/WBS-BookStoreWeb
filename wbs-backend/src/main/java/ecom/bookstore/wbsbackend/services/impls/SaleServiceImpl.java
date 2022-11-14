@@ -4,13 +4,13 @@ import ecom.bookstore.wbsbackend.dto.request.SaleCreationDTO;
 import ecom.bookstore.wbsbackend.dto.response.SaleResponseDTO;
 import ecom.bookstore.wbsbackend.entities.Image;
 import ecom.bookstore.wbsbackend.entities.Product;
-import ecom.bookstore.wbsbackend.entities.Sales;
+import ecom.bookstore.wbsbackend.entities.Sale;
 import ecom.bookstore.wbsbackend.entities.User;
 import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
 import ecom.bookstore.wbsbackend.mapper.SaleMapper;
 import ecom.bookstore.wbsbackend.models.enums.EImageType;
 import ecom.bookstore.wbsbackend.repositories.ProductRepo;
-import ecom.bookstore.wbsbackend.repositories.SalesRepo;
+import ecom.bookstore.wbsbackend.repositories.SaleRepo;
 import ecom.bookstore.wbsbackend.repositories.UserRepo;
 import ecom.bookstore.wbsbackend.services.ImageService;
 import ecom.bookstore.wbsbackend.services.SaleService;
@@ -37,6 +37,7 @@ import java.util.Set;
 @Transactional
 public class SaleServiceImpl implements SaleService {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  public static final String branchName = Sale.class.getSimpleName();
   private ImageService imageService;
 
   @Autowired
@@ -54,14 +55,14 @@ public class SaleServiceImpl implements SaleService {
   private ProductRepo productRepo;
 
   @Autowired
-  public void BookRepo(ProductRepo productRepo) {
+  public void ProductRepo(ProductRepo productRepo) {
     this.productRepo = productRepo;
   }
 
-  private SalesRepo saleRepo;
+  private SaleRepo saleRepo;
 
   @Autowired
-  public void SaleRepo(SalesRepo saleRepo) {
+  public void SaleRepo(SaleRepo saleRepo) {
     this.saleRepo = saleRepo;
   }
 
@@ -74,11 +75,11 @@ public class SaleServiceImpl implements SaleService {
 
   @Override
   public Page<SaleResponseDTO> getAllSales(boolean isHasChild, Pageable pageable) {
-    this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT, Sales.class.getSimpleName()));
-    Page<Sales> sales = this.saleRepo.findAll(pageable);
+    this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT, branchName));
+    Page<Sale> sales = this.saleRepo.findAll(pageable);
     if (sales.getContent().size() < 1) {
       throw new ResourceNotFoundException(
-          String.format(Utils.OBJECT_NOT_FOUND, Sales.class.getSimpleName()));
+          String.format(Utils.OBJECT_NOT_FOUND, branchName));
     }
 
     return sales.map(sale -> this.saleMapper.saleToSaleResponseDTO(sale, isHasChild));
@@ -93,12 +94,12 @@ public class SaleServiceImpl implements SaleService {
       Date toDate,
       boolean isHasChild,
       Pageable pageable) {
-    //    this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT, Sale.class.getSimpleName());
-    Page<Sales> sales =
+    //    this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT, branchName);
+    Page<Sale> sales =
         this.saleRepo.search(name, fromPercent, toPercent, fromDate, toDate, pageable);
     if (sales.getContent().size() < 1) {
       throw new ResourceNotFoundException(
-          String.format(Utils.OBJECT_NOT_FOUND, Sales.class.getSimpleName()));
+          String.format(Utils.OBJECT_NOT_FOUND, branchName));
     }
 
     return sales.map(sale -> this.saleMapper.saleToSaleResponseDTO(sale, isHasChild));
@@ -106,8 +107,8 @@ public class SaleServiceImpl implements SaleService {
 
   @Override
   public SaleResponseDTO getSaleById(Long id, boolean isHasChild) {
-    this.LOGGER.info(String.format(Utils.LOG_GET_OBJECT, Sales.class.getSimpleName(), "ID", id));
-    Sales saleFound =
+    this.LOGGER.info(String.format(Utils.LOG_GET_OBJECT, branchName, "ID", id));
+    Sale saleFound =
         this.saleRepo
             .findById(id)
             .orElseThrow(
@@ -115,14 +116,14 @@ public class SaleServiceImpl implements SaleService {
                     new ResourceNotFoundException(
                         String.format(
                             Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                            Sales.class.getSimpleName(),
+                            branchName,
                             "ID",
                             id)));
     return this.saleMapper.saleToSaleResponseDTO(saleFound);
   }
 
   @Override
-  public Sales getMostOptimalSaleByProduct(Long productId) {
+  public Sale getMostOptimalSaleByProduct(Long productId) {
     Product productFound =
         this.productRepo
             .findById(productId)
@@ -130,7 +131,7 @@ public class SaleServiceImpl implements SaleService {
     if (productFound == null) {
       return null;
     }
-    List<Sales> saleList = this.saleRepo.findMostOptimalSaleByBook(productFound);
+    List<Sale> saleList = this.saleRepo.findMostOptimalSaleByProduct(productFound);
     return saleList.size() > 0 ? saleList.get(0) : null;
   }
 
@@ -139,16 +140,15 @@ public class SaleServiceImpl implements SaleService {
       SaleCreationDTO creationDTO, MultipartFile thumbnailFile) {
     this.LOGGER.info(
         String.format(
-            Utils.LOG_CREATE_OBJECT, Sales.class.getSimpleName(), "Name", creationDTO.getName()));
-    Sales sale = new Sales();
+            Utils.LOG_CREATE_OBJECT, branchName, "Name", creationDTO.getName()));
+    Sale sale = new Sale();
     sale.setName(creationDTO.getName());
     sale.setDescription(creationDTO.getDescription());
     sale.setPercent(creationDTO.getPercent());
 
-    // set Book gallery
+    // set product gallery
     if (creationDTO.getProductIds() != null && creationDTO.getProductIds().size() > 0) {
       Set<Product> products = new HashSet<>();
-      int i = 0;
       for (Long productId : creationDTO.getProductIds()) {
         Product productFound =
             this.productRepo
@@ -162,7 +162,6 @@ public class SaleServiceImpl implements SaleService {
                                 "ID",
                                 productId)));
         products.add(productFound);
-        i++;
       }
       sale.setProducts(products);
     }
@@ -176,7 +175,7 @@ public class SaleServiceImpl implements SaleService {
                   () ->
                       new ResourceNotFoundException(
                           String.format(
-                              Utils.OBJECT_NOT_FOUND_BY_FIELD, "ID", creationDTO.getCreatorId())));
+                              Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", creationDTO.getCreatorId())));
       sale.setCreator(userFound);
     }
 
@@ -198,8 +197,8 @@ public class SaleServiceImpl implements SaleService {
       Long id, SaleCreationDTO creationDTO, MultipartFile thumbnailFile) {
     this.LOGGER.info(
         String.format(
-            Utils.LOG_CREATE_OBJECT, Sales.class.getSimpleName(), "Name", creationDTO.getName()));
-    Sales saleFound =
+            Utils.LOG_CREATE_OBJECT, branchName, "Name", creationDTO.getName()));
+    Sale saleFound =
         this.saleRepo
             .findById(id)
             .orElseThrow(
@@ -207,17 +206,16 @@ public class SaleServiceImpl implements SaleService {
                     new ResourceNotFoundException(
                         String.format(
                             Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                            Sales.class.getSimpleName(),
+                            branchName,
                             "ID",
                             id)));
     saleFound.setName(creationDTO.getName());
     saleFound.setDescription(creationDTO.getDescription());
     saleFound.setPercent(creationDTO.getPercent());
 
-    // update Book gallery
+    // update product gallery
     if (creationDTO.getProductIds() != null && creationDTO.getProductIds().size() > 0) {
       Set<Product> products = new HashSet<>();
-      int i = 0;
       for (Long productId : creationDTO.getProductIds()) {
         Product productFound =
             this.productRepo
@@ -231,7 +229,6 @@ public class SaleServiceImpl implements SaleService {
                                 "ID",
                                 productId)));
         products.add(productFound);
-        i++;
       }
       saleFound.setProducts(products);
     }
@@ -245,7 +242,7 @@ public class SaleServiceImpl implements SaleService {
                   () ->
                       new ResourceNotFoundException(
                           String.format(
-                              Utils.OBJECT_NOT_FOUND_BY_FIELD, "ID", creationDTO.getCreatorId())));
+                              Utils.OBJECT_NOT_FOUND_BY_FIELD,branchName, "ID", creationDTO.getCreatorId())));
       saleFound.setCreator(userFound);
     }
 
@@ -274,8 +271,8 @@ public class SaleServiceImpl implements SaleService {
 
   @Override
   public SaleResponseDTO deleteSaleById(Long id) {
-    this.LOGGER.info(String.format(Utils.LOG_DELETE_OBJECT, Sales.class.getSimpleName(), "ID", id));
-    Sales saleFound =
+    this.LOGGER.info(String.format(Utils.LOG_DELETE_OBJECT, branchName, "ID", id));
+    Sale saleFound =
         this.saleRepo
             .findById(id)
             .orElseThrow(
@@ -283,7 +280,7 @@ public class SaleServiceImpl implements SaleService {
                     new ResourceNotFoundException(
                         String.format(
                             Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                            Sales.class.getSimpleName(),
+                            branchName,
                             "ID",
                             id)));
     // delete thumbnail

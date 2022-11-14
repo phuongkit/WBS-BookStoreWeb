@@ -18,7 +18,7 @@ const ProductDetailProvider = ({ children }) => {
     // console.log(productDetailData);
     // console.log(children);
 
-    getProductDetailApi(dispatch, productSlug)
+    getProductDetailApi(dispatch, productSlug);
 
     return (
         <ProductDetailContext.Provider

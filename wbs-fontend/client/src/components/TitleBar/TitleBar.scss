@@ -157,3 +157,52 @@ ul li a.header{
     color: #F5A623;
 }
 /* danhmucan */
+
+.categorycontent ul li ul li:first-child{
+    margin-top: 3px;
+}
+
+.categorycontent ul li ul li.liheader{
+    margin-top: 16px;
+}
+
+ul li a.header{
+    font-size: 15px;
+    padding-left: 33px;
+    color: #CF111A;
+}
+
+.categorycontent ul li ul .content{
+    float:left;
+    margin-left: 19px;
+    width: 300px;
+    height: 265px;
+}
+
+
+.categorycontent ul li ul .content.phai{
+    margin-left: 100px;
+}
+
+
+.categorycontent ul li ul .content li a:hover{
+    color: #F5A623;
+}
+
+.categoryheader .categorycontent{
+    display: none;
+    position: relative;
+    z-index: 10;
+    margin-top: 8px;
+}
+
+.categoryheader .categorycontent ul li ul{
+    height: 387px;
+    top: -1px;
+    left: -16px;
+}
+
+.categoryheader:hover .categorycontent{
+    display: block;
+}
+/*het danhmucan */

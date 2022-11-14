@@ -6,6 +6,9 @@ export const products = createSlice({
         allProduct: {
             data: [],
         },
+        pageProduct: {
+            data: [],
+        },
         oneProduct: {
             data: '',
         },
@@ -22,6 +25,9 @@ export const products = createSlice({
     reducers: {
         getAllProducts: (state, action) => {
             state.allProduct.data = action.payload;
+        },
+        getPageProduct: (state, action, list) => {
+            state.pageProduct.data = action.payload;
         },
         updateAllProduct: (state, action) => {
             state.allProduct.data = action.payload;
@@ -49,6 +55,7 @@ export const products = createSlice({
 export const {
     updateDiscussRating,
     getAllProducts,
+    getPageProduct,
     getOneProduct,
     handleFilter,
     getLocationProduct,

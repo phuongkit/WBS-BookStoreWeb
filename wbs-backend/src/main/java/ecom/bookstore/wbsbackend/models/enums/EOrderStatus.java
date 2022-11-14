@@ -3,6 +3,7 @@ package ecom.bookstore.wbsbackend.models.enums;
 /**
  * @author minh phuong
  * @created 17/09/2022 - 10:11 PM
+ * @project gt-backend
  */
 public enum EOrderStatus {
   ORDER_PENDING,

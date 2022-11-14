@@ -1,5 +1,6 @@
 package ecom.bookstore.wbsbackend.entities;
 
+import ecom.bookstore.wbsbackend.models.enums.ECommentType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -41,8 +42,13 @@ public class Comment {
   private User relyForUser;
 
   @ManyToOne
-  @JoinColumn(name = "main_Review_id", nullable = false)
+  @JoinColumn(name = "main_review_id", nullable = false)
   private Review mainReview;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "comment_type", length = 50, nullable = false)
+  @NonNull
+  private ECommentType commentType;
 
   @Column(name = "created_at")
   @CreationTimestamp
@@ -51,4 +57,13 @@ public class Comment {
   @Column(name = "updated_at")
   @UpdateTimestamp
   private Date updatedAt;
+
+  public void setChildReview(Review mainReview, User author, String content) {
+    this.content = content;
+    this.product = mainReview.getProduct();
+    this.author = author;
+    this.mainReview = mainReview;
+    this.relyForUser = mainReview.getAuthor();
+    this.commentType = ECommentType.REVIEW;
+  }
 }

@@ -3,7 +3,7 @@ package ecom.bookstore.wbsbackend.mapper.impls;
 import ecom.bookstore.wbsbackend.dto.response.ProductGalleryDTO;
 import ecom.bookstore.wbsbackend.dto.response.SaleResponseDTO;
 import ecom.bookstore.wbsbackend.entities.Product;
-import ecom.bookstore.wbsbackend.entities.Sales;
+import ecom.bookstore.wbsbackend.entities.Sale;
 import ecom.bookstore.wbsbackend.mapper.ProductMapper;
 import ecom.bookstore.wbsbackend.mapper.SaleMapper;
 import ecom.bookstore.wbsbackend.mapper.UserMapper;
@@ -31,7 +31,7 @@ public class SaleMapperImpl implements SaleMapper {
   }
 
   @Override
-  public SaleResponseDTO saleToSaleResponseDTO(Sales entity, boolean... isFull) {
+  public SaleResponseDTO saleToSaleResponseDTO(Sale entity, boolean... isFull) {
     if (entity == null) {
       return null;
     }

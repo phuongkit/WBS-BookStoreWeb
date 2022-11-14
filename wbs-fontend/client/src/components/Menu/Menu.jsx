@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import './Menu.scss';
 
 function Menu() {
@@ -15,14 +16,14 @@ function Menu() {
                     <div className="content trai">
                         {childLeft.map((item) => (
                             <li key={item.id}>
-                                <a href={item.slug}>{item.name}</a>
+                                <Link to={item.slug}>{item.name}</Link>
                             </li>
                         ))}
                     </div>
                     <div className="content phai">
                         {childRight.map((item) => (
                             <li key={item.id}>
-                                <a href={item.slug}>{item.name}</a>
+                                <Link to={item.slug}>{item.name}</Link>
                             </li>
                         ))}
                     </div>
@@ -39,13 +40,13 @@ function Menu() {
                     {categories.map((parent) => (
                         <li key={parent.id}>
                             {' '}
-                            <a href={parent.slug}>{parent.name}</a>
+                            <Link to={parent.slug}>{parent.name}</Link>
                             <i className="fa fa-chevron-right float-right"></i>
                             <ul>
                                 <li className="liheader">
-                                    <a href={parent.slug} className="header text-uppercase">
+                                    <Link to={parent.slug} className="header text-uppercase">
                                         {parent.name}
-                                    </a>
+                                    </Link>
                                 </li>
                                 {parent.childCategories && createChild(parent.childCategories)}
                             </ul>
