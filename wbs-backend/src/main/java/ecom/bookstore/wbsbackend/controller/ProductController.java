@@ -152,8 +152,7 @@ public class ProductController {
     if (sortField.equals("price")) {
       sortField = "list_price";
     }
-    Sort sort = Sort.by(sortField);
-    sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
+    Sort sort = Sort.by(sortField);    sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
     Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size, sort);
     return new ResponseObject<>(
         HttpStatus.OK, "",
