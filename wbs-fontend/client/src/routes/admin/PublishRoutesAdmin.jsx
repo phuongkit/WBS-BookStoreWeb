@@ -2,9 +2,10 @@ import React, { lazy, Suspense } from 'react';
 import Loading from '../../components/Loading';
 const HomeAdmin = lazy(() => import('../../pages/Admin/Home/HomeAdmin'));
 const Login = lazy(() => import('../../pages/Admin/Login/Login'));
-// const ListOders = lazy(() => import('../../pages/Admin/List/ListOder'));
-// const ListProducts = lazy(() => import('../../pages/Admin/List/ListProduct'));
-// const AddProducts = lazy(() => import('../../pages/Admin/New/NewProduct'));
+const ListOders = lazy(() => import('../../pages/Admin/List/ListOder'));
+const ListProducts = lazy(() => import('../../pages/Admin/List/ListProduct'));
+const ListUsers = lazy(() => import('../../pages/Admin/List/ListUser'));
+const AddProducts = lazy(() => import('../../pages/Admin/New/NewProduct'));
 export const publishRoutesAdmin = [
     {
         index: true,
@@ -22,41 +23,49 @@ export const publishRoutesAdmin = [
             </Suspense>
         ),
     },
-    // {
-    //     path: 'products',
-    //     children: [
-    //         {
-    //             index: true,
-    //             element: (
-    //                 <Suspense fallback={<Loading />}>
-    //                     <ListProducts />
-    //                 </Suspense>
-    //             ),
-    //         },
-    //         {
-    //             path: 'addProduct',
-    //             element: (
-    //                 <Suspense fallback={<Loading />}>
-    //                     <AddProducts />
-    //                 </Suspense>
-    //             ),
-    //         },
-    //         {
-    //             path: 'edit/:productId',
-    //             element: (
-    //                 <Suspense fallback={<Loading />}>
-    //                     <AddProducts isUpdate />
-    //                 </Suspense>
-    //             ),
-    //         },
-    //     ],
-    // },
-    // {
-    //     path: 'orders',
-    //     element: (
-    //         <Suspense fallback={<Loading />}>
-    //             <ListOders />
-    //         </Suspense>
-    //     ),
-    // },
+    {
+        path: 'products',
+        children: [
+            {
+                index: true,
+                element: (
+                    <Suspense fallback={<Loading />}>
+                        <ListProducts />
+                    </Suspense>
+                ),
+            },
+            {
+                path: 'addProduct',
+                element: (
+                    <Suspense fallback={<Loading />}>
+                        <AddProducts />
+                    </Suspense>
+                ),
+            },
+            {
+                path: 'edit/:productId',
+                element: (
+                    <Suspense fallback={<Loading />}>
+                        <AddProducts isUpdate />
+                    </Suspense>
+                ),
+            },
+        ],
+    },
+    {
+        path: 'orders',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ListOders />
+            </Suspense>
+        ),
+    },
+    {
+        path: 'users',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <ListUsers />
+            </Suspense>
+        ),
+    },
 ];

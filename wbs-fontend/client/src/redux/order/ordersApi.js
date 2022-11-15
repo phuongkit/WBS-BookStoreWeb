@@ -6,6 +6,11 @@ export const getAllOrdersByUserId = async(dispatch, userId) => {
     dispatch(getPageOrder(res.data));
 } 
 
+export const getAllOrders = async(dispatch) => {
+    let res = await orderService.getAllOrders();
+    dispatch(getPageOrder(res.data));
+} 
+
 export const postOrders = async (dispatch, data) => {
     let res = await orderService.postOrder(data);
     if (res.status === 'CREATED') {

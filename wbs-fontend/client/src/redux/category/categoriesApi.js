@@ -4,7 +4,7 @@ import { getAllProductByCategoryId } from '../product/productsApi';
 
 export const getAllCategoriesApi = async (dispatch) => {
     let res = await categoryService.getAllCategories();
-    dispatch(getAllCategories(res));
+    dispatch(getAllCategories(res.data));
 };
 export const getAllCategoriesHierarchyApi = async (dispatch) => {
     let res = await categoryService.getAllCategoriesWithHierarchy();

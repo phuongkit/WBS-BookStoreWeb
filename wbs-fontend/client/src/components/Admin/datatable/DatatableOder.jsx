@@ -1,3 +1,4 @@
+import React from "react"
 import './datatable.scss';
 import { DataGrid } from '@mui/x-data-grid';
 import { OderColumns } from '../datablesource/datablesource';
@@ -5,14 +6,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getAllOrdersByShopApi } from '../../../redux/order/ordersApi';
+import { getAllOrders, getAllOrdersByShopApi } from '../../../redux/order/ordersApi';
 
 const Datatable = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const getUser = JSON.parse(localStorage.getItem('customerInfo'));
     useEffect(() => {
-        getAllOrdersByShopApi(dispatch, getUser.shopId);
+        getAllOrders(dispatch);
     }, []);
 
     const { content: orderList = [] } = useSelector((state) => state.orders.pageOrder.data);
@@ -35,7 +36,7 @@ const Datatable = () => {
             renderCell: (params) => {
                 return (
                     <div className="cellAction text-[12px]">
-                        <Link to={`/seller/orders/${params.row._id}`}>
+                        <Link to={`/admin/orders/${params.row._id}`}>
                             <div className="updateButton">Detail</div>
                         </Link>
                     </div>

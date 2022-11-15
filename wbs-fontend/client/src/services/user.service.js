@@ -1,6 +1,9 @@
 import { axiosClient } from '~/api/';
 
 export const userService = {
+    getAllUsers() {
+        return axiosClient.get(`/users`);
+    },
     getUserById(id) {
         return axiosClient.get(`/users/${id}`);
     },

@@ -1,8 +1,8 @@
+import React from "react"
 import './datatable.scss';
 import { DataGrid } from '@mui/x-data-grid';
 import { productColumns } from '../datablesource/datablesource';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getAllProductApi, deleteProduct } from '../../../redux/product/productsApi';
@@ -10,13 +10,13 @@ import { getAllProductApi, deleteProduct } from '../../../redux/product/products
 const Datatable = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const getUser = JSON.parse(localStorage.getItem('customerInfo'));
+    const getUser = JSON.parse(localStorage.getItem('user'));
     useEffect(() => {
-        getAllProductApi(dispatch, { shopId: getUser.shopId });
+        getAllProductApi(dispatch, {  });
     }, []);
     const productList = useSelector((state) => state.products?.pageProduct?.data);
     useEffect(() => {
-        if (getUser.role != 1) {
+        if (getUser.role !== 0) {
             navigate('/');
         }
 
@@ -39,7 +39,7 @@ const Datatable = () => {
             renderCell: (params) => {
                 return (
                     <div className="cellAction">
-                        <Link to={`/seller/products/edit/${params.row.id}`}>
+                        <Link to={`/admin/products/edit/${params.row.id}`}>
                             <div className="updateButton">Edit</div>
                         </Link>
                         <div className="deleteButton" onClick={() => handleDelete(params.row.id)}>
@@ -54,7 +54,7 @@ const Datatable = () => {
         <div className="datatable">
             <div className="datatableTitle">
                 Add New Product
-                <Link to="/seller/products/addProduct" className="link">
+                <Link to="/admin/products/addProduct" className="link">
                     Add New
                 </Link>
             </div>

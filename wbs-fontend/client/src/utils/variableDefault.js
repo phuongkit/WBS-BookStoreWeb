@@ -117,6 +117,27 @@ const EShippingMethod = {
             ?.name || EShippingMethod.GHN_EXPRESS.name,
 };
 
+const EProductStatus = {
+    PRODUCT_UN_TRADING: {
+        name: 'Chưa kinh doanh',
+        index: 0,
+    },
+    PRODUCT_TRADING: {
+        name: 'Đang kinh doanh',
+        index: 1,
+    },
+    PRODUCT_TRADED: {
+        name: 'Ngưng kinh doanh',
+        index: 2,
+    },
+    getNameFromIndex: (index) =>
+        EProductStatus[
+            Object.keys(EProductStatus)[
+                index > EProductStatus.PRODUCT_TRADING.index ? EProductStatus.PRODUCT_TRADING.index : index
+            ]
+        ]?.name || EProductStatus.PRODUCT_TRADING.name,
+};
+
 export const REGEXP = {  
     PHONE: new RegExp('^(0|84?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$'),
     EMAIL: new RegExp("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"),
@@ -138,5 +159,6 @@ export const MESSAGE = {
 export const ENUM = {
     EGender,
     EPayment,
+    EProductStatus,
     EShippingMethod,
 };

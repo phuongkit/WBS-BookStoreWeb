@@ -43,6 +43,37 @@ const Sidebar = () => {
           <Link to="/admin/users" style={{ textDecoration: "none" }}>
            
           </Link>
+          
+          
+          <Link to="/admin/authrors" style={{ textDecoration: "none" }}>
+          <li>
+            <CreditCardIcon className="icon" />
+            <span>Authors</span>
+          </li>
+          </Link>
+
+          <Link to="/admin/categories" style={{ textDecoration: "none" }}>
+          <li>
+            <CreditCardIcon className="icon" />
+            <span>Categories</span>
+          </li>
+          </Link>
+
+          
+          <Link to="/admin/publishers" style={{ textDecoration: "none" }}>
+          <li>
+            <CreditCardIcon className="icon" />
+            <span>Publishers</span>
+          </li>
+          </Link>
+
+          <Link to="/admin/suppliers" style={{ textDecoration: "none" }}>
+          <li>
+            <CreditCardIcon className="icon" />
+            <span>Suppliers</span>
+          </li>
+          </Link>
+
           <Link to="/admin/products" style={{ textDecoration: "none" }}>
             <li>
               <StoreIcon className="icon" />
@@ -54,6 +85,13 @@ const Sidebar = () => {
           <li>
             <CreditCardIcon className="icon" />
             <span>Orders</span>
+          </li>
+          </Link>
+
+          <Link to="/admin/users" style={{ textDecoration: "none" }}>
+          <li>
+            <CreditCardIcon className="icon" />
+            <span>Users</span>
           </li>
           </Link>
          

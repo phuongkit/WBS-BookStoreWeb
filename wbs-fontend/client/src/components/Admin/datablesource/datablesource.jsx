@@ -1,3 +1,4 @@
+import React from "react"
 import { ENUM } from '../../../utils';
 
 export const OderColumns = [
@@ -121,28 +122,52 @@ export const productColumns = [
         },
     },
     {
-        field: 'price',
-        headerName: 'Price',
+        field: 'originPrice',
+        headerName: 'Origin Price',
         width: 100,
         renderCell: (params) => {
-            return <div className="cellWithImg">{params.row.price}</div>;
+            return <div className="cellWithImg">{params.row.originPrice}</div>;
         },
     },
 
     {
         field: 'category',
         headerName: 'Category',
-        width: 120,
+        width: 200,
         renderCell: (params) => {
-            return <div className="cellWithImg">{params.row.category}</div>;
+            return <div className="cellWithImg">{params.row.categoryName}</div>;
         },
     },
     {
-        field: 'brand',
-        headerName: 'Brand',
-        width: 100,
+        field: 'authors',
+        headerName: 'Authors',
+        width: 200,
         renderCell: (params) => {
-            return <div className={`cellWithStatus`}>{params.row.brand}</div>;
+            return <div className="cellWithImg">{params.row.authors.join(', ')}</div>;
+        },
+    },
+    {
+        field: 'supplier',
+        headerName: 'Supplier',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.supplier}</div>;
+        },
+    },
+    {
+        field: 'publisher',
+        headerName: 'Publisher',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.publisher}</div>;
+        },
+    },
+    {
+        field: 'translators',
+        headerName: 'Translators',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.translators && params.row.translators.join(', ')}</div>;
         },
     },
     {
@@ -153,31 +178,111 @@ export const productColumns = [
             return <div className={`cellWithStatus`}>{params.row.availableQuantity}</div>;
         },
     },
-    // {
-    //   field: "seller",
-    //   headerName: "Seller",
-    //   width: 200,
-    //   renderCell: (params) => {
-    //     return (
-    //       <div className="cellWithImg">
-
-    //         {params.row.shop.name}
-    //       </div>
-    //     );
-    //   },
-    // },
-
     {
         field: 'status',
         headerName: 'Status',
-        width: 100,
+        width: 120,
         renderCell: (params) => {
             return (
                 <div className={`cellWithStatus`}>
                     {ENUM.EProductStatus.getNameFromIndex(params.row?.status) ||
-                        ENUM.EProductStatus.PRODUCT_UN_TRADING.name}
+                        ENUM.EProductStatus.PRODUCT_TRADING.name}
                 </div>
             );
         },
     },
 ];
+
+export const userColumns = [
+    {
+        field: 'id',
+        headerName: 'ID',
+        width: 50,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.id}</div>;
+        },
+    },
+    {
+        field: 'image',
+        headerName: 'Image',
+        width: 200,
+        renderCell: (params) => {
+            return (
+                <div className="cellWithImg">
+                    <img className="cellImg2" src={params.row.avatar} alt="avatar" />
+                    {params.row.title}
+                </div>
+            );
+        },
+    },
+    {
+        field: 'username',
+        headerName: 'Username',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.username}</div>;
+        },
+    },
+
+    {
+        field: 'fullName',
+        headerName: 'FullName',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.fullName}</div>;
+        },
+    },
+    {
+        field: 'email',
+        headerName: 'Email',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.email}</div>;
+        },
+    },
+    {
+        field: 'phone',
+        headerName: 'Phone',
+        width: 150,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.phone}</div>;
+        },
+    },
+    {
+        field: 'birthDate',
+        headerName: 'birthDate',
+        width: 200,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{params.row.birthDate}</div>;
+        },
+    },
+    {
+        field: 'gender',
+        headerName: 'gender',
+        width: 120,
+        renderCell: (params) => {
+            return <div className="cellWithImg">{ENUM.EGender.getNameFromIndex(params.row.gender)}</div>;
+        },
+    },
+    {
+        field: 'address',
+        headerName: 'Address',
+        width: 700,
+        renderCell: (params) => {
+            return <div className={`cellWithStatus`}>{JSON.stringify(params.row.address)}</div>;
+        },
+    },
+    {
+        field: 'status',
+        headerName: 'Status',
+        width: 120,
+        renderCell: (params) => {
+            return (
+                <div className={`cellWithStatus`}>
+                    {params.row.enabled ? "Hoạt động" : "Khóa"}
+                </div>
+            );
+        },
+    },
+];
+

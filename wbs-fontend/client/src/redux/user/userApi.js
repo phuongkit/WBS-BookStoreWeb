@@ -1,6 +1,12 @@
 import { Navigate } from 'react-router-dom';
 import { authService, userService } from '../../services';
-import { login, logout } from './userSlice';
+import { getPageUser, login, logout } from './userSlice';
+
+export const getAllUsersApi = async (dispatch) => {
+    let res = await userService.getAllUsers();
+    dispatch(getPageUser(res.data));
+}
+
 export const postLogin = async (dispatch, data, navigate) => {
     try {
         let res = await authService.postLogin(data);

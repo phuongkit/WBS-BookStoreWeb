@@ -3,6 +3,9 @@ import { axiosClient } from '~/api';
 const branch_api = "/orders";
 
 export const orderService = {
+    getAllOrders() {
+        return axiosClient.get(`${branch_api}`);
+    },
     getAllOrdersByUserId(userId) {
         return axiosClient.get(`${branch_api}/userId/${userId}`);
     },

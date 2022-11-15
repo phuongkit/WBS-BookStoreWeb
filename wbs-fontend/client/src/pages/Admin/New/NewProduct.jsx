@@ -1,13 +1,11 @@
 import './new.scss';
 import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import FileBase64 from 'react-file-base64';
-import { CardMedia } from '@material-ui/core';
-import { getAllBrandApi } from '../../../redux/brand/brandApi';
+// import FileBase64 from 'react-file-base64';
+// import { CardMedia } from '@material-ui/core';
 import { getAllCategoriesApi } from '../../../redux/category/categoriesApi';
-import { getUserByAccess } from './../../../redux/user/userApi';
 import { createProduct, getProductByIdApi, updateProduct } from '../../../redux/product/productsApi';
 import { getAllProductApi } from '../../../redux/product/productsApi';
 const New = ({ title, action, isUpdate }) => {
@@ -23,18 +21,15 @@ const New = ({ title, action, isUpdate }) => {
 
     useEffect(() => {
         getAllCategoriesApi(dispatch);
-        getAllBrandApi(dispatch);
-        getAllProductApi(dispatch, { shopId: getuser.shopId });
+        getAllProductApi(dispatch);
     }, []);
     const categoriesList = useSelector((state) => state.categories?.allCategory?.data);
-    const brandList = useSelector((state) => state.brands?.allBrand?.data);
     const productList = useSelector((state) => state.products?.pageProducts?.data) || [];
     const [file, setFile] = useState();
     const [files, setFiles] = useState();
     const [name, setName] = useState();
     const [price, setPrice] = useState('0');
     const [category_id, setCategory] = useState('1');
-    const [brand_id, setBrand] = useState('1');
     const [amount, setAmount] = useState('0');
     const [description, setDescription] = useState();
     const [status, setStatus] = useState('');
@@ -92,10 +87,9 @@ const New = ({ title, action, isUpdate }) => {
     useEffect(() => {
         if (isUpdate && product && product.id === Number.parseInt(productId)) {
             getFileFromUrl(product.img, product.gallery);
-            setName(product.title);
-            setPrice(product.price);
-            setCategory(categoriesList.find((item) => item.title === product.category)?.id);
-            setBrand(brandList.find((item) => item.name === product.brand)?.id);
+            setName(product.name);
+            setPrice(product.originPrice);
+            setCategory(categoriesList.find((item) => item.title === product.categoryName)?.id);
             setAmount(product.availableQuantity);
             setDescription(product.description);
             setStatus(product.status);
@@ -113,7 +107,6 @@ const New = ({ title, action, isUpdate }) => {
             quantity: Number(amount),
             shopId: Number(getuser.shopId),
             status: 'PRODUCT_UN_TRADING',
-            brandId: Number(brand_id),
             categoryId: Number(category_id),
             descriptions: {
                 additionalProp1: 'string',
@@ -233,18 +226,18 @@ const New = ({ title, action, isUpdate }) => {
                                     setCategory(e.target.value);
                                 }}
                             >
-                                {categoriesList?.map((item, index) => (
+                                {categoriesList && categoriesList?.map((item, index) => (
                                     <option
                                         key={index}
                                         value={item.id}
-                                        selected={isUpdate && product && item.title === product.category}
+                                        selected={isUpdate && product && item.name === product.categoryName}
                                         onSelect={() => setCategory(item.id)}
                                     >
-                                        {item.title}
+                                        {item.name}
                                     </option>
                                 ))}
                             </select>
-
+{/* 
                             <select
                                 className="table-group-action-input form-control"
                                 onChange={(e) => setBrand(e.target.value)}
@@ -259,7 +252,7 @@ const New = ({ title, action, isUpdate }) => {
                                         {item.name}
                                     </option>
                                 ))}
-                            </select>
+                            </select> */}
 
                             <button type="submit">Send</button>
                         </form>

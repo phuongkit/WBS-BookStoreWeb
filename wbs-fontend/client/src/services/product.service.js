@@ -13,7 +13,7 @@ export const productService = {
     getAllProductsByOption(homeOptionId) {
         return axiosClient.get(`${branch_api}/option/${homeOptionId}`);
     },
-    getProduct(id) {
+    getProductById(id) {
         return axiosClient.get(`${branch_api}/${id}`);
     },
     getProductByName(name) {
@@ -33,12 +33,6 @@ export const productService = {
             return value ? acc + `${key}=${params[key]}&` : acc;
         }, '');
         return axiosClient.get(`${branch_api}/categoryId/${categoryId}?${query}`);
-    },
-    getProductByBrandId(brandId) {
-        return axiosClient.get(`${branch_api}/brandId/${brandId}`);
-    },
-    getProductByCategoryIdAndBrandId(categoryId, brandId) {
-        return axiosClient.get(`${branch_api}/categoryId/${categoryId}/brandId/${brandId}`);
     },
     getProductByPolicy(category, brand) {
         return axiosClient.get(`${branch_api}?category=${category}${brand}`);

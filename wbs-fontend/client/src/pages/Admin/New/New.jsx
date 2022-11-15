@@ -2,7 +2,7 @@ import "./new.scss";
 import Sidebar from "../../../Components/admin/sidebar/Sidebar";
 import Navbar from "../../../components/Admin/Navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { editUser, get1 } from "../../../redux/apiRequest";

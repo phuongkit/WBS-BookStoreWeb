@@ -3,6 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 export const userSlice = createSlice({
     name: 'users',
     initialState: {
+        pageUser: {
+            data: {},
+        },
         user: {
             data: {},
         },
@@ -11,6 +14,9 @@ export const userSlice = createSlice({
         }
     },
     reducers: {
+        getPageUser: (state, action) => {
+            state.pageUser.data = action.payload;
+        },
         login: (state, action) => {
             state.auth.currentUser = action.payload;
         },
@@ -19,7 +25,7 @@ export const userSlice = createSlice({
         },
     },
 });
-export const { login, logout } = userSlice.actions;
+export const { getPageUser, login, logout } = userSlice.actions;
 
 export const selectUser = (state) => state.user.user;
 

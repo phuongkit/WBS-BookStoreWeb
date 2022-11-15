@@ -1,4 +1,5 @@
-import Datatable from "../../../components/seller/datatable/DatatableProduct"
+import React from "react"
+import Datatable from "../../../components/Admin/datatable/DatatableProduct"
 
 const ListProduct = () => {
   return (
