@@ -1,6 +1,6 @@
 import { axiosClient } from '~/api';
 
-const branch_api = "/feedbacks";
+const branch_api = "/reviews";
 
 export const ratingService = {
     getRating(id) {

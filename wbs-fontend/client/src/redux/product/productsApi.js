@@ -60,8 +60,9 @@ export const getAllProductApi = async (dispatch) => {
 export const getProductDetailApi = async (dispatch, slug) => {
     let res = await productService.getProductBySlug(slug);
     // let resRating = await ratingService.getRating(res.id);
+    // console.log(resRating.data);
     let resRating = {};
-    dispatch(getProductDetail({ ...res.data, rating: resRating }));
+    dispatch(getProductDetail({ ...res.data, rating: resRating.data }));
 };
 
 export const getProductByIdApi = async (dispatch, id) => {

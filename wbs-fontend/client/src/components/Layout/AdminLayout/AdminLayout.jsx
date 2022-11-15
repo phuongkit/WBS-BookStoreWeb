@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './AdminLayout.scss';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../../Admin/Sidebar/Sidebar';
@@ -13,7 +13,7 @@ function AdminLayout({ children }) {
     const location = useLocation();
     const isShowLayout = location.pathname !== '/admin/login';
 
-    const mode = 'dark';
+    const [mode, setMode] = useState('light');
 
     const darkTheme = createTheme({
         palette: {
@@ -51,9 +51,9 @@ function AdminLayout({ children }) {
                 <ThemeProvider theme={darkTheme}>
                     <CssBaseline />
                     <div className="list">
-                        <Sidebar />
+                        <Sidebar onChangeMode={setMode} />
                         <div className="listContainer">
-                            <Navbar />
+                            <Navbar mode={mode}/>
                             <Outlet></Outlet>
                         </div>
                     </div>

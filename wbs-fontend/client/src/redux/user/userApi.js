@@ -5,7 +5,7 @@ import { getPageUser, login, logout } from './userSlice';
 export const getAllUsersApi = async (dispatch) => {
     let res = await userService.getAllUsers();
     dispatch(getPageUser(res.data));
-}
+};
 
 export const postLogin = async (dispatch, data, navigate) => {
     try {
@@ -30,13 +30,18 @@ export const postLogin = async (dispatch, data, navigate) => {
 export const postRegister = async (dispatch, data, navigate) => {
     try {
         let res = await authService.postRegister(data);
-        localStorage.setItem('token', JSON.stringify(res.data.accessToken));
-        if (res.data.role === 0) {
-            navigate('/Admin');
+        if (res.status === 'OK') {
+            // localStorage.setItem('token', JSON.stringify(res.data.accessToken));
+            // if (res.data.role === 0) {
+            //     navigate('/Admin');
+            // } else {
+            //     navigate('/');
+            // }
+            // dispatch(login(res.data));
+            alert("Đăng ký thành công!");
         } else {
-            navigate('/');
+            alert('Đăng ký không thành công! Vui lòng thử lại');
         }
-        dispatch(login(res.data));
     } catch (error) {
         console.error(error);
     }

@@ -27,7 +27,7 @@ function Search() {
                     <div className="noidung bg-white" style={{ width: '100%' }}>
                         {/* <!-- header của khối sản phẩm : tag(tác giả), bộ lọc và sắp xếp  --> */}
                         <div className="header-khoi-sp d-flex">
-                            <div className="tag">
+                            {/* <div className="tag">
                                 <label>Tác giả nổi bật:</label>
                                 <a href="#">Tất cả</a>
                                 <a href="#" data-tacgia=".MarieForleo">
@@ -45,7 +45,8 @@ function Search() {
                                 <a href="#" data-tacgia=".SimonSinek">
                                     Simon Sinek
                                 </a>
-                            </div>
+                            </div> */}
+                            Kết quả tìm kiếm:
                             <div className="sort d-flex ml-auto">
                                 {/* <div className="hien-thi">
                                     <label htmlFor="hienthi-select" className="label-select">

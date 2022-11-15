@@ -26,7 +26,15 @@ export const getPrice = (number) => {
     } else {
         let post = number % 1000;
         number = Number.parseInt(number / 1000);
-        return number + '.' + parseFloat(post).toFixed(3);
+        return (
+            number +
+            '.' +
+            (post < 10
+                ? '00' + parseFloat(post).toFixed(3)
+                : post < 100
+                ? '0' + parseFloat(post).toFixed(3)
+                : parseFloat(post).toFixed(3))
+        );
     }
 };
 
@@ -77,7 +85,19 @@ export const toSlug = (str) => {
 
 export const toLocationSlug = (str) => {
     if (str) {
-        const strReplaces = ['tỉnh', 'thành phố', 'quần đảo', 'huyện đảo' , 'đảo', 'huyện', 'thị trấn', 'quận', 'thị xã', 'xã', 'phường'];
+        const strReplaces = [
+            'tỉnh',
+            'thành phố',
+            'quần đảo',
+            'huyện đảo',
+            'đảo',
+            'huyện',
+            'thị trấn',
+            'quận',
+            'thị xã',
+            'xã',
+            'phường',
+        ];
         str = str.toLowerCase();
         for (let strReplace in strReplaces) {
             str = str.replace(strReplace, '');

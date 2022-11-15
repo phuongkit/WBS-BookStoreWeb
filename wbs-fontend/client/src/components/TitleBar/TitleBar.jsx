@@ -5,6 +5,7 @@ import Banner from '../Banner';
 
 function TitleBar(props) {
     const { isShowBanner } = props;
+    console.log(isShowBanner);
     return (
         <>
             {isShowBanner ? (

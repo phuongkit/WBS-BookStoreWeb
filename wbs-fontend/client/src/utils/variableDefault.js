@@ -99,8 +99,8 @@ const EPayment = {
         index: 1,
     },
     getNameFromIndex: (index) =>
-        EPayment[Object.keys(EPayment)[index > EPayment.CASH.index ? EPayment.CASH.index : index]]
-            ?.name || EPayment.CASH.name,
+        EPayment[Object.keys(EPayment)[index > EPayment.CASH.index ? EPayment.CASH.index : index]]?.name ||
+        EPayment.CASH.name,
 };
 
 const EShippingMethod = {
@@ -113,8 +113,11 @@ const EShippingMethod = {
         index: 1,
     },
     getNameFromIndex: (index) =>
-        EShippingMethod[Object.keys(EShippingMethod)[index > EShippingMethod.GHN_EXPRESS.index ? EShippingMethod.GHN_EXPRESS.index : index]]
-            ?.name || EShippingMethod.GHN_EXPRESS.name,
+        EShippingMethod[
+            Object.keys(EShippingMethod)[
+                index > EShippingMethod.GHN_EXPRESS.index ? EShippingMethod.GHN_EXPRESS.index : index
+            ]
+        ]?.name || EShippingMethod.GHN_EXPRESS.name,
 };
 
 const EProductStatus = {
@@ -138,7 +141,72 @@ const EProductStatus = {
         ]?.name || EProductStatus.PRODUCT_TRADING.name,
 };
 
-export const REGEXP = {  
+export const EOrderStatus = {
+    ORDER_PENDING: {
+        name: 'Đang chờ',
+        index: 0,
+    },
+    ORDER_AWAITING_PAYMENT: {
+        name: '',
+        index: 1,
+    },
+    ORDER_AWAITING_FULFILLMENT: {
+        name: '',
+        index: 2,
+    },
+    ORDER_AWAITING_SHIPMENT: {
+        name: '',
+        index: 3,
+    },
+    ORDER_AWAITING_PICKUP: {
+        name: '',
+        index: 4,
+    },
+    ORDER_PARTIALLY_SHIPPED: {
+        name: '',
+        index: 5,
+    },
+    ORDER_COMPLETED: {
+        name: '',
+        index: 6,
+    },
+    ORDER_SHIPPED: {
+        name: '',
+        index: 7,
+    },
+    ORDER_CANCELLED: {
+        name: '',
+        index: 8,
+    },
+    ORDER_DECLINED: {
+        name: '',
+        index: 9,
+    },
+    ORDER_REFUNDED: {
+        name: '',
+        index: 10,
+    },
+    ORDER_DISPUTED: {
+        name: '',
+        index: 11,
+    },
+    ORDER_MANUAL_VERIFICATION_REQUIRED: {
+        name: '',
+        index: 12,
+    },
+    ORDER_PARTIALLY_REFUNDED: {
+        name: '',
+        index: 13,
+    },
+    getNameFromIndex: (index) =>
+        EOrderStatus[
+            Object.keys(EOrderStatus)[
+                index > EOrderStatus.ORDER_PENDING.index ? EOrderStatus.ORDER_PENDING.index : index
+            ]
+        ]?.name || EOrderStatus.ORDER_PENDING.name,
+};
+
+export const REGEXP = {
     PHONE: new RegExp('^(0|84?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$'),
     EMAIL: new RegExp("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"),
     PASSWORD: new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$'),

@@ -8,7 +8,7 @@ import { getUserByToken } from '../../../redux/user/userApi';
 import { useEffect } from 'react';
 import { getPrice, toAddressSlug } from '../../../utils/utils';
 import Select from 'react-select';
-import { ENUM } from '../../../utils/variableDefault';
+import { ENUM, EOrderStatus } from '../../../utils/variableDefault';
 import { getAllOrdersByUserId } from '../../../redux/order/ordersApi';
 import Paging from '../../../components/Paging';
 
@@ -23,6 +23,9 @@ function Account() {
         city: '',
     });
     const token = localStorage.getItem('token');
+    if (!token) {
+        navigate('/');
+    }
     const user = token
         ? localStorage.getItem('user') !== null
             ? JSON.parse(localStorage.getItem('user'))
@@ -163,10 +166,10 @@ function Account() {
                                                         },
                                                     ]}
                                                     onChange={(option) => {}}
-                                                    placeholder="Tỉnh/Thành"
+                                                    placeholder="Giới tính"
                                                     defaultValue={{
-                                                        value: user?.gender,
-                                                        label: user?.gender,
+                                                        value: user?.gender || ENUM.EGender.UNKNOWN.index,
+                                                        label:  ENUM.EGender.getNameFromIndex(user?.gender),
                                                     }}
                                                     className="tw-min-w-[33.333333%]"
                                                     required
@@ -281,7 +284,7 @@ function Account() {
                                                                         .toString()}
                                                             </td>
                                                             <td>{getPrice(order.totalPrice)} đ</td>
-                                                            <td>{order.status}</td>
+                                                            <td>{EOrderStatus.getNameFromIndex(order.status)}</td>
                                                             <td>{ENUM.EPayment.getNameFromIndex(order.payment)}</td>
                                                             <td>
                                                                 {ENUM.EShippingMethod.getNameFromIndex(

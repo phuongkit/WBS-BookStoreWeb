@@ -125,7 +125,7 @@ function Cart() {
         email: '',
         phone: '',
         address: {
-            homeAdd: user.address.homeAdd || '',
+            homeAdd: user?.address?.homeAdd || '',
             ward: '',
             district: '',
             city: '',
@@ -175,7 +175,6 @@ function Cart() {
             note: $('#inputNoteOrder').val(),
             orderItems: orderItemDetails,
         };
-        console.log(1);
         postOrders(dispatch, orderDetail);
         dispatch(clearCart());
         navigate('/');

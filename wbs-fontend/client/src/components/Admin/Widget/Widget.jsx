@@ -6,13 +6,16 @@ import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalance
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import { useTheme } from '@emotion/react';
+import { useSelect } from '@mui/base';
+import { useSelector } from 'react-redux';
 
 const Widget = ({ type }) => {
     const theme = useTheme();
     let data;
 
+    const pageOrder = useSelector(state => state.orders.pageOrder.data) || {};
     //temporary
-    const amount = 100;
+    const amount = pageOrder?.totalElements || 0;
     const diff = 20;
 
     switch (type) {

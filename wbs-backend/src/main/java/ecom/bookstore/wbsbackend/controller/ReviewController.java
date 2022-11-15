@@ -33,7 +33,7 @@ import static ecom.bookstore.wbsbackend.utils.Utils.REVIEW_PER_PAGE;
  * @created 12/09/2022 - 8:19 PM
  */
 @RestController
-@RequestMapping(value = "/api/v1/Reviews")
+@RequestMapping(value = "/api/v1/reviews")
 @CrossOrigin(origins = "*")
 public class ReviewController {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -41,7 +41,7 @@ public class ReviewController {
   private ReviewService reviewService;
 
   @Autowired
-  public void ReviewService(ReviewService rviewService) {
+  public void ReviewService(ReviewService reviewService) {
     this.reviewService = reviewService;
   }
 

@@ -3,6 +3,7 @@ import './navbar.scss';
 import {
     SearchOutlined,
     LanguageOutlined,
+    LightModeOutlined,
     DarkModeOutlined,
     FullscreenExitOutlined,
     NotificationsNoneOutlined,
@@ -12,7 +13,7 @@ import {
 import { useTheme } from '@emotion/react';
 import { pseudo } from '../../../utils/utils';
 
-const Navbar = () => {
+const Navbar = ({ mode }) => {
     const theme = useTheme();
     const placeholder = pseudo('::-webkit-input-placeholder', { color: theme.palette.text.primary });
     return (
@@ -34,10 +35,15 @@ const Navbar = () => {
                         <LanguageOutlined className="icon" sx={{ color: 'text.primary' }} />
                         English
                     </div>
-                    <div className="item">
-                        <DarkModeOutlined className="icon" sx={{ color: 'text.primary' }} />
-                    </div>
-
+                    {mode === 'dark' ? (
+                        <div className="item">
+                            <DarkModeOutlined className="icon" sx={{ color: 'text.primary' }} />
+                        </div>
+                    ) : (
+                        <div className="item">
+                            <LightModeOutlined className="icon" sx={{ color: 'text.primary' }} />
+                        </div>
+                    )}
                     <div className="item">
                         <FullscreenExitOutlined className="icon" sx={{ color: 'text.primary' }} />
                     </div>

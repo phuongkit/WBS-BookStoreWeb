@@ -1,6 +1,6 @@
 /* .duoinavbar  */
-.duoinavbar{
-    background-color:#CF111A ;
+.duoinavbar {
+    background-color: #cf111a;
 }
 
 .benphai.float-right {
@@ -26,69 +26,69 @@
     height: 40px;
 }
 
-.hotline{
+.hotline {
     display: inline-block;
     position: relative;
     margin-right: 11px;
 }
 
-.hotline:after{
-    content:"|";
+.hotline:after {
+    content: '|';
     position: absolute;
-    color:white;
+    color: white;
     top: -1px;
     right: -10px;
     font-size: 22px;
 }
 
-.benphai a{
+.benphai a {
     color: white;
 }
 /* het css .duoinavbar  */
 
 /* css category  */
-.categorycontent{
+.categorycontent {
     border: 1px solid #b4b2b2;
     box-sizing: border-box;
     height: 387px;
     background: white;
 }
 
-.categorycontent ul{
+.categorycontent ul {
     list-style: none;
     background: white;
 }
 
-.categorycontent > ul > li:hover{
-    background-color: #CF111A;
+.categorycontent > ul > li:hover {
+    background-color: #cf111a;
     cursor: pointer;
 }
 
-.categorycontent > ul > li:hover > a{
-    color:white;
+.categorycontent > ul > li:hover > a {
+    color: white;
 }
 
-.categorycontent ul li:hover i.fa.fa-chevron-right{
-    color:white;
+.categorycontent ul li:hover i.fa.fa-chevron-right {
+    color: white;
 }
 
-.categorycontent > ul > li{
+.categorycontent > ul > li {
     border-bottom: 1px solid #f8e1e1;
     height: 35px;
 }
 
-.categorycontent > ul > li:last-child{
-    border-bottom: none
+.categorycontent > ul > li:last-child {
+    border-bottom: none;
 }
 
-.categorycontent  ul  li  a{
+.categorycontent ul li a {
     line-height: 35px;
     padding-left: 16px;
     font-weight: 400;
     font-size: 13px;
 }
 
-.categorycontent ul li ul{
+.categorycontent ul li ul {
     display: none;
     height: 386px;
     width: 750px;
@@ -102,21 +102,20 @@
     background-color: white;
 }
 
-.categorycontent ul li ul:hover{
+.categorycontent ul li ul:hover {
     cursor: auto;
 }
 
-.categorycontent ul li a{
+.categorycontent ul li a {
     text-decoration: none;
     color: black;
 }
 
-.categorycontent ul li:hover ul{
-    display:block;
-
+.categorycontent ul li:hover ul {
+    display: block;
 }
 
-ul i.fa.fa-chevron-right{
+ul i.fa.fa-chevron-right {
     font-size: 10px;
     color: #d1d1d1;
     line-height: 35px;
@@ -126,83 +125,79 @@ ul i.fa.fa-chevron-right{
 
 /* danhmucan */
 
-.categorycontent ul li ul li:first-child{
+.categorycontent ul li ul li:first-child {
     margin-top: 3px;
 }
 
-.categorycontent ul li ul li.liheader{
+.categorycontent ul li ul li.liheader {
     margin-top: 16px;
 }
 
-ul li a.header{
+ul li a.header {
     font-size: 15px;
     padding-left: 33px;
-    color: #CF111A;
+    color: #cf111a;
 }
 
-.categorycontent ul li ul .content{
-    float:left;
+.categorycontent ul li ul .content {
+    float: left;
     margin-left: 19px;
     width: 300px;
     height: 265px;
 }
 
-
-.categorycontent ul li ul .content.phai{
+.categorycontent ul li ul .content.phai {
     margin-left: 100px;
 }
 
-
-.categorycontent ul li ul .content li a:hover{
-    color: #F5A623;
+.categorycontent ul li ul .content li a:hover {
+    color: #f5a623;
 }
 /* danhmucan */
 
-.categorycontent ul li ul li:first-child{
+.categorycontent ul li ul li:first-child {
     margin-top: 3px;
 }
 
-.categorycontent ul li ul li.liheader{
+.categorycontent ul li ul li.liheader {
     margin-top: 16px;
 }
 
-ul li a.header{
+ul li a.header {
     font-size: 15px;
     padding-left: 33px;
-    color: #CF111A;
+    color: #cf111a;
 }
 
-.categorycontent ul li ul .content{
-    float:left;
+.categorycontent ul li ul .content {
+    float: left;
     margin-left: 19px;
     width: 300px;
     height: 265px;
 }
 
-
-.categorycontent ul li ul .content.phai{
+.categorycontent ul li ul .content.phai {
     margin-left: 100px;
 }
 
-
-.categorycontent ul li ul .content li a:hover{
-    color: #F5A623;
+.categorycontent ul li ul .content li a:hover {
+    color: #f5a623;
 }
 
-.categoryheader .categorycontent{
+.categoryheader .categorycontent {
     display: none;
     position: relative;
     z-index: 10;
     margin-top: 8px;
 }
 
-.categoryheader .categorycontent ul li ul{
+.categoryheader .categorycontent ul li ul {
     height: 387px;
     top: -1px;
     left: -16px;
 }
 
-.categoryheader:hover .categorycontent{
+.categoryheader:hover .categorycontent {
     display: block;
 }
 /*het danhmucan */
