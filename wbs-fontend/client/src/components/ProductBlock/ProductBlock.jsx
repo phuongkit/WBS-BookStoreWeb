@@ -4,12 +4,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import Slider from 'react-slick';
 import SlideProduct from '../SlideProduct';
 import './ProductBlock.scss';
-import { getAllProductByOptionApi } from '~/redux/product/productsApi';
+import { getAllProductByOptionApi } from '../../redux/product/productsApi';
 import ProductCard from '../ProductCard';
+import { EHomeOption } from '../../utils/variableDefault';
 
 function ProductBlock({ homeOption }) {
     const dispatch = useDispatch();
-    const data = useSelector((state) => state.products.allProduct.data);
+    const data = homeOption.index === EHomeOption.NEW.index
+        ? useSelector((state) => state.products.allProduct.new)
+        : homeOption.index === EHomeOption.SALE.index
+        ? useSelector((state) => state.products.allProduct.sale)
+        : homeOption.index === EHomeOption.POPULAR.index
+        ? useSelector((state) => state.products.allProduct.popular)
+        : useSelector((state) => state.products.allProduct.data);
 
     useEffect(() => {
         getAllProductByOptionApi(dispatch, homeOption.index);

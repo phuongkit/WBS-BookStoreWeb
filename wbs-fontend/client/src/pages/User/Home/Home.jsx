@@ -291,11 +291,10 @@ function Home({ title }) {
             {/* <!-- khoi sach sap phathanh  --> */}
             <ProductBlock homeOption={EHomeOption.POPULAR}/>
             {/* <!-- div _1khoi -- khoi sachnendoc --> */}
-            <section className="_1khoi sachnendoc bg-white mt-4">
+            {/* <section className="_1khoi sachnendoc bg-white mt-4">
                 <div className="container">
                     <div className="noidung" style={{ width: '100%' }}>
                         <div className="row">
-                            {/* <!--header--> */}
                             <div className="col-12 d-flex justify-content-between align-items-center pb-2 bg-transparent pt-4">
                                 <h2 className="header text-uppercase" style={{ fontWeight: '400' }}>
                                     SÁCH HAY NÊN ĐỌC
@@ -304,7 +303,6 @@ function Home({ title }) {
                                     Xem tất cả
                                 </a>
                             </div>
-                            {/* <!-- 1 san pham --> */}
                             <div className="col-lg col-sm-4">
                                 <div className="card">
                                     <div
@@ -450,7 +448,7 @@ function Home({ title }) {
                     </div>
                     <hr />
                 </div>
-            </section>
+            </section> */}
         </>
     );
 }

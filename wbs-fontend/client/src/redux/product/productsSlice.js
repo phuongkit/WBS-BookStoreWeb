@@ -5,6 +5,9 @@ export const products = createSlice({
     initialState: {
         allProduct: {
             data: [],
+            new: [],
+            sale: [],
+            popular: [],
         },
         pageProduct: {
             data: [],
@@ -25,6 +28,15 @@ export const products = createSlice({
     reducers: {
         getAllProducts: (state, action) => {
             state.allProduct.data = action.payload;
+        },
+        getAllNewProducts: (state, action) => {
+            state.allProduct.new = action.payload;
+        },
+        getAllSaleProducts: (state, action) => {
+            state.allProduct.sale = action.payload;
+        },
+        getAllPopularProducts: (state, action) => {
+            state.allProduct.popular = action.payload;
         },
         getPageProduct: (state, action, list) => {
             state.pageProduct.data = action.payload;
@@ -55,6 +67,9 @@ export const products = createSlice({
 export const {
     updateDiscussRating,
     getAllProducts,
+    getAllNewProducts,
+    getAllSaleProducts,
+    getAllPopularProducts,
     getPageProduct,
     getOneProduct,
     handleFilter,
