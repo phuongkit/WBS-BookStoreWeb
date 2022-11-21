@@ -1,8 +1,7 @@
 import React from 'react';
 import { useRoutes } from 'react-router-dom';
 import { CommonLayout, AdminLayout } from '../components/Layout';
-import NotFound from '../pages/User/NotFound';
-import { publishRoutesAdmin } from './admin/PublishRoutesAdmin';
+import NotFound from '../pages/NotFound';
 import { publishRoutes } from './PublishRoutes';
 
 export default function Routes() {
@@ -12,14 +11,6 @@ export default function Routes() {
             element: <CommonLayout />,
             children: [
                 ...publishRoutes,
-                { path: '*', element: <NotFound title="Not found" /> },
-            ],
-        },
-        {
-            path: 'admin',
-            element: <AdminLayout />,
-            children: [
-                ...publishRoutesAdmin,
                 { path: '*', element: <NotFound title="Not found" /> },
             ],
         },

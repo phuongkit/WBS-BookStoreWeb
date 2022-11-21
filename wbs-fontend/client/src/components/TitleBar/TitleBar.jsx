@@ -42,7 +42,7 @@ function TitleBar(props) {
                         <div className="container">
                             <div className="row">
                                 <div className="col-md-3" style={{ marginRight: '-15px' }}>
-                                    <Menu />
+                                    <Menu/>
                                 </div>
                                 <Banner />
                             </div>
@@ -60,7 +60,7 @@ function TitleBar(props) {
                                             <i className="fa fa-bars"></i>
                                             <span className="text-uppercase font-weight-bold ml-1">Danh mục sách</span>
                                         </div>
-                                        <Menu />
+                                        <Menu/>
                                     </div>
                                 </div>
                                 <div className="col-md-5 ml-auto contact d-none d-md-block">

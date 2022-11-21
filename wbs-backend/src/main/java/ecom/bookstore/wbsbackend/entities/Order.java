@@ -88,6 +88,17 @@ public class Order {
   @Column(name = "note", length = 500)
   private String note;
 
+
+  @Column(name = "ship_order_code")
+  private String shipOrderCode;
+
+  @Column(name = "log", length = 500)
+  private String log;
+
+  @Column(name = "expected_delivery_time")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date expectedDeliveryTime;
+
   @Column(name = "total_price", nullable = false)
   @NotNull(message = "An total price is required!")
   @DecimalMin(value = "0", message = "Total Price must be greater than or equal to 0.")
@@ -96,10 +107,9 @@ public class Order {
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private Set<OrderItem> orderItemSet = new HashSet<>();
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "status", length = 50, nullable = false)
+  @Column(name = "status", nullable = false)
   @NotNull(message = "An status is required!")
-  private EOrderStatus status;
+  private String status;
 
   @Column(name = "created_at")
   @CreationTimestamp

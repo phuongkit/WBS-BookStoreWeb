@@ -2,6 +2,7 @@ package ecom.bookstore.wbsbackend.controller;
 
 import ecom.bookstore.wbsbackend.dto.request.OrderCreationDTO;
 import ecom.bookstore.wbsbackend.dto.request.OrderUpdatePaymentDTO;
+import ecom.bookstore.wbsbackend.dto.request.OrderUpdateStatusDTO;
 import ecom.bookstore.wbsbackend.dto.response.OrderResponseDTO;
 import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
 import ecom.bookstore.wbsbackend.entities.Order;
@@ -110,7 +111,6 @@ public class OrderController {
         this.orderService.updateOrder(loginKey, id, orderCreationDTO));
   }
 
-
   @PutMapping("/{id}/payment")
   @RolesAllowed({ERole.Names.CUSTOMER, ERole.Names.SELLER, ERole.Names.ADMIN})
   public ResponseObject<OrderResponseDTO> updatePaymentOrder(@PathVariable(name = "id") Long id,
@@ -120,6 +120,17 @@ public class OrderController {
     String loginKey = jwtTokenUtil.getUserNameFromRequest(request);
     return new ResponseObject<>(HttpStatus.OK, String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, branchName),
         this.orderService.updatePaymentOrder(loginKey, id, updatePaymentDTO));
+  }
+
+  @PutMapping("/{id}/status")
+  @RolesAllowed({ERole.Names.ADMIN})
+  public ResponseObject<OrderResponseDTO> updateStatus(@PathVariable(name = "id") Long id,
+                                                             @RequestBody OrderUpdateStatusDTO updateStatusDTO,
+                                                             HttpServletRequest request) {
+    //    this.LOGGER.info(String.valueOf(SecurityContextHolder.getContext().getAuthentication().getAuthorities()));
+    String loginKey = jwtTokenUtil.getUserNameFromRequest(request);
+    return new ResponseObject<>(HttpStatus.OK, String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, branchName),
+                                this.orderService.updateStatusOrder(loginKey, id, updateStatusDTO));
   }
 
   @DeleteMapping("/{id}")

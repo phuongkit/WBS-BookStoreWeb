@@ -40,17 +40,9 @@ public class CategoryController {
   }
 
   @GetMapping
-  public ResponseObject<List<CategoryResponseDTO>> getAllCategories(
-      @RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE) Integer page,
-      @RequestParam(name = "limit", required = false, defaultValue = DEFAULT_SIZE) Integer size,
-      @RequestParam(name = "sortField", required = false, defaultValue = "id") String sortField,
-      @RequestParam(name = "sortDir", required = false, defaultValue = "asc") String sortDir,
-      @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword) {
-    Sort sort = Sort.by(sortField);
-    sort = sortDir.equals("asc") ? sort.ascending() : sort.descending();
-    Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size, sort);
+  public ResponseObject<List<CategoryResponseDTO>> getAllCategories() {
     return new ResponseObject<>(
-        HttpStatus.OK, "", this.categoryService.getAllCategories(keyword, pageable).toList());
+        HttpStatus.OK, "", this.categoryService.getAllCategories());
   }
 
   @GetMapping("/hierarchy")

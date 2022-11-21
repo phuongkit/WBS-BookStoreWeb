@@ -15,7 +15,7 @@ import java.util.List;
  * @created 11/09/2022 - 10:01 AM
  */
 public interface CategoryService {
-  Page<CategoryResponseDTO> getAllCategories(String keyword, Pageable pageable);
+  List<CategoryResponseDTO> getAllCategories();
 
   List<CategoryResponseDTO> getAllCategoriesWithHierarchy();
 

@@ -55,14 +55,15 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public Page<CategoryResponseDTO> getAllCategories(String keyword, Pageable pageable) {
-    this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT_BY_FIELD, branchName, "Keyword", keyword));
-    Page<Category> categoryPage = this.categoryRepo.findAll(keyword, pageable);
-    if (categoryPage.getContent().size() < 1) {
+  public List<CategoryResponseDTO> getAllCategories() {
+    this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT, branchName));
+    List<Category> entityList = this.categoryRepo.findAll();
+    if (entityList.size() < 1) {
       throw new ResourceNotFound(
           String.format(Utils.OBJECT_NOT_FOUND, branchName));
     }
-    return categoryPage.map(Category -> this.categoryMapper.categoryToCategoryResponseDTO(Category));
+    return entityList.stream().map(Category -> this.categoryMapper.categoryToCategoryResponseDTO(Category)).collect(
+        Collectors.toList());
   }
 
   @Override public List<CategoryResponseDTO> getAllCategoriesWithHierarchy() {

@@ -18,4 +18,7 @@ export const orderService = {
     updatePaymentOrder(data, id) {
         return axiosClient.put(`${branch_api}/${id}/payment`, data);
     },
+    deleteOrderById(id) {
+        return axiosClient.delete(`${branch_api}/${id}`);
+    },
 };

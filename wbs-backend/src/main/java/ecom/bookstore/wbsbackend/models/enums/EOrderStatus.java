@@ -6,20 +6,47 @@ package ecom.bookstore.wbsbackend.models.enums;
  * @project gt-backend
  */
 public enum EOrderStatus {
-  ORDER_PENDING,
-  ORDER_AWAITING_PAYMENT,
-  ORDER_AWAITING_FULFILLMENT,
-  ORDER_AWAITING_SHIPMENT,
-  ORDER_AWAITING_PICKUP,
-  ORDER_PARTIALLY_SHIPPED,
-  ORDER_COMPLETED,
-  ORDER_SHIPPED,
-  ORDER_CANCELLED,
-  ORDER_DECLINED,
-  ORDER_REFUNDED,
-  ORDER_DISPUTED,
-  ORDER_MANUAL_VERIFICATION_REQUIRED,
-  ORDER_PARTIALLY_REFUNDED
+  ORDER_PENDING(Names.ORDER_PENDING),
+  ORDER_AWAITING_PAYMENT(Names.ORDER_AWAITING_PAYMENT),
+  ORDER_COMPLETED(Names.ORDER_COMPLETED),
+  ORDER_CANCELLED(Names.ORDER_CANCELLED),
+  ORDER_AWAITING_FULFILLMENT(Names.ORDER_AWAITING_FULFILLMENT),
+  ORDER_AWAITING_SHIPMENT(Names.ORDER_AWAITING_SHIPMENT),
+  ORDER_AWAITING_PICKUP(Names.ORDER_AWAITING_PICKUP),
+  ORDER_PARTIALLY_SHIPPED(Names.ORDER_PARTIALLY_SHIPPED),
+  ORDER_SHIPPED(Names.ORDER_SHIPPED),
+  ORDER_DECLINED(Names.ORDER_DECLINED),
+  ORDER_REFUNDED(Names.ORDER_REFUNDED),
+  ORDER_DISPUTED(Names.ORDER_DISPUTED),
+  ORDER_MANUAL_VERIFICATION_REQUIRED(Names.ORDER_MANUAL_VERIFICATION_REQUIRED),
+  ORDER_PARTIALLY_REFUNDED(Names.ORDER_PARTIALLY_REFUNDED);
+
+  public class Names{
+    public static final String ORDER_PENDING = "Đang chờ xác nhận";
+    public static final String ORDER_AWAITING_PAYMENT = "Đang chờ thanh toán";
+    public static final String ORDER_COMPLETED = "Đã hoàn thành";
+    public static final String ORDER_CANCELLED = "Đã hủy";
+    public static final String ORDER_AWAITING_FULFILLMENT = "";
+    public static final String ORDER_AWAITING_SHIPMENT = "";
+    public static final String ORDER_AWAITING_PICKUP = "";
+    public static final String ORDER_PARTIALLY_SHIPPED = "";
+    public static final String ORDER_SHIPPED = "";
+    public static final String ORDER_DECLINED = "";
+    public static final String ORDER_REFUNDED = "";
+    public static final String ORDER_DISPUTED = "";
+    public static final String ORDER_MANUAL_VERIFICATION_REQUIRED = "";
+    public static final String ORDER_PARTIALLY_REFUNDED = "";
+  }
+
+  private final String label;
+
+  private EOrderStatus(String label) {
+    this.label = label;
+  }
+
+  public String toString() {
+    return this.label;
+  }
 
   //  Pending — Customer started the checkout process but did not complete it. Incomplete orders are
   // assigned a "Pending" status and can be found under the More tab in the View Orders screen.

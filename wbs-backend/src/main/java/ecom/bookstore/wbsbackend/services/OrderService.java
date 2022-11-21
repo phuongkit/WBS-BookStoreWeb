@@ -2,6 +2,7 @@ package ecom.bookstore.wbsbackend.services;
 
 import ecom.bookstore.wbsbackend.dto.request.OrderCreationDTO;
 import ecom.bookstore.wbsbackend.dto.request.OrderUpdatePaymentDTO;
+import ecom.bookstore.wbsbackend.dto.request.OrderUpdateStatusDTO;
 import ecom.bookstore.wbsbackend.dto.response.OrderResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,6 @@ public interface OrderService {
 
   OrderResponseDTO updateOrder(String loginKey, Long id, OrderCreationDTO creationDTO);
   OrderResponseDTO updatePaymentOrder(String loginKey, Long id, OrderUpdatePaymentDTO updatePaymentDTO);
-
+  OrderResponseDTO updateStatusOrder(String loginKey, Long id, OrderUpdateStatusDTO updateStatusDTO);
   OrderResponseDTO deleteOrderById(String loginKey, Long id);
 }

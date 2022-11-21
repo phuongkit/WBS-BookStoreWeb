@@ -1,0 +1,16 @@
+export { authService } from './auth.service';
+export { authorService } from './author.service';
+export { genreService } from './genre.service';
+export { productService } from './product.service';
+export { publisherService } from './publisher.service';
+export { searchService } from './search.service';
+export { supplierService} from './supplier.service';
+export { translatorService } from './translator.service';
+export { categoryService } from './category.service';
+export { commentService } from './comment.service';
+export { historyService } from './history.service';
+export { ratingService } from './rate.service';
+export { customerService } from './customer.service';
+export { orderService } from './order.service';
+export { promoService } from './promo.service';
+export { userService } from './user.service';

@@ -98,6 +98,10 @@ const EPayment = {
         name: 'Ví momo',
         index: 1,
     },
+    VNPAY: {
+        name: 'VNPay',
+        index: 2,
+    },
     getNameFromIndex: (index) =>
         EPayment[Object.keys(EPayment)[index > EPayment.CASH.index ? EPayment.CASH.index : index]]?.name ||
         EPayment.CASH.name,
@@ -143,38 +147,38 @@ const EProductStatus = {
 
 export const EOrderStatus = {
     ORDER_PENDING: {
-        name: 'Đang chờ',
+        name: 'Đang chờ xác nhận',
         index: 0,
     },
     ORDER_AWAITING_PAYMENT: {
-        name: '',
+        name: 'Đang chờ thanh toán',
         index: 1,
+    },
+    ORDER_COMPLETED: {
+        name: 'Đã hoàn thành',
+        index: 2,
+    },
+    ORDER_CANCELLED: {
+        name: 'Đã hủy',
+        index: 3,
     },
     ORDER_AWAITING_FULFILLMENT: {
         name: '',
-        index: 2,
+        index: 4,
     },
     ORDER_AWAITING_SHIPMENT: {
         name: '',
-        index: 3,
+        index: 5,
     },
     ORDER_AWAITING_PICKUP: {
         name: '',
-        index: 4,
+        index: 6,
     },
     ORDER_PARTIALLY_SHIPPED: {
         name: '',
-        index: 5,
-    },
-    ORDER_COMPLETED: {
-        name: '',
-        index: 6,
-    },
-    ORDER_SHIPPED: {
-        name: '',
         index: 7,
     },
-    ORDER_CANCELLED: {
+    ORDER_SHIPPED: {
         name: '',
         index: 8,
     },
@@ -222,10 +226,12 @@ export const MESSAGE = {
     PRODUCT_NO_INFO: 'Sản phẩm chưa có thông tin',
     LOGIN_USER_NAME_NOT_MATCH: 'Số điện thoại hoặc email không đúng',
     NAME_NOT_AVAILABLE: 'Tên không khả dung',
+    ERROR_ACTION: 'Có lỗi xảy ra! Vui lòng thử lại sau',
 };
 
 export const ENUM = {
     EGender,
+    EOrderStatus,
     EPayment,
     EProductStatus,
     EShippingMethod,

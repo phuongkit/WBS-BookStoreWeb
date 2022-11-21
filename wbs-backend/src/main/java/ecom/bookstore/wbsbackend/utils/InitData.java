@@ -224,6 +224,9 @@ private RoleService roleService;
     Payment paymentMoMo = new Payment(EPayment.MOMO, "", "");
     paymentMoMo = this.paymentRepo.save(paymentMoMo);
 
+    Payment paymentVNPay = new Payment(EPayment.VNPAY, "", "");
+    paymentVNPay = this.paymentRepo.save(paymentVNPay);
+
     ShippingMethod shippingMethodGHN = new ShippingMethod(EShippingMethod.GHN_EXPRESS, "", "");
     shippingMethodGHN = this.shippingMethodRepo.save(shippingMethodGHN);
 

@@ -33,6 +33,7 @@ public class WbsBackendApplication implements CommandLineRunner {
       initData.init();
     }
 //    initData.init();
-    //    this.LOGGER .info(saleService.getMostOptimalSaleByProduct(10l).getName());
+    //    this.LOGGER
+    //    .info(saleService.getMostOptimalSaleByProduct(10l).getName());
   }
 }

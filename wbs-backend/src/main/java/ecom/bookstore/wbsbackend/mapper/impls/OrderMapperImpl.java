@@ -76,7 +76,7 @@ public class OrderMapperImpl implements OrderMapper {
           this.addressMapper.lineAndLocationToAddressResponseDTO(
               entity.getLine(), entity.getLocation()));
     }
-    responseDTO.setStatus(entity.getStatus().ordinal());
+    responseDTO.setStatus(entity.getStatus());
     responseDTO.setPayAt(entity.getPayAt());
     responseDTO.setNote(entity.getNote());
     if (isFull.length > 0 && isFull[0]) {
@@ -92,6 +92,9 @@ public class OrderMapperImpl implements OrderMapper {
         responseDTO.setOrderItems(orderItems);
       }
     }
+    responseDTO.setLog(entity.getLog());
+    responseDTO.setShipOrderCode(entity.getShipOrderCode());
+    responseDTO.setExpectedDeliveryTime(entity.getExpectedDeliveryTime());
     responseDTO.setCreatedAt(entity.getCreatedAt());
     responseDTO.setUpdatedAt(entity.getUpdatedAt());
     return responseDTO;

@@ -3,6 +3,7 @@ package ecom.bookstore.wbsbackend.repositories;
 import ecom.bookstore.wbsbackend.entities.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +17,13 @@ import java.util.Optional;
  */
 @Repository
 @Transactional
-public interface CategoryRepo extends SearchRepository<Category, Integer> {
-  @Query(
-      value =
-          "select c from Category c where " +
-              "lower(c.name) like lower(concat('%', :keyword,'%'))")
-  Page<Category> findAll(String keyword, Pageable pageable);
+public interface CategoryRepo extends JpaRepository<Category, Integer> {
+//  @Query(
+//      value =
+//          "select c from Category c where " +
+//              "lower(c.name) like lower(concat('%', :keyword,'%'))")
+//  List<Category> findAll(String keyword, Pageable pageable);
+
 
   @Query(value = "select c from Category c where c.parentCategory is null")
   List<Category> findAllParentCategory();

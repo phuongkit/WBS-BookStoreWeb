@@ -17,4 +17,5 @@ import lombok.Setter;
 public class OrderUpdatePaymentDTO {
   private EPayment payment;
   private boolean paid;
+  private String status;
 }

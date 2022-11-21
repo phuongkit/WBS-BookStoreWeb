@@ -1,11 +1,12 @@
 import React, { lazy, Suspense } from 'react';
 import Loading from '../components/Loading';
-const Account = lazy(() => import('../pages/User/Account'));
-const Category = lazy(() => import('../pages/User/Category'));
-const Cart = lazy(() => import('../pages/User/Cart'));
-const Home = lazy(() => import('../pages/User/Home'));
-const ProductDetail = lazy(() => import('../pages/User/ProductDetail'));
-const Search = lazy(() => import('../pages/User/Search'));
+const Account = lazy(() => import('../pages/Account'));
+const Category = lazy(() => import('../pages/Category'));
+const Cart = lazy(() => import('../pages/Cart'));
+const Home = lazy(() => import('../pages/Home'));
+const Order = lazy(() => import('../pages/Order'));
+const ProductDetail = lazy(() => import('../pages/ProductDetail'));
+const Search = lazy(() => import('../pages/Search'));
 import { ProductDetailProvider } from '../context/ProductDetailContext';
 export const publishRoutes = [
     {
@@ -21,6 +22,14 @@ export const publishRoutes = [
         element: (
             <Suspense fallback={<Loading />}>
                 <Cart title="Giỏ hàng - DealBook.com" />
+            </Suspense>
+        ),
+    },
+    {
+        path: 'order',
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Order title="Đơn hàng - DealBook.com" />
             </Suspense>
         ),
     },

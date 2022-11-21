@@ -30,10 +30,13 @@ public class OrderResponseDTO {
   private int shippingMethod;
   private BigDecimal transportFee;
   private DiscountResponseDTO discount;
-  private int status;
+  private String status;
   private Date payAt;
   private String note;
   private OrderDetailResponseDTO[] orderItems;
+  private String log;
+  private String shipOrderCode;
+  private Date expectedDeliveryTime;
   private Date createdAt;
   private Date updatedAt;
 }

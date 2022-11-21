@@ -2,6 +2,7 @@ package ecom.bookstore.wbsbackend.services.impls;
 
 import ecom.bookstore.wbsbackend.dto.request.OrderCreationDTO;
 import ecom.bookstore.wbsbackend.dto.request.OrderUpdatePaymentDTO;
+import ecom.bookstore.wbsbackend.dto.request.OrderUpdateStatusDTO;
 import ecom.bookstore.wbsbackend.dto.response.OrderResponseDTO;
 import ecom.bookstore.wbsbackend.entities.*;
 import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
@@ -42,49 +43,57 @@ public class OrderServiceImpl implements OrderService {
   public static final String branchName = Order.class.getSimpleName();
   private DiscountRepo discountRepo;
 
-  @Autowired public void DiscountRepo(DiscountRepo discountRepo) {
+  @Autowired
+  public void DiscountRepo(DiscountRepo discountRepo) {
     this.discountRepo = discountRepo;
   }
 
   private LocationMapper locationMapper;
 
-  @Autowired public void LocationMapper(LocationMapper locationMapper) {
+  @Autowired
+  public void LocationMapper(LocationMapper locationMapper) {
     this.locationMapper = locationMapper;
   }
 
   private LocationService locationService;
 
-  @Autowired public void LocationService(LocationService locationService) {
+  @Autowired
+  public void LocationService(LocationService locationService) {
     this.locationService = locationService;
   }
 
   private OrderItemMapper orderItemMapper;
 
-  @Autowired public void OrderItemMapper(OrderItemMapper orderItemMapper) {
+  @Autowired
+  public void OrderItemMapper(OrderItemMapper orderItemMapper) {
     this.orderItemMapper = orderItemMapper;
   }
 
   private OrderItemService orderItemService;
 
-  @Autowired public void OrderItemService(OrderItemService orderItemService) {
+  @Autowired
+  public void OrderItemService(OrderItemService orderItemService) {
     this.orderItemService = orderItemService;
   }
 
   private OrderMapper orderMapper;
 
-  @Autowired public void OrderMapper(OrderMapper orderMapper) {
+  @Autowired
+  public void OrderMapper(OrderMapper orderMapper) {
     this.orderMapper = orderMapper;
   }
 
   private OrderRepo orderRepo;
 
-  @Autowired public void OrderRepo(OrderRepo orderRepo) {
+  @Autowired
+  public void OrderRepo(OrderRepo orderRepo) {
     this.orderRepo = orderRepo;
   }
 
   private PaymentRepo paymentRepo;
 
-  @Autowired public void PaymentRepo(PaymentRepo paymentRepo) {
+  @Autowired
+  public void PaymentRepo(PaymentRepo paymentRepo) {
     this.paymentRepo = paymentRepo;
   }
 
@@ -97,49 +106,77 @@ public class OrderServiceImpl implements OrderService {
 
   private ShippingMethodRepo shippingMethodRepo;
 
-  @Autowired public void ShippingMethodRepo(ShippingMethodRepo shippingMethodRepo) {
+  @Autowired
+  public void ShippingMethodRepo(ShippingMethodRepo shippingMethodRepo) {
     this.shippingMethodRepo = shippingMethodRepo;
   }
 
   private UserService userService;
 
-  @Autowired public void UserService(UserService userService) {
+  @Autowired
+  public void UserService(UserService userService) {
     this.userService = userService;
   }
 
-  @Override public Page<OrderResponseDTO> getAllOrders(Pageable pageable) {
+  @Override
+  public Page<OrderResponseDTO> getAllOrders(Pageable pageable) {
     this.LOGGER.info(String.format(Utils.LOG_GET_ALL_OBJECT, branchName));
     Page<Order> orderPage = this.orderRepo.findAll(pageable);
     return orderPage.map(order -> this.orderMapper.orderToOrderResponseDTO(order, null, true));
   }
 
-  @Override public Page<OrderResponseDTO> getAllOrdersByUser(String loginKey, Integer userId, Pageable pageable) {
+  @Override
+  public Page<OrderResponseDTO> getAllOrdersByUser(
+      String loginKey, Integer userId, Pageable pageable) {
     this.LOGGER.info(
-        String.format(Utils.LOG_GET_ALL_OBJECT_BY_FIELD + Utils.ADD_LOG_FOR_USER, branchName, "User",
-                      userId, "LoginKey", loginKey));
+        String.format(
+            Utils.LOG_GET_ALL_OBJECT_BY_FIELD + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            "User",
+            userId,
+            "LoginKey",
+            loginKey));
     User userFound = this.userService.getUserByLoginKey(loginKey);
     Page<Order> orderPage = this.orderRepo.findAllByUser(userFound, pageable);
     return orderPage.map(order -> this.orderMapper.orderToOrderResponseDTO(order, null, true));
   }
 
-  @Override public OrderResponseDTO getOrderById(String loginKey, Long id) {
+  @Override
+  public OrderResponseDTO getOrderById(String loginKey, Long id) {
     this.LOGGER.info(
-        String.format(Utils.LOG_GET_OBJECT + Utils.ADD_LOG_FOR_USER, branchName, "ID", id, "LoginKey",
-                      loginKey));
+        String.format(
+            Utils.LOG_GET_OBJECT + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            "ID",
+            id,
+            "LoginKey",
+            loginKey));
     User userFound = this.userService.getUserByLoginKey(loginKey);
-    Order orderFound = this.orderRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(
-        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
+    Order orderFound =
+        this.orderRepo
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
     return this.orderMapper.orderToOrderResponseDTO(orderFound, null, true);
   }
 
-  @Override public OrderResponseDTO createOrder(String loginKey, OrderCreationDTO creationDTO) {
-    this.LOGGER.info(String.format(Utils.LOG_CREATE_OBJECT + Utils.ADD_LOG_FOR_USER, branchName,
-                                   User.class.getSimpleName() + "ID", creationDTO.getUserId(), "LoginKey",
-                                   loginKey));
+  @Override
+  public OrderResponseDTO createOrder(String loginKey, OrderCreationDTO creationDTO) {
+    this.LOGGER.info(
+        String.format(
+            Utils.LOG_CREATE_OBJECT + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            User.class.getSimpleName() + "ID",
+            creationDTO.getUserId(),
+            "LoginKey",
+            loginKey));
     User userFound = this.userService.getUserByLoginKey(loginKey);
     Order newEntity = new Order();
     newEntity.setUser(userFound);
-    newEntity.setGender(creationDTO.getGender() == null ? EGender.UNKNOWN : creationDTO.getGender());
+    newEntity.setGender(
+        creationDTO.getGender() == null ? EGender.UNKNOWN : creationDTO.getGender());
     newEntity.setFullName(creationDTO.getFullName());
     newEntity.setEmail(creationDTO.getEmail().length() < 1 ? null : creationDTO.getEmail());
     newEntity.setPhone(creationDTO.getPhone().length() < 1 ? null : creationDTO.getPhone());
@@ -148,17 +185,30 @@ public class OrderServiceImpl implements OrderService {
     Location location = locationMapper.AddressCreationDTOToLocation(creationDTO.getAddress());
     newEntity.setLocation(this.locationService.saveLocation(location));
     // set payment
-    Payment paymentFound = this.paymentRepo.findByName(creationDTO.getPayment()).orElseThrow(
-        () -> new ResourceNotFoundException(
-            String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Payment.class.getSimpleName(), "Name",
-                          creationDTO.getPayment())));
+    Payment paymentFound =
+        this.paymentRepo
+            .findByName(creationDTO.getPayment())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(
+                            Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                            Payment.class.getSimpleName(),
+                            "Name",
+                            creationDTO.getPayment())));
     newEntity.setPayment(paymentFound);
     // set shipping method
-    ShippingMethod shippingMethodFound = this.shippingMethodRepo.findByName(creationDTO.getShippingMethod())
-        .orElseThrow(
-            () -> new ResourceNotFoundException(
-                String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, ShippingMethod.class.getSimpleName(), "Name",
-                              creationDTO.getShippingMethod())));
+    ShippingMethod shippingMethodFound =
+        this.shippingMethodRepo
+            .findByName(creationDTO.getShippingMethod())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(
+                            Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                            ShippingMethod.class.getSimpleName(),
+                            "Name",
+                            creationDTO.getShippingMethod())));
     newEntity.setShippingMethod(shippingMethodFound);
     // set transportFee
     if (creationDTO.getTransportFee() != null) {
@@ -169,10 +219,17 @@ public class OrderServiceImpl implements OrderService {
 
     // set discount
     if (creationDTO.getDiscountCode() != null && creationDTO.getDiscountCode().length() > 0) {
-      Discount discountFound = this.discountRepo.findByCode(creationDTO.getDiscountCode()).orElseThrow(
-          () -> new ResourceNotFoundException(
-              String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Discount.class.getSimpleName(), "Code",
-                            creationDTO.getDiscountCode())));
+      Discount discountFound =
+          this.discountRepo
+              .findByCode(creationDTO.getDiscountCode())
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          String.format(
+                              Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                              Discount.class.getSimpleName(),
+                              "Code",
+                              creationDTO.getDiscountCode())));
       if (Utils.checkValidDiscount(discountFound)) {
         discountFound.setQuantity(discountFound.getQuantity() - 1);
         newEntity.setDiscount(discountFound);
@@ -186,60 +243,124 @@ public class OrderServiceImpl implements OrderService {
     // initial total price
     newEntity.setTotalPrice(new BigDecimal(0));
     // initial status
-    newEntity.setStatus(EOrderStatus.ORDER_PENDING);
+    newEntity.setStatus(
+        creationDTO.getStatus() == null || Objects.equals(creationDTO.getStatus().trim(), "")
+            ? EOrderStatus.ORDER_PENDING.toString()
+            : creationDTO.getStatus());
     newEntity.setNote(creationDTO.getNote());
 
     Order savedEntity = this.orderRepo.save(newEntity);
 
     // set order item
     savedEntity.setOrderItemSet(
-        this.orderItemMapper.orderDetailCreationDTOsToOrderItems(savedEntity, creationDTO.getOrderItems()));
+        this.orderItemMapper.orderDetailCreationDTOsToOrderItems(
+            savedEntity, creationDTO.getOrderItems()));
     savedEntity.setTotalPrice(Utils.getTotalPriceFromOrderItems(newEntity.getOrderItemSet()));
 
     return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(savedEntity), null);
   }
 
-  @Override public OrderResponseDTO updateOrder(String loginKey, Long id, OrderCreationDTO creationDTO) {
-    this.LOGGER.info(String.format(Utils.LOG_UPDATE_OBJECT + Utils.ADD_LOG_FOR_USER, branchName,
-                                   User.class.getSimpleName() + "ID", creationDTO.getUserId(), "LoginKey",
-                                   loginKey));
+  @Override
+  public OrderResponseDTO updateOrder(String loginKey, Long id, OrderCreationDTO creationDTO) {
+    this.LOGGER.info(
+        String.format(
+            Utils.LOG_UPDATE_OBJECT + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            User.class.getSimpleName() + "ID",
+            creationDTO.getUserId(),
+            "LoginKey",
+            loginKey));
     User userFound = this.userService.getUserByLoginKey(loginKey);
-    Order entityFound = this.orderRepo.findById(id).orElseThrow(
-        () ->
-            new ResourceNotFoundException(
-                String.format(
-                    Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                    branchName,
-                    "ID",
-                    id)));
-
+    Order entityFound =
+        this.orderRepo
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
 
     return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null);
   }
 
-  @Override public OrderResponseDTO updatePaymentOrder(
-      String loginKey, Long id,
-      OrderUpdatePaymentDTO updatePaymentDTO
-  ) {
+  @Override
+  public OrderResponseDTO updatePaymentOrder(
+      String loginKey, Long id, OrderUpdatePaymentDTO updatePaymentDTO) {
     this.LOGGER.info(
-        String.format(Utils.LOG_UPDATE_OBJECT + Utils.ADD_LOG_FOR_USER, branchName, "Payment",
-                      updatePaymentDTO.getPayment(), "LoginKey",
-                      loginKey));
+        String.format(
+            Utils.LOG_UPDATE_OBJECT + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            "Payment",
+            updatePaymentDTO.getPayment(),
+            "LoginKey",
+            loginKey));
     User userFound = this.userService.getUserByLoginKey(loginKey);
-    Order entityFound = this.orderRepo.findById(id).orElseThrow(
-        () ->
-            new ResourceNotFoundException(
-                String.format(
-                    Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                    branchName,
-                    "ID",
-                    id)));
-    if (entityFound.getUser() == null || Objects.equals(userFound.getId(), entityFound.getUser().getId())) {
-      Payment paymentFound = this.paymentRepo.findByName(
-          updatePaymentDTO.getPayment() != null ? updatePaymentDTO.getPayment() : EPayment.CASH).orElse(null);
+    Order entityFound =
+        this.orderRepo
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
+    if (entityFound.getUser() == null
+        || Objects.equals(userFound.getId(), entityFound.getUser().getId()) || userFound.getRole()
+        .getName() == ERole.ROLE_ADMIN) {
+      Payment paymentFound =
+          this.paymentRepo
+              .findByName(
+                  updatePaymentDTO.getPayment() != null
+                      ? updatePaymentDTO.getPayment()
+                      : EPayment.CASH)
+              .orElse(null);
       entityFound.setPayment(paymentFound);
       if (updatePaymentDTO.isPaid()) {
         entityFound.setPayAt(new Date());
+      }
+      entityFound.setStatus(
+          updatePaymentDTO.getStatus() == null
+                  || Objects.equals(updatePaymentDTO.getStatus().trim(), "")
+              ? EOrderStatus.ORDER_PENDING.toString()
+              : updatePaymentDTO.getStatus());
+      return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null);
+    } else {
+      throw new UserNotPermissionException(Utils.USER_NOT_PERMISSION);
+    }
+  }
+
+  @Override
+  public OrderResponseDTO updateStatusOrder(
+      String loginKey, Long id, OrderUpdateStatusDTO updateStatusDTO) {
+    this.LOGGER.info(
+        String.format(
+            Utils.LOG_UPDATE_OBJECT_BY_TWO_FIELD + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            "Id",
+            id,
+            "Status",
+            updateStatusDTO.getStatus(),
+            "LoginKey",
+            loginKey));
+    User userFound = this.userService.getUserByLoginKey(loginKey);
+    Order entityFound =
+        this.orderRepo
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
+    if (entityFound.getUser() == null
+        || Objects.equals(userFound.getId(), entityFound.getUser().getId()) || userFound.getRole()
+        .getName() == ERole.ROLE_ADMIN) {
+      entityFound.setStatus(updateStatusDTO.getStatus());
+      if (updateStatusDTO.getLog() != null
+          && !Objects.equals(updateStatusDTO.getLog().trim(), "")) {
+        entityFound.setLog(updateStatusDTO.getLog());
+      }
+      if (updateStatusDTO.getShipOrderCode() != null
+          && !Objects.equals(updateStatusDTO.getShipOrderCode().trim(), "")) {
+        entityFound.setShipOrderCode(updateStatusDTO.getShipOrderCode());
+      }
+      if (updateStatusDTO.getExpectedDeliveryTime() != null) {
+        entityFound.setExpectedDeliveryTime(updateStatusDTO.getExpectedDeliveryTime());
       }
       return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null);
     } else {
@@ -247,23 +368,27 @@ public class OrderServiceImpl implements OrderService {
     }
   }
 
-  @Override public OrderResponseDTO deleteOrderById(String loginKey, Long id) {
+  @Override
+  public OrderResponseDTO deleteOrderById(String loginKey, Long id) {
     this.LOGGER.info(
-        String.format(Utils.LOG_DELETE_OBJECT + Utils.ADD_LOG_FOR_USER, branchName, "ID", id,
-                      "LoginKey",
-                      loginKey));
+        String.format(
+            Utils.LOG_DELETE_OBJECT + Utils.ADD_LOG_FOR_USER,
+            branchName,
+            "ID",
+            id,
+            "LoginKey",
+            loginKey));
     User userFound = this.userService.getUserByLoginKey(loginKey);
-    Order entityFound = this.orderRepo.findById(id).orElseThrow(
-        () ->
-            new ResourceNotFoundException(
-                String.format(
-                    Utils.OBJECT_NOT_FOUND_BY_FIELD,
-                    branchName,
-                    "ID",
-                    id)));
+    Order entityFound =
+        this.orderRepo
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
 
-    if (userFound.getRole().getName() == ERole.ROLE_ADMIN || Objects.equals(userFound.getId(),
-                                                                            entityFound.getUser().getId())) {
+    if (userFound.getRole().getName() == ERole.ROLE_ADMIN
+        || Objects.equals(userFound.getId(), entityFound.getUser().getId())) {
 
       for (OrderItem orderItem : entityFound.getOrderItemSet()) {
         this.orderItemService.deleteOrderItem(orderItem);

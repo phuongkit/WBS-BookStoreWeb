@@ -2,6 +2,7 @@ package ecom.bookstore.wbsbackend.dto.request;
 
 import ecom.bookstore.wbsbackend.entities.User;
 import ecom.bookstore.wbsbackend.models.enums.EGender;
+import ecom.bookstore.wbsbackend.models.enums.EOrderStatus;
 import ecom.bookstore.wbsbackend.models.enums.EPayment;
 import ecom.bookstore.wbsbackend.models.enums.EShippingMethod;
 import ecom.bookstore.wbsbackend.utils.Utils;
@@ -51,6 +52,7 @@ public class OrderCreationDTO {
   private String discountCode;
   private boolean paid;
   private String note;
+  private String status;
 
 //  @NotBlank(message = "OrderItems not blank!")
   @NotNull(message = "OrderItems not null!")
@@ -66,6 +68,7 @@ public class OrderCreationDTO {
     this.payment = EPayment.CASH;
     this.shippingMethod = EShippingMethod.GHN_EXPRESS;
     this.paid = true;
+    this.status = EOrderStatus.ORDER_PENDING.toString();
     this.orderItems = orderItems;
   }
 }

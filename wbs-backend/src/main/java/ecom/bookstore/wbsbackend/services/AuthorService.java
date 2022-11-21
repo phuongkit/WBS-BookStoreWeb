@@ -1,7 +1,7 @@
 package ecom.bookstore.wbsbackend.services;
 
+import ecom.bookstore.wbsbackend.dto.request.AuthorCreationDTO;
 import ecom.bookstore.wbsbackend.dto.response.AuthorResponseDTO;
-import ecom.bookstore.wbsbackend.dto.response.SupplierResponseDTO;
 
 import java.util.List;
 
@@ -11,4 +11,8 @@ import java.util.List;
  */
 public interface AuthorService {
   List<AuthorResponseDTO> getAllAuthor();
+  AuthorResponseDTO getAuthorById(Integer id);
+  AuthorResponseDTO createAuthor(AuthorCreationDTO creationDTO);
+  AuthorResponseDTO updateAuthor(Integer id, AuthorCreationDTO creationDTO);
+  AuthorResponseDTO deleteAuthorById(Integer id);
 }

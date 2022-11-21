@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './ProductCard.scss';
+import { numberWithCommas } from '../../utils';
 
 function ProductCard({ product }) {
     return (
@@ -22,8 +23,8 @@ function ProductCard({ product }) {
                     <div className="gia d-flex align-items-baseline">
                         {(product.sale && (
                             <>
-                                <div className="giamoi">{product.salePrice} ₫</div>
-                                <div className="giacu text-muted">{product.originPrice} ₫</div>
+                                <div className="giamoi">{ numberWithCommas(product.salePrice)} ₫</div>
+                                <div className="giacu text-muted">{numberWithCommas(product.originPrice)} ₫</div>
                                 <div className="sale">-{product.sale ? product.sale * 100 : 0}%</div>
                             </>
                         )) || <div className="giacu text-muted">{product.originPrice} ₫</div>}

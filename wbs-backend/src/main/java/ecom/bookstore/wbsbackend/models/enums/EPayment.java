@@ -6,5 +6,6 @@ package ecom.bookstore.wbsbackend.models.enums;
  */
 public enum EPayment {
   CASH,
-  MOMO
+  MOMO,
+  VNPAY
 }

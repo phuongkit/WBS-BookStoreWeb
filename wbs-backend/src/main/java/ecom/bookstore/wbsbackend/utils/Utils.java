@@ -62,6 +62,8 @@ public class Utils {
   public static final String UPDATE_MAIN_OBJECT_SUCCESSFULLY = "Update new main %s successfully!";
   public static final String UPDATE_RELY_OBJECT_SUCCESSFULLY = "Update new rely %s successfully!";
   public static final String DELETE_OBJECT_SUCCESSFULLY = "Delete %s successfully!";
+  // INFO
+  public static final String PAYMENT_ORDER = "%s thanh toan don hang %s voi tong tien %s voi %s";
 
   //  Log
   public static final String LOG_GET_ALL_OBJECT = "Fetching all %ss";
@@ -74,6 +76,7 @@ public class Utils {
   public static final String LOG_REGISTER_OBJECT = "Registering new %S with %s = %s to database";
   public static final String LOG_CREATE_OBJECT_BY_TWO_FIELD = "Creating new %s with %s = %s and %s = %s to the database";
   public static final String LOG_UPDATE_OBJECT = "Updating %s with %s = %s to the database";
+  public static final String LOG_UPDATE_OBJECT_BY_TWO_FIELD = "Updating %s with %s = %s and %s = %s to the database";
   public static final String LOG_DELETE_OBJECT = "Deleting %s with %s = %s from the database";
   public static final String ADD_LOG_FOR_USER = " for User with %s = %s";
 
@@ -199,6 +202,20 @@ public class Utils {
       }
     }
     return locationString;
+  }
+
+  public static String getLocationStringFromLocationAndLine(Location location, String line) {
+    String locationString = "";
+    if (location.getProvince() != null) {
+      locationString = location.getProvince();
+      if (location.getDistrict() != null) {
+        locationString = location.getDistrict() + ", " + locationString;
+        if (location.getCommune() != null) {
+          locationString = location.getCommune() + ", " + locationString;
+        }
+      }
+    }
+    return line + ", " + locationString;
   }
 
   public static String getUrlFromPathImage(String path) {

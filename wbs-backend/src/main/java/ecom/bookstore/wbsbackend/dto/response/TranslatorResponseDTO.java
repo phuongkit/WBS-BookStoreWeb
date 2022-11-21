@@ -11,5 +11,5 @@ import lombok.Data;
 public class TranslatorResponseDTO {
   private Integer id;
   private String fullName;
-  private EGender gender;
+  private int gender;
 }

@@ -117,7 +117,7 @@ function Header() {
             <nav className="navbar navbar-expand-md bg-white navbar-light">
                 <div className="container">
                     {/* <!-- logo  --> */}
-                    <Link className="navbar-brand" to="" style={{ color: '#CF111A' }}>
+                    <Link className="navbar-brand" to="/" style={{ color: '#CF111A' }}>
                         <b>DealBook</b>.xyz
                     </Link>
 
@@ -194,13 +194,13 @@ function Header() {
                                                 </a> */}
                                             </div>
                                             <div className="dropdown-menu">
-                                                <Link className="dropdown-item text-center mb-2" to="/account">
+                                                <Link className="dropdown-item text-center mb-2 text-white-important" to="/account">
                                                     Tài khoản của tôi
                                                 </Link>
-                                                <Link className="dropdown-item text-center mb-2" to="/purchase">
+                                                <Link className="dropdown-item text-center mb-2 text-white-important" to="/purchase">
                                                     Đơn mua
                                                 </Link>
-                                                <Link className="dropdown-item text-center" onClick={handleLogout}>
+                                                <Link className="dropdown-item text-center text-white-important" onClick={handleLogout}>
                                                     Đăng xuất
                                                 </Link>
                                             </div>
