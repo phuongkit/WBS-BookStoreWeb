@@ -2,11 +2,15 @@ package ecom.bookstore.wbsbackend.services.impls;
 
 import ecom.bookstore.wbsbackend.dto.request.VNPayCreationDTO;
 import ecom.bookstore.wbsbackend.dto.response.VNPayResponseDTO;
+import ecom.bookstore.wbsbackend.entities.Order;
+import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
+import ecom.bookstore.wbsbackend.repositories.OrderRepo;
 import ecom.bookstore.wbsbackend.services.VNPayService;
 import ecom.bookstore.wbsbackend.utils.Config;
 import ecom.bookstore.wbsbackend.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,13 @@ public class VNPayServiceImpl implements VNPayService {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
   public static final String branchName = "VNPAY";
 
+  private OrderRepo orderRepo;
+
+  @Autowired
+  public void OrderRepo(OrderRepo orderRepo) {
+    this.orderRepo = orderRepo;
+  }
+
   @Override public VNPayResponseDTO getPaymentUrlVNPay(String ipAddress, VNPayCreationDTO creationDTO)
       throws UnsupportedEncodingException {
     this.LOGGER.info(String.format(Utils.LOG_CREATE_OBJECT_BY_TWO_FIELD,
@@ -35,6 +46,14 @@ public class VNPayServiceImpl implements VNPayService {
                                    creationDTO.getOrderId(),
                                    "totalPrice",
                                    creationDTO.getTotalPrice()));
+    Order entityFound =
+        this.orderRepo
+            .findById(creationDTO.getOrderId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Order.class.getSimpleName(), "Id", creationDTO.getOrderId())));
+
     VNPayResponseDTO responseDTO = new VNPayResponseDTO();
     String vnp_TmnCode = Config.vnp_TmnCode;
     String locate = "vn";
@@ -58,6 +77,9 @@ public class VNPayServiceImpl implements VNPayService {
     cld.add(Calendar.MINUTE, 30);
     responseDTO.setExpireDate(cld.getTime());
     String vnp_ExpireDate = formatter.format(cld.getTime());
+
+    entityFound.setPaymentOrderCode(vnp_TxnRef);
+    this.orderRepo.save(entityFound);
 
     Map vnp_Params = new HashMap<>();
 
@@ -105,9 +127,9 @@ public class VNPayServiceImpl implements VNPayService {
     String queryUrl = query.toString();
     String vnp_SecureHash = Config.hmacSHA512(Config.vnp_HashSecret, hashData.toString());
     queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-    this.LOGGER.info(vnp_SecureHash);
     String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
     responseDTO.setPayUrl(paymentUrl);
+
     return responseDTO;
   }
 }

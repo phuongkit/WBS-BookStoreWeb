@@ -237,7 +237,25 @@ export const oderColumns = [
 
     {
         field: 'totalPrice',
-        headerName: 'total price',
+        headerName: 'total price product',
+        width: 120,
+        renderCell: (params) => {
+            return <div className={`cellWithStatus`}>{params.row.totalPriceProduct}</div>;
+        },
+    },
+
+    {
+        field: 'totalFee',
+        headerName: 'transportFee',
+        width: 120,
+        renderCell: (params) => {
+            return <div className={`cellWithStatus`}>{params.row.transportFee || 'Chưa có thông tin'}</div>;
+        },
+    },
+
+    {
+        field: 'totalFee',
+        headerName: 'totalPrice',
         width: 120,
         renderCell: (params) => {
             return <div className={`cellWithStatus`}>{params.row.totalPrice}</div>;

@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -257,7 +258,7 @@ public class OrderServiceImpl implements OrderService {
             savedEntity, creationDTO.getOrderItems()));
     savedEntity.setTotalPrice(Utils.getTotalPriceFromOrderItems(newEntity.getOrderItemSet()));
 
-    return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(savedEntity), null);
+    return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(savedEntity), null, true);
   }
 
   @Override
@@ -279,7 +280,7 @@ public class OrderServiceImpl implements OrderService {
                     new ResourceNotFoundException(
                         String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
 
-    return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null);
+    return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null, true);
   }
 
   @Override
@@ -320,7 +321,13 @@ public class OrderServiceImpl implements OrderService {
                   || Objects.equals(updatePaymentDTO.getStatus().trim(), "")
               ? EOrderStatus.ORDER_PENDING.toString()
               : updatePaymentDTO.getStatus());
-      return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null);
+      if (updatePaymentDTO.getExpectedDeliveryTime() != null) {
+        entityFound.setExpectedDeliveryTime(updatePaymentDTO.getExpectedDeliveryTime());
+      }
+      if (updatePaymentDTO.getTransportFee() != null) {
+        entityFound.setTransportFee(updatePaymentDTO.getTransportFee());
+      }
+      return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null, true);
     } else {
       throw new UserNotPermissionException(Utils.USER_NOT_PERMISSION);
     }
@@ -362,10 +369,31 @@ public class OrderServiceImpl implements OrderService {
       if (updateStatusDTO.getExpectedDeliveryTime() != null) {
         entityFound.setExpectedDeliveryTime(updateStatusDTO.getExpectedDeliveryTime());
       }
-      return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null);
+      if (updateStatusDTO.getTransportFee() != null) {
+        entityFound.setTransportFee(updateStatusDTO.getTransportFee());
+      }
+      return this.orderMapper.orderToOrderResponseDTO(this.orderRepo.save(entityFound), null, true);
     } else {
       throw new UserNotPermissionException(Utils.USER_NOT_PERMISSION);
     }
+  }
+
+  @Override public void updatePostPaymentOrder(String payString, String paymentOrderCode, boolean success) {
+    this.LOGGER.info(String.format(Utils.LOG_UPDATE_OBJECT_BY_TWO_FIELD, branchName, "PaymentOrderCode", paymentOrderCode, "Sucess", success));
+    List<Order> entityList =
+        this.orderRepo
+            .findAllByPaymentOrderCode(paymentOrderCode);
+    if (entityList.size() < 1) {
+           throw new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "PaymentOrderCode", paymentOrderCode));
+    }
+    Order order = entityList.get(0);
+    System.out.println("txnRef1" + order.getPaymentOrderCode());
+    if (success) {
+      order.setPayAt(new Date(Long.parseLong(payString)));
+      order.setStatus(EOrderStatus.ORDER_PENDING.toString());
+    }
+    this.orderRepo.save(order);
   }
 
   @Override

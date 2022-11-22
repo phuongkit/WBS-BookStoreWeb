@@ -22,5 +22,6 @@ public interface OrderService {
   OrderResponseDTO updateOrder(String loginKey, Long id, OrderCreationDTO creationDTO);
   OrderResponseDTO updatePaymentOrder(String loginKey, Long id, OrderUpdatePaymentDTO updatePaymentDTO);
   OrderResponseDTO updateStatusOrder(String loginKey, Long id, OrderUpdateStatusDTO updateStatusDTO);
+  void updatePostPaymentOrder(String payString, String paymentOrderCode, boolean success);
   OrderResponseDTO deleteOrderById(String loginKey, Long id);
 }

@@ -7,7 +7,11 @@ export const vnpay = {
     createVNPayPayment(data) {
         return axiosClient.post(`${branch_api}/vnpay/create-payment-url`,data);
     },
-    getReturnVNPay() {
-        return axiosClient.post(`${branch_api}/vnpay/return`);
+    getReturnVNPay(params) {
+        const query = params.reduce((acc, {key, value}) => {
+            return value ? acc + `${key}=${value}&` : acc;
+        }, '');
+        console.log(query);
+        return axiosClient.post(`${branch_api}/vnpay/return?${query}`);
     }
 };

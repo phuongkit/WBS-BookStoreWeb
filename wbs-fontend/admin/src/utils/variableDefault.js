@@ -227,16 +227,23 @@ export const GHN_CONFIG = {
     shopId: '3330973',
     thuduc: 3695,
     truongtho: 90746,
-    weight: 5000,
-    length: 30,
-    width: 30,
-    height: 50,
+    weight: 250,
+    length: 20,
+    width: 15,
+    height: 0.5,
+    totalWeight: 30000,
+    totalLength: 150,
+    totalWidth: 150,
+    totalHeight: 150,
+    toName: 'Thái Phương',
+    maxInsuranceValue: 5000000,
 };
 
 export const MESSAGE = {
     PRODUCT_NO_INFO: 'Sản phẩm chưa có thông tin',
     LOGIN_USER_NAME_NOT_MATCH: 'Số điện thoại hoặc email không đúng',
     NAME_NOT_AVAILABLE: 'Tên không khả dung',
+    ERROR_ACTION: 'Có lỗi xảy ra! Vui lòng thử lại sau',
 };
 
 export const ENUM = {

@@ -191,6 +191,10 @@ public class ProductMapperImpl implements ProductMapper {
       responseDTO.setCategoryName(entity.getCategory().getName());
       responseDTO.setCategorySlug(entity.getCategory().getSlug());
     }
+    responseDTO.setWeight(entity.getWeight());
+    responseDTO.setPackagingLength(entity.getPackagingLength());
+    responseDTO.setPackagingWidth(entity.getPackagingWidth());
+    responseDTO.setPackagingHeight(entity.getPackagingHeight());
     return responseDTO;
   }
 }

@@ -115,3 +115,22 @@ export const toAddressSlug = (address) => {
         city: toLocationSlug(address?.city),
     };
 };
+
+export const toFullAddress = (address) => {
+    let addressString = 'Việt Nam';
+    if (address) {
+        if (address?.city) {
+            addressString = address?.city + ', ' + addressString;
+            if (address?.district) {
+                addressString = address?.district + ', ' + addressString;
+                if (address?.ward) {
+                    addressString = address?.ward + ', ' + addressString;
+                    if (address?.homeAdd) {
+                        addressString = address?.homeAdd + ', ' + addressString;
+                    }
+                }
+            }
+        }
+    }
+    return addressString;
+};

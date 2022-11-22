@@ -7838,6 +7838,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 2/9 Tú Mỡ");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Trình");
+      customers[i].setLastName("Duy");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7850,6 +7853,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 108 Lê Tự Tài");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Đăng");
+      customers[i].setLastName("Phúc");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7862,6 +7868,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Đường Số 1");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Quân");
+      customers[i].setLastName("Lý");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7874,6 +7883,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 119/7 Đường Số 7");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Trình");
+      customers[i].setLastName("Lê");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7886,6 +7898,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 7");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Như");
+      customers[i].setLastName("Diệu");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7898,6 +7913,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 15/13 Nguyễn Du");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Khả");
+      customers[i].setLastName("Lâm");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7910,6 +7928,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 47 Bùi Đình Túy");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Vĩnh");
+      customers[i].setLastName("Đạt");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7922,6 +7943,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 456/31 Cao Thắng");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Phương");
+      customers[i].setLastName("Thái");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -7934,6 +7958,9 @@ private RoleService roleService;
       location = this.locationService.saveLocation(location);
       Address address = new Address(customers[i], location, "Hẻm 6 Nguyễn Trung Trực");
       address = this.addressService.saveAddress(address);
+      customers[i].setFirstName("Trình");
+      customers[i].setLastName("Phú");
+      this.userRepo.save(customers[i]);
       customers[i] = this.userRepo.findById(customers[i].getId()).orElse(null);
     }
 
@@ -8072,6 +8099,8 @@ private RoleService roleService;
     uv.admin = this.userRepo.findUserByPhone(authAdmin1.getPhone()).orElse(null);
     if (uv.admin != null) {
       uv.admin.setRole(rv.roleAdmin);
+      uv.admin.setFirstName("Thái");
+      uv.admin.setLastName("Phùng");
       uv.admin = this.userRepo.save(uv.admin);
       Address addressAdmin = new Address(uv.admin, lv.locationLongAn, "Nguyễn Trung");
       addressAdmin = this.addressService.saveAddress(addressAdmin);
@@ -8083,6 +8112,8 @@ private RoleService roleService;
     uv.admin1 = this.userRepo.findUserByPhone(authAdmin2.getPhone()).orElse(null);
     if (uv.admin1 != null) {
       uv.admin1.setRole(rv.roleAdmin);
+      uv.admin1.setFirstName("Thái");
+      uv.admin1.setLastName("Phương");
       uv.admin1 = this.userRepo.save(uv.admin1);
     }
 

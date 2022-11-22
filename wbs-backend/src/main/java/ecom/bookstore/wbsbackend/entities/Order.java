@@ -88,6 +88,8 @@ public class Order {
   @Column(name = "note", length = 500)
   private String note;
 
+  @Column(name = "payment_order_code")
+  private String paymentOrderCode;
 
   @Column(name = "ship_order_code")
   private String shipOrderCode;

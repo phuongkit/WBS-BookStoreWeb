@@ -10,11 +10,12 @@ import { momo, vnpay } from '../../services/payment';
 import { updatePaymentOrders } from '~/redux/order/ordersApi';
 import { ENUM } from '../../utils';
 import { deleteOrdersByIdApi } from '../../redux/order/ordersApi';
+import { ghn } from '../../services/shipping/ghn.service';
 
 function Order({ title }) {
-    
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [ship, setShip] = useState({ expectedDeliveryTime: null, transportFee: 0 });
     const order = localStorage.getItem('order')
         ? JSON.parse(localStorage.getItem('order'))
         : useSelector((state) => state.orders.order.data);
@@ -39,14 +40,21 @@ function Order({ title }) {
         const payment = getPayment();
         console.log('payment', payment);
         // const data = { ...order, payment };
-        const data = { ...payment, status: payment.payment > 0 ? ENUM.EOrderStatus.ORDER_AWAITING_PAYMENT.name :  ENUM.EOrderStatus.ORDER_PENDING.name};
+        const data = {
+            ...payment,
+            ...ship,
+            status:
+                payment.payment > 0
+                    ? ENUM.EOrderStatus.ORDER_AWAITING_PAYMENT.name
+                    : ENUM.EOrderStatus.ORDER_PENDING.name,
+        };
         updatePaymentOrders(dispatch, data, order.id);
         localStorage.removeItem('order');
         if (payment.payment === ENUM.EPayment.MOMO.index) {
             const dataMomo = {
                 orderId: info.id,
                 orderInfo: `${customer.fullName} thanh toán đơn hàng ${info.id} với MoMo`,
-                redirectUrl: window.location.origin,
+                redirectUrl: window.location.origin +'/#/',
                 amount: 5000,
                 extraData: '',
             };
@@ -54,11 +62,12 @@ function Order({ title }) {
             localStorage.removeItem('order');
             window.location = res.data.payUrl;
         } else if (payment.payment === ENUM.EPayment.VNPAY.index) {
+            console.log(window.location.origin);
             const dataVNPay = {
                 orderId: info.id,
                 // orderInfo: `${customer.fullName} thanh toán đơn hàng ${info.id} với MoMo`,
                 fullName: customer.fullName,
-                redirectUrl: window.location.origin,
+                redirectUrl: window.location.origin +'/#/',
                 totalPrice: info.totalPrice,
                 // extraData: '',
             };
@@ -88,142 +97,165 @@ function Order({ title }) {
     useEffect(() => {
         document.title = title;
     }, []);
+    useEffect(() => {
+        if (order && ship.expectedDeliveryTime === null) {
+            const getShip = async () => {
+                let res = await ghn.getPreviewOrderGHN(order);
+                console.log(res?.data?.data);
+                let date = new Date(Date.parse(res?.data?.data?.expected_delivery_time));
+                // console.log(date.toUTCString);
+                
+                setShip({
+                    expectedDeliveryTime: date,
+                    transportFee: res?.data?.data?.total_fee,
+                });
+            };
+            getShip();
+        }
+    }, [order]);
     return (
-    <>
-        {hasOrder ? (
-            <div className="order">
-                <div className="alertsuccess-new">
-                    <i className="new-cartnew-success"></i>
-                    <strong>Đặt hàng thành công</strong>
-                </div>
-                <div className="ordercontent">
-                    <div>
-                        <p>
-                            Cảm ơn {ENUM.EGender.getNameFromIndex(customer.gender)} <b>{customer.fullName}</b> đã cho
-                            Deadblock cơ hội được phục vụ.
-                        </p>
+        <>
+            {hasOrder ? (
+                <div className="order">
+                    <div className="alertsuccess-new">
+                        <i className="new-cartnew-success"></i>
+                        <strong>Đặt hàng thành công</strong>
                     </div>
-                    <div>
-                        <div className="info-order">
-                            <div className="info-order-header">
-                                <h6>
-                                    Đơn hàng: <span className="text-blue-400 font-bold">#{info.id}</span>
-                                </h6>
-                                <div className="header-right">
-                                    <Link to="/account">Quản lý đơn hàng</Link>
-                                    <div className="cancel-order-new">
-                                        <div>
-                                            <div className="cancel-order-new">
-                                                <span>.</span>
-                                                <label
-                                                    onClick={handleCancel}
-                                                    style={{ color: 'blue', cursor: 'pointer', padding: '0 0' }}
-                                                >
-                                                    Hủy
-                                                </label>
+                    <div className="ordercontent">
+                        <div>
+                            <p>
+                                Cảm ơn {ENUM.EGender.getNameFromIndex(customer.gender)} <b>{customer.fullName}</b> đã
+                                cho Deadblock cơ hội được phục vụ.
+                            </p>
+                        </div>
+                        <div>
+                            <div className="info-order">
+                                <div className="info-order-header">
+                                    <h6>
+                                        Đơn hàng: <span className="text-blue-400 font-bold">#{info.id}</span>
+                                    </h6>
+                                    <div className="header-right">
+                                        <Link to="/account">Quản lý đơn hàng</Link>
+                                        <div className="cancel-order-new">
+                                            <div>
+                                                <div className="cancel-order-new">
+                                                    <span>.</span>
+                                                    <label
+                                                        onClick={handleCancel}
+                                                        style={{ color: 'blue', cursor: 'pointer', padding: '0 0' }}
+                                                    >
+                                                        Hủy
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <label htmlFor="">
+                                    <span>
+                                        <i className="info-order__dot-icon"></i>
+                                        <span>
+                                            <strong>Người nhận hàng:</strong>
+                                            <h6 id="userName">
+                                                {ENUM.EGender.getNameFromIndex(customer.gender)} {customer.fullName}
+                                            </h6>
+                                            <br />
+                                            <strong>Số điện thoại:</strong>
+                                            <h6 id="customerPhone">{customer.phone}</h6>
+                                        </span>
+                                    </span>
+                                </label>
+                                <label htmlFor="">
+                                    <span>
+                                        <i className="info-order__dot-icon"></i>
+                                        <span>
+                                            <strong>Giao đến: </strong>
+                                            {customer.address?.homeAdd}, {customer.address?.ward},
+                                            {customer.address?.district}, Thành phố {customer.address?.city} (nhân viên
+                                            sẽ gọi xác nhận trước khi giao).
+                                        </span>
+                                    </span>
+                                </label>
+                                <label htmlFor="">
+                                    <span>
+                                        <i className="info-order__dot-icon"></i>
+                                        <span>
+                                            <strong>
+                                                Phí giao hàng: {numberWithCommas(Number(info.transportFee || ship.transportFee)) || 0}{' '}
+                                            </strong>
+                                        </span>
+                                        <span>
+                                            <strong>
+                                                Thời gian dự kiến giao hàng: {ship.expectedDeliveryTime?.toISOString() || 'Chưa xác định'}{' '}
+                                            </strong>
+                                        </span>
+                                    </span>
+                                </label>
+                                <label htmlFor="">
+                                    <span>
+                                        <i className="info-order__dot-icon"></i>
+                                        <span>
+                                            <strong>
+                                                Tổng tiền: {numberWithCommas(Number(info.totalPrice + (ship.transportFee.transportFee || 0))) || 0}{' '}
+                                            </strong>
+                                        </span>
+                                    </span>
+                                </label>
                             </div>
-                            <label htmlFor="">
-                                <span>
-                                    <i className="info-order__dot-icon"></i>
-                                    <span>
-                                        <strong>Người nhận hàng:</strong>
-                                        <h6 id="userName">
-                                            {ENUM.EGender.getNameFromIndex(customer.gender)} {customer.fullName}
-                                        </h6>
-                                        <br />
-                                        <strong>Số điện thoại:</strong>
-                                        <h6 id="customerPhone">{customer.phone}</h6>
-                                    </span>
-                                </span>
-                            </label>
-                            <label htmlFor="">
-                                <span>
-                                    <i className="info-order__dot-icon"></i>
-                                    <span>
-                                        <strong>Giao đến: </strong>
-                                        {customer.address?.homeAdd}, {customer.address?.ward},
-                                        {customer.address?.district}, Thành phố {customer.address?.city} (nhân viên sẽ
-                                        gọi xác nhận trước khi giao).
-                                    </span>
-                                </span>
-                            </label>
-                            <label htmlFor="">
-                                <span>
-                                    <i className="info-order__dot-icon"></i>
-                                    <span>
-                                        <strong>
-                                            Phí giao hàng: {numberWithCommas(Number(info.transportFee)) || 0}{' '}
-                                        </strong>
-                                    </span>
-                                </span>
-                            </label>
-                            <label htmlFor="">
-                                <span>
-                                    <i className="info-order__dot-icon"></i>
-                                    <span>
-                                        <strong>Tổng tiền: {numberWithCommas(Number(info.totalPrice)) || 0} </strong>
-                                    </span>
-                                </span>
-                            </label>
                         </div>
-                    </div>
 
-                    <div>
-                        <h4 className="order-infor-alert">Đơn hàng chưa được thanh toán</h4>
-                    </div>
-
-                    <div className="payment-method-new">
                         <div>
-                            <h3>Chọn hình thức thanh toán:</h3>
-                            <ul className="formality-pay-new" style={{listStyle: 'none'}}>
-                                <li className="normal-payment">
-                                    <div className="text-payment">
-                                        <span>
-                                            <input
-                                                type="radio"
-                                                id="cash"
-                                                name="payment"
-                                                value={ENUM.EPayment.CASH.index}
-                                                defaultChecked
-                                            />
-                                            <label htmlFor="cash">Thanh toán tiền mặt khi nhận hàng</label>
-                                        </span>
-                                    </div>
-                                </li>
+                            <h4 className="order-infor-alert">Đơn hàng chưa được thanh toán</h4>
+                        </div>
 
-                                <li className="normal-payment">
-                                    <div className="text-payment">
-                                        <span>
-                                            <input
-                                                type="radio"
-                                                id="momo"
-                                                name="payment"
-                                                value={ENUM.EPayment.MOMO.index}
-                                            />
-                                            <label htmlFor="momo">Ví MoMo</label>
-                                        </span>
-                                    </div>
-                                </li>
+                        <div className="payment-method-new">
+                            <div>
+                                <h3>Chọn hình thức thanh toán:</h3>
+                                <ul className="formality-pay-new" style={{ listStyle: 'none' }}>
+                                    <li className="normal-payment">
+                                        <div className="text-payment">
+                                            <span>
+                                                <input
+                                                    type="radio"
+                                                    id="cash"
+                                                    name="payment"
+                                                    value={ENUM.EPayment.CASH.index}
+                                                    defaultChecked
+                                                />
+                                                <label htmlFor="cash">Thanh toán tiền mặt khi nhận hàng</label>
+                                            </span>
+                                        </div>
+                                    </li>
 
-                                <li className="normal-payment">
-                                    <div className="text-payment">
-                                        <span>
-                                            <input
-                                                type="radio"
-                                                id="vnpay"
-                                                name="payment"
-                                                value={ENUM.EPayment.VNPAY.index}
-                                            />
-                                            <label htmlFor="vnpay">Thanh toán qua VNPay</label>
-                                        </span>
-                                    </div>
-                                </li>
+                                    <li className="normal-payment">
+                                        <div className="text-payment">
+                                            <span>
+                                                <input
+                                                    type="radio"
+                                                    id="momo"
+                                                    name="payment"
+                                                    value={ENUM.EPayment.MOMO.index}
+                                                />
+                                                <label htmlFor="momo">Ví MoMo</label>
+                                            </span>
+                                        </div>
+                                    </li>
 
-                                {/**<li className="normal-payment">
+                                    <li className="normal-payment">
+                                        <div className="text-payment">
+                                            <span>
+                                                <input
+                                                    type="radio"
+                                                    id="vnpay"
+                                                    name="payment"
+                                                    value={ENUM.EPayment.VNPAY.index}
+                                                />
+                                                <label htmlFor="vnpay">Thanh toán qua VNPay</label>
+                                            </span>
+                                        </div>
+                                    </li>
+
+                                    {/**<li className="normal-payment">
                                 <div className="text-payment">
                                     <span>
                                         <input type="radio" id="ck" name="payment" value="banking" />
@@ -275,45 +307,46 @@ function Order({ title }) {
                                     </span>
                                 </div>
                             </li> */}
-                            </ul>
+                                </ul>
 
-                            <button onClick={handleConfirm} className="confirm-payment-button">
-                                Xác nhận
-                            </button>
-                        </div>
-                        <div className="refund-popup">
-                            <a href="">Xem chính sách hoàn tiền online</a>
-                        </div>
-                        <hr />
-
-                        <div className="buyanotherNew">
-                            <Link to="/"> Mua thêm sản phẩm khác </Link>
-                        </div>
-                        <span className="customer-rating">
-                            <div className="customer-rating__top">
-                                <div className="customer-rating__top__desc">
-                                    {ENUM.EGender.getNameFromIndex(customer.gender)}{' '}
-                                    <strong>{customer.fullName}</strong> có hài lòng về trải nghiệm mua hàng?
-                                </div>
-                                <div className="customer-rating__top__rating-buttons">
-                                    <button className="customer-rating__top__rating-buttons__good">
-                                        <p>Hài lòng</p>
-                                        <i className="iconrating-good"></i>
-                                    </button>
-                                    <button className="customer-rating__top__rating-buttons__bad">
-                                        <p>Không hài lòng</p>
-                                        <i className="iconrating-bad"></i>
-                                    </button>
-                                </div>
+                                <button onClick={handleConfirm} className="confirm-payment-button">
+                                    Xác nhận
+                                </button>
                             </div>
-                        </span>
+                            <div className="refund-popup">
+                                <a href="">Xem chính sách hoàn tiền online</a>
+                            </div>
+                            <hr />
+
+                            <div className="buyanotherNew">
+                                <Link to="/"> Mua thêm sản phẩm khác </Link>
+                            </div>
+                            <span className="customer-rating">
+                                <div className="customer-rating__top">
+                                    <div className="customer-rating__top__desc">
+                                        {ENUM.EGender.getNameFromIndex(customer.gender)}{' '}
+                                        <strong>{customer.fullName}</strong> có hài lòng về trải nghiệm mua hàng?
+                                    </div>
+                                    <div className="customer-rating__top__rating-buttons">
+                                        <button className="customer-rating__top__rating-buttons__good">
+                                            <p>Hài lòng</p>
+                                            <i className="iconrating-good"></i>
+                                        </button>
+                                        <button className="customer-rating__top__rating-buttons__bad">
+                                            <p>Không hài lòng</p>
+                                            <i className="iconrating-bad"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        ) : (
-            <Navigate to="/cart" />
-        )}
-    </>);
+            ) : (
+                <Navigate to="/cart" />
+            )}
+        </>
+    );
 }
 
 export default Order;

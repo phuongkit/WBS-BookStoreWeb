@@ -57,14 +57,15 @@ public class OrderMapperImpl implements OrderMapper {
     }
     responseDTO.setGender(entity.getGender().ordinal());
     responseDTO.setFullName(entity.getFullName());
-    responseDTO.setTotalPrice(Utils.getTotalPriceFromOrderItems(entity.getOrderItemSet()));
+    responseDTO.setTotalPriceProduct(Utils.getTotalPriceFromOrderItems(entity.getOrderItemSet()));
+    responseDTO.setTransportFee(entity.getTransportFee());
+    responseDTO.setTotalPrice(responseDTO.getTotalPriceProduct().add(responseDTO.getTransportFee()));
     if (entity.getPayment() != null) {
       responseDTO.setPayment(entity.getPayment().getName().ordinal());
     }
     if (entity.getShippingMethod() != null) {
       responseDTO.setShippingMethod(entity.getShippingMethod().getName().ordinal());
     }
-    responseDTO.setTransportFee(entity.getTransportFee());
     responseDTO.setEmail(entity.getEmail());
     responseDTO.setPhone(entity.getPhone());
     if (entity.getDiscount() != null) {

@@ -26,9 +26,10 @@ public class OrderResponseDTO {
   private String phone;
   private AddressResponseDTO address;
   private BigDecimal totalPrice;
+  private BigDecimal totalPriceProduct;
+  private BigDecimal transportFee;
   private int payment;
   private int shippingMethod;
-  private BigDecimal transportFee;
   private DiscountResponseDTO discount;
   private String status;
   private Date payAt;

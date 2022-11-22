@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -17,4 +18,5 @@ public class OrderUpdateStatusDTO {
   private String log;
   private String shipOrderCode;
   private Date expectedDeliveryTime;
+  private BigDecimal transportFee;
 }

@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * @author minh phuong
  * @created 11/09/2022 - 10:03 AM
@@ -16,4 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface OrderRepo extends JpaRepository<Order, Long> {
   Page<Order> findAllByUser(User user, Pageable pageable);
+
+  List<Order> findAllByPaymentOrderCode(String paymentOrderCode);
 }

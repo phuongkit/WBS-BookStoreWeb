@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import ecom.bookstore.wbsbackend.dto.request.VNPayCreationDTO;
 import ecom.bookstore.wbsbackend.dto.response.ResponseObject;
+import ecom.bookstore.wbsbackend.services.OrderService;
 import ecom.bookstore.wbsbackend.services.VNPayService;
 import ecom.bookstore.wbsbackend.utils.Config;
 import org.slf4j.Logger;
@@ -35,41 +36,50 @@ import java.util.*;
 @CrossOrigin("*")
 public class PaymentController {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+  private OrderService orderService;
+
+  @Autowired
+  public void OrderService(OrderService orderService) {
+    this.orderService = orderService;
+  }
+
   private VNPayService vnPayService;
 
-  @Autowired public void VNPayService(VNPayService vnPayService) {
+  @Autowired
+  public void VNPayService(VNPayService vnPayService) {
     this.vnPayService = vnPayService;
   }
 
   @PostMapping("/vnpay/return")
   public String getVNPayReturn(HttpServletRequest request, HttpServletResponse resp)
       throws IOException {
-//    Map fields = new HashMap();
-//    for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
-//      String fieldName = (String) params.nextElement();
-//      String fieldValue = request.getParameter(fieldName);
-//      if ((fieldValue != null) && (fieldValue.length() > 0)) {
-//        fields.put(fieldName, fieldValue);
-//      }
-//    }
-//    String vnp_SecureHash = request.getParameter("vnp_SecureHash");
-//    if (fields.containsKey("vnp_SecureHashType")) {
-//      fields.remove("vnp_SecureHashType");
-//    }
-//    if (fields.containsKey("vnp_SecureHash")) {
-//      fields.remove("vnp_SecureHash");
-//    }
-//    String signValue = Config.hashAllFields(fields);
-//    if (signValue.equals(vnp_SecureHash)) {
-//      if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-//        return "GD Thanh cong";
-//      } else {
-//        return "GD Khong thanh cong";
-//      }
-//
-//    } else {
-//      return "Chu ky khong hop le";
-//    }
+    //    Map fields = new HashMap();
+    //    for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
+    //      String fieldName = (String) params.nextElement();
+    //      String fieldValue = request.getParameter(fieldName);
+    //      if ((fieldValue != null) && (fieldValue.length() > 0)) {
+    //        fields.put(fieldName, fieldValue);
+    //      }
+    //    }
+    //    String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+    //    if (fields.containsKey("vnp_SecureHashType")) {
+    //      fields.remove("vnp_SecureHashType");
+    //    }
+    //    if (fields.containsKey("vnp_SecureHash")) {
+    //      fields.remove("vnp_SecureHash");
+    //    }
+    //    String signValue = Config.hashAllFields(fields);
+    //    if (signValue.equals(vnp_SecureHash)) {
+    //      if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
+    //        return "GD Thanh cong";
+    //      } else {
+    //        return "GD Khong thanh cong";
+    //      }
+    //
+    //    } else {
+    //      return "Chu ky khong hop le";
+    //    }
     try {
       Map fields = new HashMap();
       for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
@@ -90,52 +100,47 @@ public class PaymentController {
 
       // Check checksum
       String signValue = Config.hashAllFields(fields);
-      this.LOGGER.info(signValue);
-      for (Object key : fields.keySet()) {
-        System.out.println(key +";"+ fields.get(key));
-      }
-//      if (signValue.equals(vnp_SecureHash)) {
+      //      if (signValue.equals(vnp_SecureHash)) {
 
-        boolean checkOrderId = true; // vnp_TxnRef exists in your database
-        boolean checkAmount =
-            true; // vnp_Amount is valid (Check vnp_Amount VNPAY returns compared to the amount of the code (vnp_TxnRef) in the Your database).
-        boolean checkOrderStatus = true; // PaymnentStatus = 0 (pending)
-
-        if (checkOrderId) {
-          if (checkAmount) {
-            if (checkOrderStatus) {
-              if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-
-                //Here Code update PaymnentStatus = 1 into your Database
-              } else {
-
-                // Here Code update PaymnentStatus = 2 into your Database
-              }
-              return "{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}";
+      boolean checkOrderId = true; // vnp_TxnRef exists in your database
+      boolean checkAmount =
+          true; // vnp_Amount is valid (Check vnp_Amount VNPAY returns compared to the amount of the
+      // code (vnp_TxnRef) in the Your database).
+      boolean checkOrderStatus = true; // PaymnentStatus = 0 (pending)
+      if (checkOrderId) {
+        if (checkAmount) {
+          if (checkOrderStatus) {
+            String payString = request.getParameter("vnp_PayDate");
+            String paymentOrderCode = request.getParameter("vnp_TxnRef");
+            boolean success = true;
+            if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
+              // Here Code update PaymnentStatus = 1 into your Database
             } else {
-
-              return "{\"RspCode\":\"02\",\"Message\":\"Order already confirmed\"}";
+              success = false;
+              // Here Code update PaymnentStatus = 2 into your Database
             }
+            this.orderService.updatePostPaymentOrder(payString, paymentOrderCode, success);
+            return "{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}";
           } else {
-            return "{\"RspCode\":\"04\",\"Message\":\"Invalid Amount\"}";
+            return "{\"RspCode\":\"02\",\"Message\":\"Order already confirmed\"}";
           }
         } else {
-          return "{\"RspCode\":\"01\",\"Message\":\"Order not Found\"}";
+          return "{\"RspCode\":\"04\",\"Message\":\"Invalid Amount\"}";
         }
-//      } else {
-//        return "{\"RspCode\":\"97\",\"Message\":\"Invalid Checksum\"}";
-//      }
-    } catch (
-        Exception e) {
+      } else {
+        return "{\"RspCode\":\"01\",\"Message\":\"Order not Found\"}";
+      }
+      //      } else {
+      //        return "{\"RspCode\":\"97\",\"Message\":\"Invalid Checksum\"}";
+      //      }
+    } catch (Exception e) {
       return "{\"RspCode\":\"99\",\"Message\":\"Unknow error\"}";
     }
-
   }
 
   @GetMapping("/vnpay-refund")
-  public void getVNPayRefund(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-    //vnp_Command = refund
+  public void getVNPayRefund(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    // vnp_Command = refund
     String vnp_TxnRef = req.getParameter("vnp_TxnRef");
     String vnp_TransDate = req.getParameter("vnp_PayDate");
     String email = req.getParameter("vnp_Bill_Email");
@@ -160,7 +165,7 @@ public class PaymentController {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
     String vnp_CreateDate = formatter.format(cld.getTime());
     vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-    //Build data to hash and querystring
+    // Build data to hash and querystring
     List fieldNames = new ArrayList(vnp_Params.keySet());
     Collections.sort(fieldNames);
     StringBuilder hashData = new StringBuilder();
@@ -170,11 +175,11 @@ public class PaymentController {
       String fieldName = (String) itr.next();
       String fieldValue = (String) vnp_Params.get(fieldName);
       if ((fieldValue != null) && (fieldValue.length() > 0)) {
-        //Build hash data
+        // Build hash data
         hashData.append(fieldName);
         hashData.append('=');
         hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-        //Build query
+        // Build query
         query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
         query.append('=');
         query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
@@ -192,8 +197,7 @@ public class PaymentController {
     URL url = new URL(paymentUrl);
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
-    BufferedReader in = new BufferedReader(
-        new InputStreamReader(connection.getInputStream()));
+    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
     String inputLine;
     StringBuilder response = new StringBuilder();
     while ((inputLine = in.readLine()) != null) {
@@ -211,13 +215,12 @@ public class PaymentController {
 
   @PostMapping("/vnpay/create-payment-url")
   public ResponseObject<?> getPaymentUrlVNPay(
-      @RequestBody @Valid VNPayCreationDTO vnPayCreationDTO,
-      HttpServletRequest req
-  )
+      @RequestBody @Valid VNPayCreationDTO vnPayCreationDTO, HttpServletRequest req)
       throws IOException {
     String ipAddress = Config.getIpAddress(req);
-    return new ResponseObject<>(HttpStatus.OK,
-                                "Get url vnpay sucess",
-                                this.vnPayService.getPaymentUrlVNPay(ipAddress, vnPayCreationDTO));
+    return new ResponseObject<>(
+        HttpStatus.OK,
+        "Get url vnpay sucess",
+        this.vnPayService.getPaymentUrlVNPay(ipAddress, vnPayCreationDTO));
   }
 }

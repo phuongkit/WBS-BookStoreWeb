@@ -30,4 +30,8 @@ public class ProductGalleryDTO {
   private long totalVote;
   private String categoryName;
   private String categorySlug;
+  private Integer weight;
+  private Double packagingLength;
+  private Double packagingWidth;
+  private Double packagingHeight;
 }

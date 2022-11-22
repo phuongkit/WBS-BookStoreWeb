@@ -1,22 +1,48 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import validate from 'jquery-validation';
 import './Home.scss';
-import { ProductBlock} from '@Components/ProductBlock';
+import { ProductBlock } from '@Components/ProductBlock';
 import { EHomeOption } from '~/utils';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { vnpay } from '../../services/payment';
 
 var jQueryBridget = require('jquery-bridget');
-var Isotope = require('isotope-layout'); 
-var $ = require( "jquery" );
-jQueryBridget( 'isotope', Isotope, $ );
+var Isotope = require('isotope-layout');
+var $ = require('jquery');
+jQueryBridget('isotope', Isotope, $);
 
 function Home({ title }) {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+    useEffect(() => {
+        const clearParam = async () => {
+            if (searchParams && searchParams.get('vnp_ResponseCode')) {
+                const params = [];
+
+                for (let entry of searchParams.entries()) {
+                    params.push(entry);
+                }
+                const param = params.map(([key, value]) => ({ key, value }));
+                let status = param.find(({ key, value }) => key === 'vnp_ResponseCode');
+                if (status?.value === '00') {
+                    alert('Giao dịch thành công');
+                } else {
+                    alert('Giao dịch thất bại');
+                }
+                console.log(param);
+                await vnpay.getReturnVNPay(param);
+                navigate('/');
+            }
+        };
+        clearParam();
+    }, []);
     //hieu ung header va nut backtotop
-    $('#backtotop').on("click", function () {
+    $('#backtotop').on('click', function () {
         $('html, body').animate({ scrollTop: 0 }, 400);
     });
 
-    $(window).on("scroll", function () {
+    $(window).on('scroll', function () {
         if ($('body,html').scrollTop() > 150) {
             $('.navbar').addClass('fixed-top');
         } else {
@@ -24,7 +50,7 @@ function Home({ title }) {
         }
     });
 
-    $(window).on("scroll", function () {
+    $(window).on('scroll', function () {
         if ($('body,html').scrollTop() > 500) {
             $('.nutcuonlen').addClass('hienthi');
         } else {
@@ -33,12 +59,12 @@ function Home({ title }) {
     });
 
     //btn-spin
-    $('.btn-inc').on("click", function (e) {
+    $('.btn-inc').on('click', function (e) {
         var strval = $(this).parent().prev().val();
         var val = parseInt(strval) + 1;
         $(this).parent().prev().attr('value', val);
     });
-    $('.btn-dec').on("click", function (e) {
+    $('.btn-dec').on('click', function (e) {
         var strval = $(this).parent().next().val();
         var val = parseInt(strval) - 1;
         if (val < 1) {
@@ -50,11 +76,9 @@ function Home({ title }) {
 
     // gui danh gia
     $('.formdanhgia').hide(200);
-    $('.vietdanhgia').on("click", function (e) {
+    $('.vietdanhgia').on('click', function (e) {
         $('.formdanhgia').toggle(200);
     });
-
-    
 
     $('#form-signin').validate({
         rules: {
@@ -210,7 +234,7 @@ function Home({ title }) {
         }
     }
 
-    $('.btn-checkout').on("click", function (e) {
+    $('.btn-checkout').on('click', function (e) {
         localStorage.clear();
         location.reload(true);
         alert('cảm ơn đã mua hàng');
@@ -220,7 +244,7 @@ function Home({ title }) {
         itemSelector: '.item',
     });
 
-    $('.tag a').on("click", function (e) {
+    $('.tag a').on('click', function (e) {
         var tacgia = $(this).data('tacgia');
 
         if (tacgia == 'all') {
@@ -232,17 +256,17 @@ function Home({ title }) {
     });
 
     $('.thay-doi-mk').hide();
-    $('#changepass').on("click", function (e) {
+    $('#changepass').on('click', function (e) {
         $('.thay-doi-mk').toggle(200);
     });
 
     return (
         <>
-            <ProductBlock homeOption={EHomeOption.NEW}/>
+            <ProductBlock homeOption={EHomeOption.NEW} />
             {/* <!-- khoi sach combo hot  --> */}
-            <ProductBlock homeOption={EHomeOption.SALE}/>
+            <ProductBlock homeOption={EHomeOption.SALE} />
             {/* <!-- khoi sach sap phathanh  --> */}
-            <ProductBlock homeOption={EHomeOption.POPULAR}/>
+            <ProductBlock homeOption={EHomeOption.POPULAR} />
             {/* <!-- div _1khoi -- khoi sachnendoc --> */}
             {/* <section className="_1khoi sachnendoc bg-white mt-4">
                 <div className="container">

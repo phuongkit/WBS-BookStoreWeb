@@ -222,6 +222,23 @@ export const PAGE = {
     RIGHT: 1,
 };
 
+export const GHN_CONFIG = {
+    token: '1a54568c-4713-11ed-8a70-52fa25d1292f',
+    shopId: '3330973',
+    thuduc: 3695,
+    truongtho: 90746,
+    weight: 250,
+    length: 20,
+    width: 15,
+    height: 0.5,
+    totalWeight: 30000,
+    totalLength: 150,
+    totalWidth: 150,
+    totalHeight: 150,
+    toName: 'Thái Phương',
+    maxInsuranceValue: 5000000,
+};
+
 export const MESSAGE = {
     PRODUCT_NO_INFO: 'Sản phẩm chưa có thông tin',
     LOGIN_USER_NAME_NOT_MATCH: 'Số điện thoại hoặc email không đúng',
