@@ -41,7 +41,7 @@
 .alertsuccess-new {
     display: block;
     overflow: hidden;
-    background-color: #f0fff7;
+    background-color: 'blue';
     text-align: center;
     padding: 10px 0;
 }
@@ -137,7 +137,13 @@
     margin-bottom: -10px;
 }
 
-
+.btn-checkout, .btn-shopping-without-signup {
+    padding: 12px;
+    letter-spacing: 0.08rem;
+    font-size: 80%;
+    font-weight: bold;
+    transition: all 0.2s;
+}
 
 
 .confirm-payment-button {

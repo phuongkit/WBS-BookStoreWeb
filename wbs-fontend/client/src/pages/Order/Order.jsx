@@ -115,10 +115,10 @@ function Order({ title }) {
     }, [order]);
     return (
         <>
-            {hasOrder ? (
+            {hasOrder ? (<>
                 <div className="order">
                     <div className="alertsuccess-new">
-                        <i className="new-cartnew-success"></i>
+                        {/* <i className="new-cartnew-success"></i> */}
                         <strong>Đặt hàng thành công</strong>
                     </div>
                     <div className="ordercontent">
@@ -134,15 +134,15 @@ function Order({ title }) {
                                     <h6>
                                         Đơn hàng: <span className="text-blue-400 font-bold">#{info.id}</span>
                                     </h6>
-                                    <div className="header-right">
-                                        <Link to="/account">Quản lý đơn hàng</Link>
+                                    <div className="header-right" >
+                                        <Link to="/account" style={{color: 'rgb(245, 166, 35)'}}>Quản lý đơn hàng</Link>
                                         <div className="cancel-order-new">
                                             <div>
                                                 <div className="cancel-order-new">
                                                     <span>.</span>
                                                     <label
                                                         onClick={handleCancel}
-                                                        style={{ color: 'blue', cursor: 'pointer', padding: '0 0' }}
+                                                        style={{ color: 'rgb(245, 166, 35)', cursor: 'pointer', padding: '0 0' }}
                                                     >
                                                         Hủy
                                                     </label>
@@ -171,8 +171,7 @@ function Order({ title }) {
                                         <span>
                                             <strong>Giao đến: </strong>
                                             {customer.address?.homeAdd}, {customer.address?.ward},
-                                            {customer.address?.district}, Thành phố {customer.address?.city} (nhân viên
-                                            sẽ gọi xác nhận trước khi giao).
+                                            {customer.address?.district}, Thành phố {customer.address?.city}.
                                         </span>
                                     </span>
                                 </label>
@@ -181,7 +180,7 @@ function Order({ title }) {
                                         <i className="info-order__dot-icon"></i>
                                         <span>
                                             <strong>
-                                                Phí giao hàng: {numberWithCommas(Number(info.transportFee || ship.transportFee)) || 0}{' '}
+                                                Phí giao hàng: {numberWithCommas(Number(info.transportFee || ship.transportFee)) || 0}{' đ'}
                                             </strong>
                                         </span>
                                         <span>
@@ -196,7 +195,7 @@ function Order({ title }) {
                                         <i className="info-order__dot-icon"></i>
                                         <span>
                                             <strong>
-                                                Tổng tiền: {numberWithCommas(Number(info.totalPrice + (ship.transportFee.transportFee || 0))) || 0}{' '}
+                                                Tổng tiền: {numberWithCommas(Number(info.totalPrice + (ship.transportFee.transportFee || 0))) || 0}{' đ'}
                                             </strong>
                                         </span>
                                     </span>
@@ -309,11 +308,11 @@ function Order({ title }) {
                             </li> */}
                                 </ul>
 
-                                <button onClick={handleConfirm} className="confirm-payment-button">
+                                <button onClick={handleConfirm} className="confirm-payment-button" style={{backgroundColor: 'rgb(245, 166, 35)'}}>
                                     Xác nhận
                                 </button>
                             </div>
-                            <div className="refund-popup">
+                            {/* <div className="refund-popup">
                                 <a href="">Xem chính sách hoàn tiền online</a>
                             </div>
                             <hr />
@@ -338,11 +337,11 @@ function Order({ title }) {
                                         </button>
                                     </div>
                                 </div>
-                            </span>
+                            </span> */}
                         </div>
                     </div>
                 </div>
-            ) : (
+            </>) : (
                 <Navigate to="/cart" />
             )}
         </>
