@@ -47,7 +47,7 @@ const Datatable = () => {
                 status: resDetails?.data?.data.status,
                 shipOrderCode: data?.order_code,
                 expectedDeliveryTime: data?.expected_delivery_time,
-                totalFee: data?.total_fee,
+                transportFee: data?.total_fee,
             };
             updateStatusOrderApi(dispatch, order.id, dataResponse);
             alert('Xác nhận đơn hàng thành công');
@@ -67,12 +67,12 @@ const Datatable = () => {
                 };
                 if (order?.shipOrderCode) {
                     let res = await ghn.cancelOrderGHN(order.shipOrderCode);
-                    if (res.data?.data?.result) {
+                    // if (res.data?.data?.result) {
                         updateStatusOrderApi(dispatch, order.id, data);
                         alert('Hủy đơn hàng thành công!');
-                    } else {
-                        alert(MESSAGE.ERROR_ACTION);
-                    }
+                    // } else {
+                    //     alert(MESSAGE.ERROR_ACTION);
+                    // }
                 } else {
                     updateStatusOrderApi(dispatch, order.id, data);
                     alert('Hủy đơn hàng thành công!');

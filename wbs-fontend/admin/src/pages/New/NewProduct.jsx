@@ -23,13 +23,23 @@ const New = ({ title, action, isUpdate }) => {
         getAllCategoriesApi(dispatch);
         getAllProductApi(dispatch);
     }, []);
-    const categoriesList = useSelector((state) => state.categories?.allCategory?.data);
+    const categoriesList = useSelector((state) => state.categories?.allCategory?.data) || [];
+    const authorList = useSelector((state) => state.authors.allAuthor.data) || [];
+    const genreList = useSelector((state) => state.genres.allGenre.data) || [];
+    const publisherList = useSelector((state) => state.publishers.allPublisher.data) || [];
+    const supplierList = useSelector((state) => state.suppliers.allSupplier.data) || [];
+    const translatorList = useSelector((state) => state.translators.allTranslator.data) || [];
     const productList = useSelector((state) => state.products?.pageProducts?.data) || [];
     const [file, setFile] = useState();
     const [files, setFiles] = useState();
     const [name, setName] = useState();
     const [price, setPrice] = useState('0');
     const [category_id, setCategory] = useState('1');
+    const [author_id, setAuthor] = useState('1');
+    const [genre_id, setGenres] = useState(null);
+    const [publisher_id, setPublisher] = useState('1');
+    const [supplier_id, setSupplier] = useState('1');
+    const [translator_id, setTranslator] = useState(null);
     const [amount, setAmount] = useState('0');
     const [description, setDescription] = useState();
     const [status, setStatus] = useState('');
@@ -212,32 +222,115 @@ const New = ({ title, action, isUpdate }) => {
                                 />
                             </div>
 
-                            {/* <div className="formInput">
-                <label>Brand</label>
-                <input
-                  type="text"
-                  onChange={(e) => setBrand(e.target.value)}
-                />
-              </div> */}
+                            <div className="formInput">
+                                <label>Category</label>
 
-                            <select
-                                className="table-group-action-input form-control"
-                                onChange={(e) => {
-                                    setCategory(e.target.value);
-                                }}
-                            >
-                                {categoriesList && categoriesList?.map((item, index) => (
-                                    <option
-                                        key={index}
-                                        value={item.id}
-                                        selected={isUpdate && product && item.name === product.categoryName}
-                                        onSelect={() => setCategory(item.id)}
-                                    >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-{/* 
+                                <select
+                                    className="table-group-action-input form-control"
+                                    onChange={(e) => {
+                                        setCategory(e.target.value);
+                                    }}
+                                >
+                                    {categoriesList &&
+                                        categoriesList?.map((item, index) => (
+                                            <option
+                                                key={index}
+                                                value={item.id}
+                                                selected={isUpdate && product && item.name === product.categoryName}
+                                                onSelect={() => setCategory(item.id)}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <div className="formInput">
+                                <label>Author</label>
+                                <select
+                                    className="table-group-action-input form-control"
+                                    onChange={(e) => {
+                                        setAuthor(e.target.value);
+                                    }}
+                                >
+                                    {authorList &&
+                                        authorList?.map((item, index) => (
+                                            <option
+                                                key={index}
+                                                value={item.id}
+                                                selected={isUpdate && product && product.authors.contain(item.fullName)}
+                                                onSelect={() => setAuthor(item.id)}
+                                            >
+                                                {item.fullName}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <div className="formInput">
+                                <label>Publisher</label>
+
+                                <select
+                                    className="table-group-action-input form-control"
+                                    onChange={(e) => {
+                                        setPublisher(e.target.value);
+                                    }}
+                                >
+                                    {publisherList &&
+                                        publisherList?.map((item, index) => (
+                                            <option
+                                                key={index}
+                                                value={item.id}
+                                                selected={isUpdate && product && item.name === product.categoryName}
+                                                onSelect={() => setPublisher(item.id)}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <div className="formInput">
+                                <label>Supplier</label>
+
+                                <select
+                                    className="table-group-action-input form-control"
+                                    onChange={(e) => {
+                                        setSupplier(e.target.value);
+                                    }}
+                                >
+                                    {supplierList &&
+                                        supplierList?.map((item, index) => (
+                                            <option
+                                                key={index}
+                                                value={item.id}
+                                                selected={isUpdate && product && item.name === product.categoryName}
+                                                onSelect={() => setSupplier(item.id)}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            <div className="formInput">
+                                <label>Translator</label>
+                                <select
+                                    className="table-group-action-input form-control"
+                                    onChange={(e) => {
+                                        setTranslator(e.target.value);
+                                    }}
+                                >
+                                    {translatorList &&
+                                        translatorList?.map((item, index) => (
+                                            <option
+                                                key={index}
+                                                value={item.id}
+                                                selected={isUpdate && product && product.translators.contain(item.fullName)}
+                                                onSelect={() => setTranslator(item.id)}
+                                            >
+                                                {item.fullName}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            {/* 
                             <select
                                 className="table-group-action-input form-control"
                                 onChange={(e) => setBrand(e.target.value)}

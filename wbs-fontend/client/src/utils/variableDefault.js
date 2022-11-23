@@ -237,6 +237,9 @@ export const GHN_CONFIG = {
     totalHeight: 150,
     toName: 'Thái Phương',
     maxInsuranceValue: 5000000,
+    provinceId: 202, // HCM
+    districtId: 3695, // Thu Duc
+    wardCode: '90476', // Truong Tho
 };
 
 export const MESSAGE = {

@@ -15,6 +15,14 @@
     color: gray;
 }
 
+.deleteButton {
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: crimson;
+    border: 1px dotted rgba(220, 20, 60, 0.6);
+    cursor: pointer;
+  }
+
 .button-capnhat {
     background: linear-gradient(#f8c168, #ffa142);
     color: white;

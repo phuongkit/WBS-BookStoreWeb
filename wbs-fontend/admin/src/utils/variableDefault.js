@@ -231,12 +231,12 @@ export const GHN_CONFIG = {
     length: 20,
     width: 15,
     height: 0.5,
-    totalWeight: 30000,
-    totalLength: 150,
-    totalWidth: 150,
-    totalHeight: 150,
+    totalWeight: 999,
+    totalLength: 100,
+    totalWidth: 100,
+    totalHeight: 100,
     toName: 'Thái Phương',
-    maxInsuranceValue: 5000000,
+    maxInsuranceValue: 4900000,
 };
 
 export const MESSAGE = {

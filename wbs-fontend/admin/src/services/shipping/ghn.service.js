@@ -1,9 +1,10 @@
-import { toFullAddress } from '../../utils/utils';
+import { toAddressSlug, toFullAddress } from '../../utils/utils';
 import { GHN_CONFIG } from '../../utils/variableDefault';
 import axiosGHN from './axios.config';
 
 export const ghn = {
-    getPreviewOrderGHN(order) {
+    async getPreviewOrderGHN (order) {
+        this.getAddressGHN(order?.address);
         let items = order?.orderItems.map((item) => {
             return {
                 name: item.product?.name,
@@ -56,6 +57,7 @@ export const ghn = {
             // pick_shift: [2],
             items: items,
         };
+        console.log('data', data);
         return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', data);
     },
     createOrderGHN(order) {
@@ -111,6 +113,7 @@ export const ghn = {
             // pick_shift: [2],
             items: items,
         };
+        console.log('data', data);
         return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', data);
     },
     cancelOrderGHN(orderCode) {
@@ -118,5 +121,24 @@ export const ghn = {
     },
     getOrderDetailGHN(orderCode) {
         return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
+    },
+    getAddressGHN (address) {
+        console.log('address', address);
+        address = toAddressSlug(address);
+        let res = getProvinceList();
+        console.log('res: ', res);
+        let provinceList = res?.data.data;
+        let provinceId = 202;
+        for (let province in provinceList) {
+            if(province?.ProvinceName.contain(address?.city)) {
+                provinceId = province?.ProvinceID;
+            }
+        }
+        console.log(provinceId);
+        return null;
     }
 };
+
+export const getProvinceList = async () => {
+    return await axiosGHN.get('https://online-gateway.ghn.vn/shiip/public-api/master-data/province');
+}

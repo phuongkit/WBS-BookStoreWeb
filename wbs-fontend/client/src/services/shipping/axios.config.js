@@ -7,6 +7,7 @@ const axiosGHN = axios.create({
         'Token': GHN_CONFIG.token,
         'shopId': GHN_CONFIG.shopId,
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
     },
 });
 

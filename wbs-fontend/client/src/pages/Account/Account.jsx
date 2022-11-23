@@ -11,6 +11,7 @@ import Select from 'react-select';
 import { ENUM, EOrderStatus } from '../../utils/variableDefault';
 import { getAllOrdersByUserId } from '../../redux/order/ordersApi';
 import Paging from '../../components/Paging';
+import { updateStatusOrderApi } from '../../redux/order/ordersApi';
 
 var $ = require('jquery');
 
@@ -42,6 +43,35 @@ function Account() {
             getAllOrdersByUserId(dispatch, user.id);
         }
     }, []);
+
+    const handleCancel = async (order) => {
+        let result = confirm('Bạn có muốn hủy đơn này không');
+        if (result) {
+            // let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
+            // if (reason !== null) {
+                let data = {
+                    status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
+                    log: '',
+                    shipOrderCode: null,
+                    expectedDeliveryTime: null,
+                };
+                console.log(order);
+                if (order?.shipOrderCode) {
+                    let res = await ghn.cancelOrderGHN(order.shipOrderCode);
+                    // if (res.data?.data?.result) {
+                        updateStatusOrderApi(dispatch, order.id, data);
+                        alert('Hủy đơn hàng thành công!');
+                    // } else {
+                    //     alert(MESSAGE.ERROR_ACTION);
+                    // }
+                } else {
+                    updateStatusOrderApi(dispatch, order.id, data);
+                    alert('Hủy đơn hàng thành công!');
+                }
+            // }
+        }
+    };
+
     return (
         <>
             {/* <!-- nội dung của trang  --> */}
@@ -169,7 +199,7 @@ function Account() {
                                                     placeholder="Giới tính"
                                                     defaultValue={{
                                                         value: user?.gender || ENUM.EGender.UNKNOWN.index,
-                                                        label:  ENUM.EGender.getNameFromIndex(user?.gender),
+                                                        label: ENUM.EGender.getNameFromIndex(user?.gender),
                                                     }}
                                                     className="tw-min-w-[33.333333%]"
                                                     required
@@ -270,6 +300,7 @@ function Account() {
                                                 <th>Trạng thái đơn hàng</th>
                                                 <th>Phương thức thanh toán</th>
                                                 <th>Phương thức vận chuyển</th>
+                                                <th>Hành động</th>
                                             </tr>
                                             <tbody>
                                                 {orders &&
@@ -284,12 +315,20 @@ function Account() {
                                                                         .toString()}
                                                             </td>
                                                             <td>{getPrice(order.totalPrice)} đ</td>
-                                                            <td>{EOrderStatus.getNameFromIndex(order.status)}</td>
+                                                            <td>{order.status}</td>
                                                             <td>{ENUM.EPayment.getNameFromIndex(order.payment)}</td>
                                                             <td>
                                                                 {ENUM.EShippingMethod.getNameFromIndex(
                                                                     order.shippingMethod,
                                                                 )}
+                                                            </td>
+                                                            <td>
+                                                                <div
+                                                                    className="deleteButton"
+                                                                    onClick={() => handleCancel(order)}
+                                                                >
+                                                                    Cancel
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     ))}

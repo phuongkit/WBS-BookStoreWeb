@@ -5,7 +5,7 @@ export const orders = createSlice({
     name: 'orders',
     initialState: {
         pageOrder: {
-            data: [],
+            data: {},
         },
         order: {
             //data: [],
@@ -21,11 +21,16 @@ export const orders = createSlice({
             const orderData = JSON.stringify(action.payload);
             localStorage.setItem('order', orderData);
         },
+        updateOrder: (state, action) => {
+            state.pageOrder.data = {...state.pageOrder.data, content: Array.from(state.pageOrder?.data?.content || []).map(
+                (item) => (item.id === action.payload?.id ? action.payload : item)
+              )};
+        },
         deleteOrder: (state, action) => {
             state.order.data = null;
             localStorage.removeItem("order");
         }
     },
 });
-export const { getPageOrder, postOrder, deleteOrder } = orders.actions;
+export const { getPageOrder, postOrder, updateOrder, deleteOrder } = orders.actions;
 export default orders.reducer;

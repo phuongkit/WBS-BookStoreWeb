@@ -15,9 +15,9 @@ export const postLogin = async (dispatch, data, navigate) => {
             delete res?.data?.tokenToken;
             localStorage.setItem('user', JSON.stringify(res.data));
             if (res.data.role === 0) {
-                navigate('/Admin');
-            } else {
                 navigate('/');
+            } else {
+                navigate('/login');
             }
             dispatch(login(res.data));
         } else {

@@ -6,8 +6,11 @@ img.card-img-top.anh {
     position: relative;
     top: 15px;
     transition: 0.3s;
+    /*
     max-width: 235px;
-    max-height: 235px;
+    max-height: 235px;*/
+    max-height: 178px;
+    max-width: 178px;
     object-fit: contain;
 }
 

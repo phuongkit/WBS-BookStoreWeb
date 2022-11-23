@@ -43,13 +43,13 @@ function Category() {
             </section>
 
             {/* <!-- ảnh banner  --> */}
-            <section className="banner">
+            {/* <section className="banner">
                 <div className="container">
                     <a href="sach-moi-tuyen-chon.html">
                         <img src="images/banner-sach-ktkn.jpg" alt="banner-sach-ktkn" className="img-fluid" />
                     </a>
                 </div>
-            </section>
+            </section> */}
 
             {/* <!-- thể loại sách: kinh tế chính trị nhân vật bài học kinh doanh ( từng ô vuông) --> */}
             <section className="page-content my-3">
@@ -57,7 +57,7 @@ function Category() {
                     <div>
                         <h1 className="header text-uppercase">{category?.name}</h1>
                     </div>
-                    <div className="the-loai-sach">
+                    {/* <div className="the-loai-sach">
                         <ul className="list-unstyled d-flex">
                             <li>
                                 <a href="#" className="danh-muc text-decoration-none">
@@ -146,7 +146,7 @@ function Category() {
                                 </a>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 

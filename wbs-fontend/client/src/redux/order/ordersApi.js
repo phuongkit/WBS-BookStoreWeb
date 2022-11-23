@@ -1,4 +1,4 @@
-import { getPageOrder, postOrder } from './orderSlice';
+import { getPageOrder, postOrder, updateOrder } from './orderSlice';
 import { orderService } from '../../services';
 import { MESSAGE } from '../../utils';
 
@@ -32,6 +32,11 @@ export const updateOrders = async (dispatch, data, id) => {
 export const updatePaymentOrders = async (dispatch, data, id) => {
     let res = await orderService.updatePaymentOrder(data, id);
     dispatch(postOrder(res?.data));
+};
+
+export const updateStatusOrderApi = async (dispatch, id, data) => {
+    let res = await orderService.updateStatus(id, data);
+    dispatch(updateOrder(res?.data));
 };
 
 export const deleteOrdersByIdApi = async (dispatch, id, navigate=null) => {

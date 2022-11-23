@@ -85,23 +85,9 @@ export const toSlug = (str) => {
 
 export const toLocationSlug = (str) => {
     if (str) {
-        const strReplaces = [
-            'tỉnh',
-            'thành phố',
-            'quần đảo',
-            'huyện đảo',
-            'đảo',
-            'huyện',
-            'thị trấn',
-            'quận',
-            'thị xã',
-            'xã',
-            'phường',
-        ];
         str = str.toLowerCase();
-        for (let strReplace in strReplaces) {
-            str = str.replace(strReplace, '');
-        }
+        str = str.replace(/(TP[.]|T[.]|thành phố|H[.]|quần đảo|huyện đảo|đảo|huyện|thị trấn|quận|P[.]|X[.]|thị xã|xã|phường)/gi, "");
+        str = str.replace(/\s/gi, " ").trim();
         return str;
     }
     return '';

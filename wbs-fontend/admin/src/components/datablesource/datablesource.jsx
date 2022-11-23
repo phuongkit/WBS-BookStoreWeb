@@ -236,7 +236,7 @@ export const oderColumns = [
     },
 
     {
-        field: 'totalPrice',
+        field: 'totalPriceProduct',
         headerName: 'total price product',
         width: 120,
         renderCell: (params) => {
@@ -254,7 +254,7 @@ export const oderColumns = [
     },
 
     {
-        field: 'totalFee',
+        field: 'totalPrice',
         headerName: 'totalPrice',
         width: 120,
         renderCell: (params) => {

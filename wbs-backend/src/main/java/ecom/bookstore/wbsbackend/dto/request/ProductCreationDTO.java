@@ -23,6 +23,10 @@ public class ProductCreationDTO {
   private BigDecimal listPrice;
   private Integer quantity;
   private EProductStatus status;
+  private Integer[] authors;
   private Integer categoryId;
+  private Integer publisherId;
+  private Integer supplierId;
+  private Integer[] translators;
   private String location;
 }

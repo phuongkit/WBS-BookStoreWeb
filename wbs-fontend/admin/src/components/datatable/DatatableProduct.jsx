@@ -6,6 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getAllProductApi, deleteProduct } from '../../redux/product/productsApi';
+import { getAllAuthorsApi } from "../../redux/author/authorsApi";
+import { getAllGenresApi } from "../../redux/genre/genresApi";
+import { getAllPublishersApi } from "../../redux/publisher/publishersApi";
+import { getAllSuppliersApi } from "../../redux/supplier/suppliersApi";
+import { getAllTranslatorsApi } from "../../redux/translator/tranlatorsApi";
 
 const Datatable = () => {
     const dispatch = useDispatch();
@@ -13,6 +18,12 @@ const Datatable = () => {
     const getUser = JSON.parse(localStorage.getItem('user'));
     useEffect(() => {
         getAllProductApi(dispatch, { limit: 9999 });
+        getAllAuthorsApi(dispatch);
+        getAllGenresApi(dispatch);
+        getAllPublishersApi(dispatch);
+        getAllSuppliersApi(dispatch);
+        getAllTranslatorsApi(dispatch);
+
     }, []);
     const productList = useSelector((state) => state.products?.pageProduct?.data);
     useEffect(() => {

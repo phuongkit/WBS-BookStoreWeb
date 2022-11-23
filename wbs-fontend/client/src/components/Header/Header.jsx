@@ -186,7 +186,7 @@ function Header() {
                                                     className="nav-link text-dark text-uppercase username"
                                                     href="/account"
                                                 >
-                                                    {getName(user?.username)}
+                                                    {getName(user?.lastName + " " + user?.firstName)}
                                                 </a>
                                                 {/* <a className="nav-link text-dark logout" href="#">
                                                     Thoát
