@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getAllOrders, getAllOrdersByShopApi, updateStatusOrderApi } from '../../redux/order/ordersApi';
-import { ENUM, MESSAGE } from '../../utils';
+import { ENUM, EOrderStatusGHN, MESSAGE } from '../../utils';
 import { ghn } from '../../services/shipping';
 import swal from 'sweetalert';
 
@@ -36,13 +36,9 @@ const Datatable = () => {
                 let data = res.data?.data;
 
                 let resDetails = await ghn.getOrderDetailGHN(data.order_code);
-                console.log('resDetails', resDetails);
-
-                // let resCancel = await ghn.cancelOrderGHN(data.order_code);
-                // console.log('resCancel', resCancel?.data?.data);
 
                 const dataResponse = {
-                    status: resDetails?.data?.data.status,
+                    status: EOrderStatusGHN.getIndexFromName(resDetails?.data?.data.status),
                     shipOrderCode: data?.order_code,
                     expectedDeliveryTime: data?.expected_delivery_time,
                     transportFee: data?.total_fee,

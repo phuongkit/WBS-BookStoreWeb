@@ -77,7 +77,7 @@ public class OrderMapperImpl implements OrderMapper {
           this.addressMapper.lineAndLocationToAddressResponseDTO(
               entity.getLine(), entity.getLocation()));
     }
-    responseDTO.setStatus(entity.getStatus());
+    responseDTO.setStatus(entity.getStatus().ordinal());
     responseDTO.setPayAt(entity.getPayAt());
     responseDTO.setNote(entity.getNote());
     if (isFull.length > 0 && isFull[0]) {

@@ -64,9 +64,8 @@ public class AuthController {
           this.authManager.authenticate(
               new UsernamePasswordAuthenticationToken(request.isOtp() ? request.getPhone() : request.getEmail(),
                                                       request.getPassword()));
+      String accessToken = this.jwtTokenUtil.generateAccessToken(authentication);
       User user = (User) authentication.getPrincipal();
-      String accessToken = this.jwtTokenUtil.generateAccessToken(user);
-//      AuthResponse response = new AuthResponse(user.getPhone(), accessToken);
       AuthResponse response = this.authMapper.userToAuthResponse(user, accessToken);
 
       return new ResponseObject<>(HttpStatus.OK, "Login Successfully", response);
@@ -87,9 +86,8 @@ public class AuthController {
           this.authManager.authenticate(
               new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
+      String accessToken = jwtTokenUtil.generateAccessToken(authentication);
       User user = (User) authentication.getPrincipal();
-      String accessToken = jwtTokenUtil.generateAccessToken(user);
-//      AuthResponse response = new AuthResponse(user.getPhone(), accessToken);
       AuthResponse response = this.authMapper.userToAuthResponse(user, accessToken);
 
       return new ResponseObject<>(HttpStatus.OK, "Register Successfully", response);

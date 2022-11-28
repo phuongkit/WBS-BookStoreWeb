@@ -4,7 +4,7 @@ import axiosGHN from './axios.config';
 
 export const ghn = {
     async getPreviewOrderGHN (order) {
-        this.getAddressGHN(order?.address);
+        let addressId = await this.getAddressGHN(order?.address);
         let items = order?.orderItems.map((item) => {
             return {
                 name: item.product?.name,
@@ -41,8 +41,8 @@ export const ghn = {
             to_name: order?.fullName || GHN_CONFIG.toName,
             to_phone: order?.phone,
             to_address: toFullAddress(order?.address),
-            to_ward_code: '20107',
-            to_district_id: 1442,
+            to_ward_code: addressId?.wardCode || GHN_CONFIG.wardCode,
+            to_district_id: addressId?.districtId || GHN_CONFIG.districtId,
             cod_amount: 0,
             content: 'ABCDEF',
             weight: (config.totalWeight < GHN_CONFIG.totalWeight ? config.totalWeight : GHN_CONFIG.totalWeight) || 1,
@@ -122,23 +122,60 @@ export const ghn = {
     getOrderDetailGHN(orderCode) {
         return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
     },
-    getAddressGHN (address) {
-        console.log('address', address);
+    async getAddressGHN(address) {
         address = toAddressSlug(address);
-        let res = getProvinceList();
-        console.log('res: ', res);
-        let provinceList = res?.data.data;
-        let provinceId = 202;
-        for (let province in provinceList) {
-            if(province?.ProvinceName.contain(address?.city)) {
-                provinceId = province?.ProvinceID;
+        let addressId = {
+            provinceId: GHN_CONFIG.provinceId, 
+            districtId: GHN_CONFIG.districtId, 
+            wardCode: GHN_CONFIG.wardCode,
+        };
+
+        let resProvince = await this.getProvinceList();
+        let provinceList = resProvince.data?.data || [];
+        for (let province of provinceList) {
+            if (province?.ProvinceName.toLowerCase().includes(address?.city)) {
+                addressId.provinceId = province?.ProvinceID;
+                break;
             }
         }
-        console.log(provinceId);
-        return null;
-    }
+        if (addressId.provinceId) {
+            let resDistrict = await this.getDistrictList(addressId.provinceId);
+            let districtList = resDistrict.data?.data || [];
+            for (let district of districtList) {
+                if (district?.DistrictName.toLowerCase().includes(address?.district)) {
+                    addressId.districtId = district?.DistrictID;
+                    break;
+                }
+            }
+            if (addressId?.districtId) {
+                let resWard = await this.getWardList(addressId.districtId);
+                let wardList = resWard.data?.data || [];
+                for (let ward of wardList) {
+                    if (ward?.WardName.toLowerCase().includes(address?.ward)) {
+                        addressId.wardCode = ward?.WardCode;
+                        break;
+                    }
+                }
+                return addressId;
+            }
+        }
+        return {
+            provinceId: GHN_CONFIG.provinceId, 
+            districtId: GHN_CONFIG.districtId, 
+            wardCode: GHN_CONFIG.wardCode,
+        };
+    },
+    getProvinceList() {
+        return axiosGHN.get('https://online-gateway.ghn.vn/shiip/public-api/master-data/province');
+    },
+    getDistrictList(provinceId) {
+        return axiosGHN.get(
+            `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceId}`,
+        );
+    },
+    getWardList(districtId) {
+        return axiosGHN.get(
+            `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
+        );
+    },
 };
-
-export const getProvinceList = async () => {
-    return await axiosGHN.get('https://online-gateway.ghn.vn/shiip/public-api/master-data/province');
-}

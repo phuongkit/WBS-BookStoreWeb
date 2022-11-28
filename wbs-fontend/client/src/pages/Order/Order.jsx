@@ -8,7 +8,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { customerService, orderService } from '~/services';
 import { momo, vnpay } from '../../services/payment';
 import { updatePaymentOrders } from '~/redux/order/ordersApi';
-import { ENUM } from '../../utils';
+import { EGender, EOrderStatus, EPayment } from '../../utils';
 import { deleteOrdersByIdApi } from '../../redux/order/ordersApi';
 import { ghn } from '../../services/shipping/ghn.service';
 
@@ -24,7 +24,7 @@ function Order({ title }) {
         navigate('/');
     }
     const hasOrder = Object.keys(order).length > 0 && order.constructor === Object;
-    let customer = { gender: ENUM.EGender.UNKNOWN.index, fullName: '', phone: '', address: {} };
+    let customer = { gender: EGender.UNKNOWN.index, fullName: '', phone: '', address: {} };
     let info = { totalPrice: 0, totalQuantity: 0, transportFee: 0 };
     if (hasOrder) {
         customer = { ...order };
@@ -45,12 +45,12 @@ function Order({ title }) {
             ...ship,
             status:
                 payment.payment > 0
-                    ? ENUM.EOrderStatus.ORDER_AWAITING_PAYMENT.name
-                    : ENUM.EOrderStatus.ORDER_PENDING.name,
+                    ? EOrderStatus.ORDER_AWAITING_PAYMENT.name
+                    : EOrderStatus.ORDER_PENDING.name,
         };
         updatePaymentOrders(dispatch, data, order.id);
         localStorage.removeItem('order');
-        if (payment.payment === ENUM.EPayment.MOMO.index) {
+        if (payment.payment === EPayment.MOMO.index) {
             const dataMomo = {
                 orderId: info.id,
                 orderInfo: `${customer.fullName} thanh toán đơn hàng ${info.id} với MoMo`,
@@ -61,7 +61,7 @@ function Order({ title }) {
             const res = await momo.createMomoPayment(dataMomo);
             localStorage.removeItem('order');
             window.location = res.data.payUrl;
-        } else if (payment.payment === ENUM.EPayment.VNPAY.index) {
+        } else if (payment.payment === EPayment.VNPAY.index) {
             console.log(window.location.origin);
             const dataVNPay = {
                 orderId: info.id,
@@ -89,7 +89,7 @@ function Order({ title }) {
         }
         return paymentIndex != -1
             ? { payment: Number.parseInt(radios[paymentIndex].value), paid: false }
-            : { payment: ENUM.EPayment.CASH.index, paid: false };
+            : { payment: EPayment.CASH.index, paid: false };
     };
     const handleCancel = async () => {
         deleteOrdersByIdApi(dispatch, order.id, navigate);
@@ -103,8 +103,6 @@ function Order({ title }) {
                 let res = await ghn.getPreviewOrderGHN(order);
                 console.log(res?.data?.data);
                 let date = new Date(Date.parse(res?.data?.data?.expected_delivery_time));
-                // console.log(date.toUTCString);
-                
                 setShip({
                     expectedDeliveryTime: date,
                     transportFee: res?.data?.data?.total_fee,
@@ -124,7 +122,7 @@ function Order({ title }) {
                     <div className="ordercontent">
                         <div>
                             <p>
-                                Cảm ơn {ENUM.EGender.getNameFromIndex(customer.gender)} <b>{customer.fullName}</b> đã
+                                Cảm ơn {EGender.getNameFromIndex(customer.gender)} <b>{customer.fullName}</b> đã
                                 cho Deadblock cơ hội được phục vụ.
                             </p>
                         </div>
@@ -157,7 +155,7 @@ function Order({ title }) {
                                         <span>
                                             <strong>Người nhận hàng:</strong>
                                             <h6 id="userName">
-                                                {ENUM.EGender.getNameFromIndex(customer.gender)} {customer.fullName}
+                                                {EGender.getNameFromIndex(customer.gender)} {customer.fullName}
                                             </h6>
                                             <br />
                                             <strong>Số điện thoại:</strong>
@@ -218,7 +216,7 @@ function Order({ title }) {
                                                     type="radio"
                                                     id="cash"
                                                     name="payment"
-                                                    value={ENUM.EPayment.CASH.index}
+                                                    value={EPayment.CASH.index}
                                                     defaultChecked
                                                 />
                                                 <label htmlFor="cash">Thanh toán tiền mặt khi nhận hàng</label>
@@ -233,7 +231,7 @@ function Order({ title }) {
                                                     type="radio"
                                                     id="momo"
                                                     name="payment"
-                                                    value={ENUM.EPayment.MOMO.index}
+                                                    value={EPayment.MOMO.index}
                                                 />
                                                 <label htmlFor="momo">Ví MoMo</label>
                                             </span>
@@ -247,7 +245,7 @@ function Order({ title }) {
                                                     type="radio"
                                                     id="vnpay"
                                                     name="payment"
-                                                    value={ENUM.EPayment.VNPAY.index}
+                                                    value={EPayment.VNPAY.index}
                                                 />
                                                 <label htmlFor="vnpay">Thanh toán qua VNPay</label>
                                             </span>
@@ -323,7 +321,7 @@ function Order({ title }) {
                             <span className="customer-rating">
                                 <div className="customer-rating__top">
                                     <div className="customer-rating__top__desc">
-                                        {ENUM.EGender.getNameFromIndex(customer.gender)}{' '}
+                                        {EGender.getNameFromIndex(customer.gender)}{' '}
                                         <strong>{customer.fullName}</strong> có hài lòng về trải nghiệm mua hàng?
                                     </div>
                                     <div className="customer-rating__top__rating-buttons">

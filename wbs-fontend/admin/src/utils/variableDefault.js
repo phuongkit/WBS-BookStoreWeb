@@ -1,6 +1,6 @@
 // const PRODUCT_NO_INFO = "Sản phẩm chưa có thông tin";
 
-const EGender = {
+export const EGender = {
     FEMALE: {
         name: 'Chị',
         index: 0,
@@ -89,7 +89,7 @@ export const EBookLayout = {
             ?.name || EBookLayout.PAPERBACK.name,
 };
 
-const EPayment = {
+export const EPayment = {
     CASH: {
         name: 'Thanh toán tiền mặt',
         index: 0,
@@ -107,7 +107,7 @@ const EPayment = {
         EPayment.CASH.name,
 };
 
-const EShippingMethod = {
+export const EShippingMethod = {
     GHN_EXPRESS: {
         name: 'Giao hàng nhanh',
         index: 0,
@@ -124,7 +124,7 @@ const EShippingMethod = {
         ]?.name || EShippingMethod.GHN_EXPRESS.name,
 };
 
-const EProductStatus = {
+export const EProductStatus = {
     PRODUCT_UN_TRADING: {
         name: 'Chưa kinh doanh',
         index: 0,
@@ -202,6 +202,116 @@ export const EOrderStatus = {
         name: '',
         index: 13,
     },
+    ORDER_ready_to_pick: {
+        name: 'Mới tạo đơn hàng',
+        en: 'ready_to_pick',
+        index: 14
+    },
+    ORDER_picking: {
+        name: 'Nhân nameên đang lấy hàng',
+        en: 'picking',
+        index: 15
+    },
+    ORDER_cancel: {
+        name: 'Hủy đơn hàng',
+        en: 'cancel',
+        index: 16
+    },
+    ORDER_money_collect_picking: {
+        name: 'Đang thu tiền người gửi',
+        en: 'money_collect_picking',
+        index: 17
+    },
+    ORDER_picked: {
+        name: 'Nhân nameên đã lấy hàng',
+        en: 'picked',
+        index: 18
+    },
+    ORDER_storing: {
+        name: 'Hàng đang nằm ở kho',
+        en: 'storing',
+        index: 19
+    },
+    ORDER_transporting: {
+        name: 'Đang luân chuyển hàng',
+        en: 'transporting',
+        index: 20
+    },
+    ORDER_sorting: {
+        name: 'Đang phân loại hàng hóa',
+        en: 'sorting',
+        index: 21
+    },
+    ORDER_delivering: {
+        name: 'Nhân nameên đang giao cho người nhận',
+        en: 'delivering',
+        index: 22
+    },
+    ORDER_money_collect_delivering: {
+        name: 'Nhân nameên đang thu tiền người nhận',
+        en: 'money_collect_delivering',
+        index: 23
+    },
+    ORDER_delivered: {
+        name: 'Nhân nameên đã giao hàng thành công',
+        en: 'delivered',
+        index: 24
+    },
+    ORDER_delivery_fail: {
+        name: 'Nhân nameên giao hàng thất bại',
+        en: 'delivery_fail',
+        index: 25
+    },
+    ORDER_waiting_to_return: {
+        name: 'Đang đợi trả hàng về cho người gửi',
+        en: 'waiting_to_return',
+        index: 26
+    },
+    ORDER_return: {
+        name: 'Trả hàng',
+        en: 'return',
+        index: 27
+    },
+    ORDER_return_transporting: {
+        name: 'Đang luân chuyển hàng trả',
+        en: 'return_transporting',
+        index: 28
+    },
+    ORDER_return_sorting: {
+        name: 'Đang phân loại hàng trả',
+        en: 'return_sorting',
+        index: 29
+    },
+    ORDER_returning: {
+        name: 'Nhân nameên đang đi trả hàng',
+        en: 'returning',
+        index: 30
+    },
+    ORDER_return_fail: {
+        name: 'Nhân nameên trả hàng thất bại',
+        en: 'return_fail',
+        index: 31
+    },
+    ORDER_returned: {
+        name: 'Nhân nameên trả hàng thành công',
+        en: 'returned',
+        index: 32
+    },
+    ORDER_exception: {
+        name: 'Đơn hàng ngoại lệ không nằm trong quy trình',
+        en: 'exception',
+        index: 33
+    },
+    ORDER_damage: {
+        name: 'Hàng bị hư hỏng',
+        en: 'damage',
+        index: 34
+    },
+    ORDER_lost: {
+        name: 'Hàng bị mất',
+        en: 'lost',
+        index: 35
+    },
     getNameFromIndex: (index) =>
         EOrderStatus[
             Object.keys(EOrderStatus)[
@@ -209,6 +319,121 @@ export const EOrderStatus = {
             ]
         ]?.name || EOrderStatus.ORDER_PENDING.name,
 };
+
+export const EOrderStatusGHN = {
+    ORDER_ready_to_pick: {
+        vi: 'Mới tạo đơn hàng',
+        en: 'ready_to_pick',
+        index: 14
+    },
+    ORDER_picking: {
+        vi: 'Nhân viên đang lấy hàng',
+        en: 'picking',
+        index: 15
+    },
+    ORDER_cancel: {
+        vi: 'Hủy đơn hàng',
+        en: 'cancel',
+        index: 16
+    },
+    ORDER_money_collect_picking: {
+        vi: 'Đang thu tiền người gửi',
+        en: 'money_collect_picking',
+        index: 17
+    },
+    ORDER_picked: {
+        vi: 'Nhân viên đã lấy hàng',
+        en: 'picked',
+        index: 18
+    },
+    ORDER_storing: {
+        vi: 'Hàng đang nằm ở kho',
+        en: 'storing',
+        index: 19
+    },
+    ORDER_transporting: {
+        vi: 'Đang luân chuyển hàng',
+        en: 'transporting',
+        index: 20
+    },
+    ORDER_sorting: {
+        vi: 'Đang phân loại hàng hóa',
+        en: 'sorting',
+        index: 21
+    },
+    ORDER_delivering: {
+        vi: 'Nhân viên đang giao cho người nhận',
+        en: 'delivering',
+        index: 22
+    },
+    ORDER_money_collect_delivering: {
+        vi: 'Nhân viên đang thu tiền người nhận',
+        en: 'money_collect_delivering',
+        index: 23
+    },
+    ORDER_delivered: {
+        vi: 'Nhân viên đã giao hàng thành công',
+        en: 'delivered',
+        index: 24
+    },
+    ORDER_delivery_fail: {
+        vi: 'Nhân viên giao hàng thất bại',
+        en: 'delivery_fail',
+        index: 25
+    },
+    ORDER_waiting_to_return: {
+        vi: 'Đang đợi trả hàng về cho người gửi',
+        en: 'waiting_to_return',
+        index: 26
+    },
+    ORDER_return: {
+        vi: 'Trả hàng',
+        en: 'return',
+        index: 27
+    },
+    ORDER_return_transporting: {
+        vi: 'Đang luân chuyển hàng trả',
+        en: 'return_transporting',
+        index: 28
+    },
+    ORDER_return_sorting: {
+        vi: 'Đang phân loại hàng trả',
+        en: 'return_sorting',
+        index: 29
+    },
+    ORDER_returning: {
+        vi: 'Nhân viên đang đi trả hàng',
+        en: 'returning',
+        index: 30
+    },
+    ORDER_return_fail: {
+        vi: 'Nhân viên trả hàng thất bại',
+        en: 'return_fail',
+        index: 31
+    },
+    ORDER_returned: {
+        vi: 'Nhân viên trả hàng thành công',
+        en: 'returned',
+        index: 32
+    },
+    ORDER_exception: {
+        vi: 'Đơn hàng ngoại lệ không nằm trong quy trình',
+        en: 'exception',
+        index: 33
+    },
+    ORDER_damage: {
+        vi: 'Hàng bị hư hỏng',
+        en: 'damage',
+        index: 34
+    },
+    ORDER_lost: {
+        vi: 'Hàng bị mất',
+        en: 'lost',
+        index: 35
+    },
+    getIndexFromName: (name) =>
+        Object.values(EOrderStatusGHN).find((item) => item.en === name)?.index || EOrderStatusGHN.ORDER_ready_to_pick.index,
+}
 
 export const REGEXP = {
     PHONE: new RegExp('^(0|84?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$'),
@@ -223,20 +448,23 @@ export const PAGE = {
 };
 
 export const GHN_CONFIG = {
-    token: '1a54568c-4713-11ed-8a70-52fa25d1292f',
-    shopId: '3330973',
+    token: '841e800e-6e2a-11ed-a83f-5a63c54f968d',
+    shopId: '120835',
     thuduc: 3695,
     truongtho: 90746,
     weight: 250,
     length: 20,
     width: 15,
     height: 0.5,
-    totalWeight: 999,
-    totalLength: 100,
-    totalWidth: 100,
-    totalHeight: 100,
+    totalWeight: 30000,
+    totalLength: 150,
+    totalWidth: 150,
+    totalHeight: 150,
     toName: 'Thái Phương',
-    maxInsuranceValue: 4900000,
+    maxInsuranceValue: 5000000,
+    provinceId: 202, // HCM
+    districtId: 3695, // Thu Duc
+    wardCode: '90476', // Truong Tho
 };
 
 export const MESSAGE = {

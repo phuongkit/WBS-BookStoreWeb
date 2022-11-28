@@ -9,7 +9,7 @@ import { updateItem, removeItem, clearCart } from '../../redux/shopping-cart/car
 import { postOrders } from '../../redux/order/ordersApi';
 import LocationForm from '../../components/LocationForm';
 import './Cart.scss';
-import { MESSAGE, ENUM } from '../../utils/variableDefault';
+import { MESSAGE, EGender, EPayment, EShippingMethod } from '../../utils/variableDefault';
 import validate from 'jquery-validation';
 import { getUserByToken } from '../../redux/user/userApi';
 import swal from 'sweetalert';
@@ -114,7 +114,7 @@ function Cart() {
         }
     }, [cartItems]);
     let orderDetail = {
-        gender: ENUM.EGender.UNKNOWN.index,
+        gender: EGender.UNKNOWN.index,
         fullName: '',
         email: '',
         phone: '',
@@ -124,13 +124,13 @@ function Cart() {
             district: '',
             city: '',
         },
-        payment: ENUM.EPayment.CASH.index,
-        shippingMethod: ENUM.EShippingMethod.GHN_EXPRESS.index,
+        payment: EPayment.CASH.index,
+        shippingMethod: EShippingMethod.GHN_EXPRESS.index,
         discountCode: '',
         paid: false,
         note: '',
         orderItems: [],
-        status: ENUM.EOrderStatus.ORDER_PENDING.name,
+        status: EOrderStatus.ORDER_PENDING.name,
     };
     let orderItem = {
         productId: 0,

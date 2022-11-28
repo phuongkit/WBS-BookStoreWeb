@@ -16,7 +16,6 @@ import java.util.Random;
 public class WbsBackendApplication implements CommandLineRunner {
 
   private final Logger LOGGER = LoggerFactory.getLogger(WbsBackendApplication.class);
-  private final Random generator = new Random();
 
   @Value("${spring.jpa.hibernate.ddl-auto}")
   private String hibernate_ddl;
@@ -28,12 +27,10 @@ public class WbsBackendApplication implements CommandLineRunner {
   }
 
   @Override
-  public void run(String... args) throws Exception {
+  public void run(String... args) {
     if (Objects.equals(hibernate_ddl, "create") || Objects.equals(hibernate_ddl, "create-drop")) {
       initData.init();
     }
-    //initData.init();
-
-
+//    initData.init();
   }
 }

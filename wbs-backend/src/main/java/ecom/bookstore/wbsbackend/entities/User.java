@@ -1,5 +1,6 @@
 package ecom.bookstore.wbsbackend.entities;
 
+import ecom.bookstore.wbsbackend.models.enums.AuthProvider;
 import ecom.bookstore.wbsbackend.models.enums.EGender;
 import ecom.bookstore.wbsbackend.utils.Utils;
 import lombok.*;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -28,7 +30,7 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_user")
-public class User implements UserDetails {
+public class User implements OAuth2User, UserDetails {
   private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
   /** */
   private static final long serialVersionUID = 1L;
@@ -43,7 +45,7 @@ public class User implements UserDetails {
 
   //  private boolean isChangedUsername;
 
-  @Column(name = "password", length = 64, nullable = false)
+  @Column(name = "password", length = 64)
   @NotNull(message = "An password is required!")
   private String password;
 
@@ -63,7 +65,7 @@ public class User implements UserDetails {
 
   @Column(name = "is_email_verified", nullable = false)
   @NotNull(message = "An isEmailVerified is required!")
-  private boolean isEmailVerified;
+  private boolean isEmailVerified = false;
 
   @Column(name = "phone", length = 13, unique = true)
   @Size(message = "Invalid phone size.", max = 13, min = 9)
@@ -73,7 +75,7 @@ public class User implements UserDetails {
 
   @Column(name = "is_phone_verified", nullable = false)
   @NotNull(message = "An isPhoneVerified is required!")
-  private boolean isPhoneVerified;
+  private boolean isPhoneVerified = false;
 
   @Column(name = "identity_card", length = 12, unique = true)
   @Size(message = "Invalid identityCard size.", max = 12, min = 9)
@@ -86,7 +88,7 @@ public class User implements UserDetails {
   @Enumerated(EnumType.STRING)
   @Column(name = "gender", length = 50, nullable = false)
   @NotNull(message = "An gender is required!")
-  private EGender gender;
+  private EGender gender = EGender.UNKNOWN;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Address> addresses = new HashSet<>();
@@ -101,7 +103,7 @@ public class User implements UserDetails {
 
   @Column(name = "enabled", nullable = false)
   @NotNull(message = "An enabled is required!")
-  private boolean enabled;
+  private boolean enabled = true;
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "avatar_id")
@@ -133,6 +135,15 @@ public class User implements UserDetails {
   //    return authories;
   //  }
 
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  private AuthProvider provider = AuthProvider.local;
+
+  private String providerId;
+
+  @Transient
+  private Map<String, Object> attributes;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> authories = new ArrayList<>();
@@ -158,5 +169,34 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return enabled;
+  }
+
+  public User(Integer id, String username, String email, String password, Role role) {
+    this.id = id;
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.role = role;
+  }
+
+  public static User create(User user) {
+
+    return new User(
+        user.getId(),
+        user.getUsername(),
+        user.getEmail(),
+        user.getPassword(),
+        user.getRole()
+    );
+  }
+
+  public static User create(User user, Map<String, Object> attributes) {
+    User userPrincipal = User.create(user);
+    userPrincipal.setAttributes(attributes);
+    return userPrincipal;
+  }
+
+  @Override public String getName() {
+    return String.valueOf(id);
   }
 }

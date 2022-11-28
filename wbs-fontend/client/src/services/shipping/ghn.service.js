@@ -3,7 +3,7 @@ import { GHN_CONFIG } from '../../utils/variableDefault';
 import axiosGHN from './axios.config';
 
 export const ghn = {
-    async getPreviewOrderGHN(order) {
+    async getPreviewOrderGHN (order) {
         let addressId = await this.getAddressGHN(order?.address);
         let items = order?.orderItems.map((item) => {
             return {
@@ -27,13 +27,13 @@ export const ghn = {
                     totalLength: acc.totalLength + item.length * item.quantity,
                     totalWidth: acc.totalWidth + item.width * item.quantity,
                     totalHeight: acc.totalHeight + item.height * item.quantity,
-                };
+                }
             },
             { totalWeight: 0, totalLength: 0, totalWidth: 0, totalHeight: 0 },
         );
-        items = items.map((item) => {
-            return { name: item.name, quantity: item.quantity };
-        });
+        items = items.map(item =>{
+            return {name: item.name, quantity: item.quantity}
+        })
         let data = {
             payment_type_id: 2,
             note: order?.note,
@@ -50,18 +50,17 @@ export const ghn = {
             width: (config.totalWidth < GHN_CONFIG.totalWidth ? config.totalWidth : GHN_CONFIG.totalWidth) || 1,
             height: (config.totalHeight < GHN_CONFIG.totalHeight ? config.totalHeight : GHN_CONFIG.totalHeight) || 1,
             pick_station_id: 0,
-            insurance_value:
-                order?.totalPrice < GHN_CONFIG.maxInsuranceValue ? order?.totalPrice : GHN_CONFIG.maxInsuranceValue,
+            insurance_value: order?.totalPrice < GHN_CONFIG.maxInsuranceValue ? order?.totalPrice : GHN_CONFIG.maxInsuranceValue,
             service_id: 0,
             service_type_id: 2,
             coupon: null,
             // pick_shift: [2],
             items: items,
         };
+        console.log('data', data);
         return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', data);
     },
-    async createOrderGHN(order) {
-        let addressId = await this.getAddressGHN(order?.address);
+    createOrderGHN(order) {
         let items = order?.orderItems.map((item) => {
             return {
                 name: item.product?.name,
@@ -84,13 +83,13 @@ export const ghn = {
                     totalLength: acc.totalLength + item.length * item.quantity,
                     totalWidth: acc.totalWidth + item.width * item.quantity,
                     totalHeight: acc.totalHeight + item.height * item.quantity,
-                };
+                }
             },
             { totalWeight: 0, totalLength: 0, totalWidth: 0, totalHeight: 0 },
         );
-        items = items.map((item) => {
-            return { name: item.name, quantity: item.quantity };
-        });
+        items = items.map(item =>{
+            return {name: item.name, quantity: item.quantity}
+        })
         let data = {
             payment_type_id: 2,
             note: order?.note,
@@ -98,8 +97,8 @@ export const ghn = {
             to_name: order?.fullName || GHN_CONFIG.toName,
             to_phone: order?.phone,
             to_address: toFullAddress(order?.address),
-            to_ward_code: addressId?.wardCode || GHN_CONFIG.wardCode,
-            to_district_id: addressId?.districtId || GHN_CONFIG.districtId,
+            to_ward_code: '20107',
+            to_district_id: 1442,
             cod_amount: 0,
             content: 'ABCDEF',
             weight: (config.totalWeight < GHN_CONFIG.totalWeight ? config.totalWeight : GHN_CONFIG.totalWeight) || 1,
@@ -107,29 +106,24 @@ export const ghn = {
             width: (config.totalWidth < GHN_CONFIG.totalWidth ? config.totalWidth : GHN_CONFIG.totalWidth) || 1,
             height: (config.totalHeight < GHN_CONFIG.totalHeight ? config.totalHeight : GHN_CONFIG.totalHeight) || 1,
             pick_station_id: 0,
-            insurance_value:
-                order?.totalPrice < GHN_CONFIG.maxInsuranceValue ? order?.totalPrice : GHN_CONFIG.maxInsuranceValue,
+            insurance_value: order?.totalPrice < GHN_CONFIG.maxInsuranceValue ? order?.totalPrice : GHN_CONFIG.maxInsuranceValue,
             service_id: 0,
             service_type_id: 2,
             coupon: null,
             // pick_shift: [2],
             items: items,
         };
+        console.log('data', data);
         return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', data);
     },
     cancelOrderGHN(orderCode) {
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel', {
-            order_codes: [orderCode],
-        });
+        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel', {order_codes: [orderCode]});
     },
     getOrderDetailGHN(orderCode) {
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {
-            order_code: orderCode,
-        });
+        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
     },
     async getAddressGHN(address) {
         address = toAddressSlug(address);
-        console.log('address', address);
         let addressId = {
             provinceId: GHN_CONFIG.provinceId, 
             districtId: GHN_CONFIG.districtId, 

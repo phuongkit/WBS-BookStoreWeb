@@ -236,17 +236,13 @@ public class OrderServiceImpl implements OrderService {
         newEntity.setDiscount(discountFound);
       }
     }
-    // set payAt
-    if (creationDTO.isPaid()) {
-      newEntity.setPayAt(new Date());
-    }
 
     // initial total price
     newEntity.setTotalPrice(new BigDecimal(0));
     // initial status
     newEntity.setStatus(
-        creationDTO.getStatus() == null || Objects.equals(creationDTO.getStatus().trim(), "")
-            ? EOrderStatus.ORDER_PENDING.toString()
+        creationDTO.getStatus() == null
+            ? EOrderStatus.ORDER_PENDING
             : creationDTO.getStatus());
     newEntity.setNote(creationDTO.getNote());
 
@@ -313,13 +309,9 @@ public class OrderServiceImpl implements OrderService {
                       : EPayment.CASH)
               .orElse(null);
       entityFound.setPayment(paymentFound);
-      if (updatePaymentDTO.isPaid()) {
-        entityFound.setPayAt(new Date());
-      }
       entityFound.setStatus(
           updatePaymentDTO.getStatus() == null
-                  || Objects.equals(updatePaymentDTO.getStatus().trim(), "")
-              ? EOrderStatus.ORDER_PENDING.toString()
+              ? EOrderStatus.ORDER_PENDING
               : updatePaymentDTO.getStatus());
       if (updatePaymentDTO.getExpectedDeliveryTime() != null) {
         entityFound.setExpectedDeliveryTime(updatePaymentDTO.getExpectedDeliveryTime());
@@ -391,7 +383,7 @@ public class OrderServiceImpl implements OrderService {
     System.out.println("txnRef1" + order.getPaymentOrderCode());
     if (success) {
       order.setPayAt(new Date(Long.parseLong(payString)));
-      order.setStatus(EOrderStatus.ORDER_PENDING.toString());
+      order.setStatus(EOrderStatus.ORDER_PENDING);
     }
     this.orderRepo.save(order);
   }

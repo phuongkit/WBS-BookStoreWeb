@@ -1,5 +1,5 @@
 import React from "react"
-import { ENUM, EOrderStatus } from '../../utils';
+import { EGender, EOrderStatus, EPayment, EShippingMethod } from '../../utils';
 
 export const authorColumns = [
     {
@@ -24,7 +24,7 @@ export const authorColumns = [
         width: 150,
         renderCell: (params) => {
             return (
-                <div className={`cellWithStatus `}>{ENUM.EGender.getNameFromIndex(params.row.gender)}</div>
+                <div className={`cellWithStatus `}>{EGender.getNameFromIndex(params.row.gender)}</div>
             );
         },
     },
@@ -169,7 +169,7 @@ export const translatorColumns = [
         width: 150,
         renderCell: (params) => {
             return (
-                <div className={`cellWithStatus `}>{ENUM.EGender.getNameFromIndex(params.row.gender)}</div>
+                <div className={`cellWithStatus `}>{EGender.getNameFromIndex(params.row.gender)}</div>
             );
         },
     },
@@ -210,7 +210,7 @@ export const oderColumns = [
         width: 150,
         renderCell: (params) => {
             return (
-                <div className={`cellWithStatus `}>{ENUM.EGender.getNameFromIndex(params.row.gender)}</div>
+                <div className={`cellWithStatus `}>{EGender.getNameFromIndex(params.row.gender)}</div>
             );
         },
     },
@@ -268,7 +268,7 @@ export const oderColumns = [
         width: 130,
         renderCell: (params) => {
             return (
-                <div className={`cellWithStatus`}>{ENUM.EPayment.getNameFromIndex(params.row.payment)}</div>
+                <div className={`cellWithStatus`}>{EPayment.getNameFromIndex(params.row.payment)}</div>
             );
         },
     },
@@ -278,7 +278,7 @@ export const oderColumns = [
       width: 130,
       renderCell: (params) => {
           return (
-              <div className={`cellWithStatus`}>{ENUM.EShippingMethod.getNameFromIndex(params.row.shippingMethod)}</div>
+              <div className={`cellWithStatus`}>{EShippingMethod.getNameFromIndex(params.row.shippingMethod)}</div>
           );
       },
   },
@@ -287,7 +287,7 @@ export const oderColumns = [
         headerName: 'Status',
         width: 160,
         renderCell: (params) => {
-            return <div className={`cellWithStatus`}>{params.row.status}</div>;
+            return <div className={`cellWithStatus`}>{EOrderStatus.getNameFromIndex(params.row.status)}</div>;
         },
     },
 ];
@@ -377,8 +377,8 @@ export const productColumns = [
         renderCell: (params) => {
             return (
                 <div className={`cellWithStatus`}>
-                    {ENUM.EProductStatus.getNameFromIndex(params.row?.status) ||
-                        ENUM.EProductStatus.PRODUCT_TRADING.name}
+                    {EProductStatus.getNameFromIndex(params.row?.status) ||
+                        EProductStatus.PRODUCT_TRADING.name}
                 </div>
             );
         },
@@ -453,7 +453,7 @@ export const userColumns = [
         headerName: 'gender',
         width: 120,
         renderCell: (params) => {
-            return <div className="cellWithImg">{ENUM.EGender.getNameFromIndex(params.row.gender)}</div>;
+            return <div className="cellWithImg">{EGender.getNameFromIndex(params.row.gender)}</div>;
         },
     },
     {

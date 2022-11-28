@@ -1,0 +1,118 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ecom-book-store?createDatabaseIfNotExist=true
+    username: root
+    password: 12345
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: true
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your email address from which you want to send mail to logged in person.
+    password: your email password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  main:
+    allow-circular-references: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    timeout: 900
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 867619584300-kk1cg980vlctrv1l6vj0b58vopqc3sl0.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+          facebook:
+            clientId: 952881962336925
+            clientSecret: c52cf96a10a67d18b5fa9e12834544e9
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - public_profile
+          github:
+            clientId: d3e47fc2ddd966fa4352
+            clientSecret: 3bc0f6b8332f93076354c2a5bada2f5a05aea60d
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - user:email
+              - read:user
+        provider:
+          facebook:
+            authorizationUri: https://www.facebook.com/v3.0/dialog/oauth
+            tokenUri: https://graph.facebook.com/v3.0/oauth/access_token
+            userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
+app:
+  auth:
+    tokenSecret: abcdefghijklmnOPQRSTUVWXYZ
+    tokenExpirationMsec: 864000000
+    tokenRefreshExpirationDateMsec: 9000000
+#  cors:
+#    allowedOrigins: http://localhost:3000,http://localhost:8080
+  oauth2:
+    # After successfully authenticating with the OAuth2 Provider,
+    # we'll be generating an auth token for the user and sending the token to the
+    # redirectUri mentioned by the client in the /oauth2/authorize request.
+    # We're not using cookies because they won't work well in mobile clients.
+    authorizedRedirectUris:
+      - http://localhost:5000
+  shop:
+    default:
+      percent: 0.05
+
+server:
+  port: 8080
+  ssl:
+    # The alias mapped to the certificate
+    key-alias: gt-ecom
+    # The path to the keystore containing the certificate
+    key-store: classpath:keystore/gt-ecom.p12
+    # The format used for the keystore. It could be set to JKS in case it is a JKS file
+    key-store-type: PKCS12
+    # The password used to generate the certificate
+    key-store-password: demo123321
+    enabled: false
+
+trust:
+  store: classpath:keystore/gt-ecom.p12
+    #trust store location
+    #trust store password
+  password: demo123321
+
+ghn:
+  shopId: 885
+  token: 1a54568c-4713-11ed-8a70-52fa25d1292f
+  address:
+    district:
+      thu-duc: 3695
+    ward:
+      truong-tho: 90746
+  product:
+    weight: 5000
+    length: 30
+    width: 30
+    height: 50

@@ -1,6 +1,6 @@
 // const PRODUCT_NO_INFO = "Sản phẩm chưa có thông tin";
 
-const EGender = {
+export const EGender = {
     FEMALE: {
         name: 'Chị',
         index: 0,
@@ -89,7 +89,7 @@ export const EBookLayout = {
             ?.name || EBookLayout.PAPERBACK.name,
 };
 
-const EPayment = {
+export const EPayment = {
     CASH: {
         name: 'Thanh toán tiền mặt',
         index: 0,
@@ -107,7 +107,7 @@ const EPayment = {
         EPayment.CASH.name,
 };
 
-const EShippingMethod = {
+export const EShippingMethod = {
     GHN_EXPRESS: {
         name: 'Giao hàng nhanh',
         index: 0,
@@ -124,7 +124,7 @@ const EShippingMethod = {
         ]?.name || EShippingMethod.GHN_EXPRESS.name,
 };
 
-const EProductStatus = {
+export const EProductStatus = {
     PRODUCT_UN_TRADING: {
         name: 'Chưa kinh doanh',
         index: 0,
@@ -223,8 +223,8 @@ export const PAGE = {
 };
 
 export const GHN_CONFIG = {
-    token: '1a54568c-4713-11ed-8a70-52fa25d1292f',
-    shopId: '3330973',
+    token: '841e800e-6e2a-11ed-a83f-5a63c54f968d',
+    shopId: '120835',
     thuduc: 3695,
     truongtho: 90746,
     weight: 250,
@@ -247,12 +247,4 @@ export const MESSAGE = {
     LOGIN_USER_NAME_NOT_MATCH: 'Số điện thoại hoặc email không đúng',
     NAME_NOT_AVAILABLE: 'Tên không khả dung',
     ERROR_ACTION: 'Có lỗi xảy ra! Vui lòng thử lại sau',
-};
-
-export const ENUM = {
-    EGender,
-    EOrderStatus,
-    EPayment,
-    EProductStatus,
-    EShippingMethod,
 };

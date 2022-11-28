@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,7 +25,7 @@ import java.util.Objects;
 @Component
 public class GHN {
   private final Logger LOGGER = LoggerFactory.getLogger(GHN.class);
-  @Value("${ghn.token.api}")
+  @Value("${ghn.token}")
   private String tokenGHN;
 
   public String getProvinceId(String provinceString) throws IOException {
@@ -98,7 +99,7 @@ public class GHN {
 //    }
       ///Get Response
       try (BufferedReader br = new BufferedReader(
-          new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+          new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
         StringBuilder response = new StringBuilder();
         String responseLine = null;
         while ((responseLine = br.readLine()) != null) {

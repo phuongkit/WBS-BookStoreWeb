@@ -1,5 +1,6 @@
 package ecom.bookstore.wbsbackend.dto.request;
 
+import ecom.bookstore.wbsbackend.models.enums.EOrderStatus;
 import ecom.bookstore.wbsbackend.models.enums.EPayment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,8 +20,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class OrderUpdatePaymentDTO {
   private EPayment payment;
-  private boolean paid;
-  private String status;
+  private EOrderStatus status;
   private Date expectedDeliveryTime;
   private BigDecimal transportFee;
 }

@@ -31,7 +31,7 @@ public class OrderResponseDTO {
   private int payment;
   private int shippingMethod;
   private DiscountResponseDTO discount;
-  private String status;
+  private int status;
   private Date payAt;
   private String note;
   private OrderDetailResponseDTO[] orderItems;

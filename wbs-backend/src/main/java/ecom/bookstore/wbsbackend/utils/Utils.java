@@ -297,4 +297,16 @@ public class Utils {
       return EPattern.NONE;
     }
   }
+
+  public static String[] getFirstNameAndLastNameFromFullName(String fullName) {
+    fullName = fullName.replaceAll("\\s", " ").trim();
+    int firstSpace = fullName.indexOf(" ");
+    if (firstSpace == -1) {
+      return new String[]{fullName, ""};
+    } else {
+      String lastName = fullName.substring(0, firstSpace);
+      String firstName = fullName.substring(firstSpace+1);
+      return new String[]{firstName, lastName};
+    }
+  }
 }

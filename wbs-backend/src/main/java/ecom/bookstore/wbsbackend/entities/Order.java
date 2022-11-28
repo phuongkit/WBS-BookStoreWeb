@@ -109,9 +109,10 @@ public class Order {
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
   private Set<OrderItem> orderItemSet = new HashSet<>();
 
-  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", length = 50, nullable = false)
   @NotNull(message = "An status is required!")
-  private String status;
+  private EOrderStatus status;
 
   @Column(name = "created_at")
   @CreationTimestamp

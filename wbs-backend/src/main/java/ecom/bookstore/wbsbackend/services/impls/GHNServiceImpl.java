@@ -19,6 +19,7 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -32,17 +33,17 @@ import java.util.Map;
 public class GHNServiceImpl implements GHNService {
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
   public static final String branchName = "GHN";
-  @Value("${ghn.token.api}")
+  @Value("${ghn.token}")
   private String tokenGHN;
-  @Value("${ghn.shopId}")
-  private String shopId;
-  @Value("${product.weight}")
+//  @Value("${ghn.shopId}")
+//  private String shopId;
+  @Value("${ghn.product.weight}")
   private String defaultProductWeight;
-  @Value("${product.length}")
+  @Value("${ghn.product.length}")
   private String defaultProductLength;
-  @Value("${product.width}")
+  @Value("${ghn.product.width}")
   private String defaultProductWidth;
-  @Value("${product.height}")
+  @Value("${ghn.product.height}")
   private String defaultProductHeight;
 
   @Autowired private GHN ghn;
@@ -63,19 +64,18 @@ public class GHNServiceImpl implements GHNService {
     request.setWidth(Integer.parseInt(defaultProductWidth));
     request.setHeight(Integer.parseInt(defaultProductHeight));
     int walkService = 2;
-    int flyService = 1;
+//    int flyService = 1;
     request.setService_type_id(walkService);
     request.setService_id(0);
-    int senderPayment = 1;
+//    int senderPayment = 1;
     int receiverPayment = 2;
     request.setPayment_type_id(receiverPayment);
     request.setRequired_note("KHONGCHOXEMHANG");
-    String itemName = order.getFullName();
+//    String itemName = order.getFullName();
     GHNItem item = new GHNItem();
     item.setName("Áo Polo");
     item.setQuantity(1);
     request.setItems(new ArrayList<>(Collections.singletonList(item)));
-    System.out.println(request.toString());
     URL url =
         new URL("https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -91,15 +91,14 @@ public class GHNServiceImpl implements GHNService {
     Gson gson = new Gson();
     String json = gson.toJson(request);
     OutputStream outStream = connection.getOutputStream();
-    OutputStreamWriter outStreamWriter = new OutputStreamWriter(outStream, "UTF-8");
-    String jsonInputString = json;
+    OutputStreamWriter outStreamWriter = new OutputStreamWriter(outStream, StandardCharsets.UTF_8);
     try (OutputStream os = connection.getOutputStream()) {
-      byte[] input = jsonInputString.getBytes("utf-8");
+      byte[] input = json.getBytes(StandardCharsets.UTF_8);
       os.write(input, 0, input.length);
     }
 
     try (BufferedReader br = new BufferedReader(
-        new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+        new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
       StringBuilder response = new StringBuilder();
       String responseLine = null;
       while ((responseLine = br.readLine()) != null) {
@@ -112,8 +111,7 @@ public class GHNServiceImpl implements GHNService {
         System.out.println(responseLine);
         Type resultType = new TypeToken<Map<String, Object>>() {
         }.getType();
-        Map<String, Object> responseObject = gson.fromJson(responseLine, resultType);
-        return responseObject;
+        return gson.fromJson(responseLine, resultType);
       }
     } catch (Exception e) {
       this.LOGGER.error(e.getMessage());

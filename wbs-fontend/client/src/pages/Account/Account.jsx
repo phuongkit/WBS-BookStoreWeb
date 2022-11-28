@@ -8,7 +8,7 @@ import { getUserByToken } from '../../redux/user/userApi';
 import { useEffect } from 'react';
 import { getPrice, toAddressSlug } from '../../utils/utils';
 import Select from 'react-select';
-import { ENUM, EOrderStatus } from '../../utils/variableDefault';
+import { EGender, EOrderStatus, EPayment, EShippingMethod } from '../../utils/variableDefault';
 import { getAllOrdersByUserId } from '../../redux/order/ordersApi';
 import Paging from '../../components/Paging';
 import { updateStatusOrderApi } from '../../redux/order/ordersApi';
@@ -54,7 +54,7 @@ function Account() {
         }).then(async (isOK) => {
             if (isOK) {
                 let data = {
-                    status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
+                    status: EOrderStatus.ORDER_CANCELLED.name,
                     log: '',
                     shipOrderCode: null,
                     expectedDeliveryTime: null,
@@ -195,23 +195,23 @@ function Account() {
                                                     name="cityId"
                                                     options={[
                                                         {
-                                                            value: ENUM.EGender.FEMALE.index,
-                                                            label: ENUM.EGender.FEMALE.name,
+                                                            value: EGender.FEMALE.index,
+                                                            label: EGender.FEMALE.name,
                                                         },
                                                         {
-                                                            value: ENUM.EGender.MALE.index,
-                                                            label: ENUM.EGender.MALE.name,
+                                                            value: EGender.MALE.index,
+                                                            label: EGender.MALE.name,
                                                         },
                                                         {
-                                                            value: ENUM.EGender.UNKNOWN.index,
-                                                            label: ENUM.EGender.UNKNOWN.name,
+                                                            value: EGender.UNKNOWN.index,
+                                                            label: EGender.UNKNOWN.name,
                                                         },
                                                     ]}
                                                     onChange={(option) => {}}
                                                     placeholder="Giới tính"
                                                     defaultValue={{
-                                                        value: user?.gender || ENUM.EGender.UNKNOWN.index,
-                                                        label: ENUM.EGender.getNameFromIndex(user?.gender),
+                                                        value: user?.gender || EGender.UNKNOWN.index,
+                                                        label: EGender.getNameFromIndex(user?.gender),
                                                     }}
                                                     className="tw-min-w-[33.333333%]"
                                                     required
@@ -328,9 +328,9 @@ function Account() {
                                                             </td>
                                                             <td>{getPrice(order.totalPrice)} đ</td>
                                                             <td>{order.status}</td>
-                                                            <td>{ENUM.EPayment.getNameFromIndex(order.payment)}</td>
+                                                            <td>{EPayment.getNameFromIndex(order.payment)}</td>
                                                             <td>
-                                                                {ENUM.EShippingMethod.getNameFromIndex(
+                                                                {EShippingMethod.getNameFromIndex(
                                                                     order.shippingMethod,
                                                                 )}
                                                             </td>
