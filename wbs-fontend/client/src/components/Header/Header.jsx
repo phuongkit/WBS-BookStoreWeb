@@ -12,6 +12,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { checkRegex, getName, MESSAGE } from '../../utils';
 import { postLogin } from '../../redux/user/userApi';
 import { getAllCategoriesHierarchyApi } from '../../redux/category/categoriesApi';
+import swal from 'sweetalert';
 
 var $ = require('jquery');
 
@@ -52,7 +53,10 @@ function Header() {
         } else if (regexType === 1) {
             auth.email = data.loginUserName;
         } else {
-            alert(MESSAGE.LOGIN_USER_NAME_NOT_MATCH);
+            swal({
+                text: MESSAGE.LOGIN_USER_NAME_NOT_MATCH,
+                icon: 'info',
+            });
             return;
         }
         postLogin(dispatch, auth, navigate);
@@ -139,7 +143,7 @@ function Header() {
                         <form className="form-inline ml-auto my-2 my-lg-0 mr-3">
                             <div className="input-group" style={{ width: '520px' }}>
                                 <input
-                                id="keyword"
+                                    id="keyword"
                                     type="text"
                                     className="form-control"
                                     aria-label="Small"
@@ -186,7 +190,7 @@ function Header() {
                                                     className="nav-link text-dark text-uppercase username"
                                                     href="/account"
                                                 >
-                                                    {getName(user?.lastName + " " + user?.firstName)}
+                                                    {getName(user?.lastName + ' ' + user?.firstName)}
                                                 </a>
                                                 {/* <a className="nav-link text-dark logout" href="#">
                                                     Thoát
@@ -194,13 +198,22 @@ function Header() {
                                                 </a> */}
                                             </div>
                                             <div className="dropdown-menu">
-                                                <Link className="dropdown-item text-center mb-2 text-white-important" to="/account">
+                                                <Link
+                                                    className="dropdown-item text-center mb-2 text-white-important"
+                                                    to="/account"
+                                                >
                                                     Tài khoản của tôi
                                                 </Link>
-                                                <Link className="dropdown-item text-center mb-2 text-white-important" to="/purchase">
+                                                <Link
+                                                    className="dropdown-item text-center mb-2 text-white-important"
+                                                    to="/purchase"
+                                                >
                                                     Đơn mua
                                                 </Link>
-                                                <Link className="dropdown-item text-center text-white-important" onClick={handleLogout}>
+                                                <Link
+                                                    className="dropdown-item text-center text-white-important"
+                                                    onClick={handleLogout}
+                                                >
                                                     Đăng xuất
                                                 </Link>
                                             </div>

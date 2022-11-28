@@ -12,6 +12,7 @@ import './Cart.scss';
 import { MESSAGE, ENUM } from '../../utils/variableDefault';
 import validate from 'jquery-validation';
 import { getUserByToken } from '../../redux/user/userApi';
+import swal from 'sweetalert';
 
 var $ = require('jquery');
 function Cart() {
@@ -284,15 +285,28 @@ function Cart() {
                                                                         <span
                                                                             className="remove mt-auto"
                                                                             onClick={() => {
-                                                                                var isDelete = confirm(
-                                                                                    "Bạn có muốn xóa sản phẩm với tên '" +
+                                                                                swal({
+                                                                                    text:
+                                                                                        "Bạn có muốn xóa sản phẩm với tên '" +
                                                                                         (item.name ||
                                                                                             MESSAGE.NAME_NOT_AVAILABLE) +
                                                                                         "' trong giỏ hàng không",
-                                                                                );
-                                                                                if (isDelete) {
-                                                                                    removeCartItem(item.id);
-                                                                                }
+                                                                                    icon: 'info',
+                                                                                    buttons: {
+                                                                                        cancel: true,
+                                                                                        confirm: true,
+                                                                                    },
+                                                                                    dangerMode: true,
+                                                                                }).then((isOK) => {
+                                                                                    if (isOK) {
+                                                                                        removeCartItem(item.id);
+                                                                                        swal({
+                                                                                            title: 'Thành công',
+                                                                                            text: 'Đã xóa sản phẩm khỏi giỏ hàng',
+                                                                                            icon: 'success',
+                                                                                        });
+                                                                                    }
+                                                                                });
                                                                             }}
                                                                         >
                                                                             <i className="far fa-trash-alt"></i>

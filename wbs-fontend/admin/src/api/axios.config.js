@@ -1,6 +1,7 @@
 import axios from 'axios';
 // import { useNavigate } from 'react-router-dom';
 import { handleLogout, postLogout } from '../redux/user/userApi';
+import swal from 'sweetalert';
 
 //const apiProduction = 'https://json-kali.onrender.com';
 // const apiProduction = 'https://jsonserv.glitch.me';
@@ -43,7 +44,7 @@ axiosClient.interceptors.request.use(
     },
 
     function (error) {
-        alert('Vui lòng đăng nhập lại');
+        swal('Vui lòng đăng nhập lại');
         postLogout();
         return Promise.reject(error);
     },
@@ -58,7 +59,11 @@ axiosClient.interceptors.response.use(
         console.log(error);
         // const { data } = error.response;
         if (response.status === 401) {
-            alert('Vui lòng đăng nhập để thực hiện chức năng này');
+            swal({
+                text: 'Vui lòng đăng nhập để thực hiện chức năng này',
+                icon: 'info',
+            });
+
             postLogout();
         }
         // if (error.hasOwnProperty('code') && data.hasOwnProperty('message')) {

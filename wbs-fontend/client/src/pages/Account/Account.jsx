@@ -12,6 +12,7 @@ import { ENUM, EOrderStatus } from '../../utils/variableDefault';
 import { getAllOrdersByUserId } from '../../redux/order/ordersApi';
 import Paging from '../../components/Paging';
 import { updateStatusOrderApi } from '../../redux/order/ordersApi';
+import swal from 'sweetalert';
 
 var $ = require('jquery');
 
@@ -45,10 +46,13 @@ function Account() {
     }, []);
 
     const handleCancel = async (order) => {
-        let result = confirm('Bạn có muốn hủy đơn này không');
-        if (result) {
-            // let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
-            // if (reason !== null) {
+        swal({
+            text: 'Bạn có chắc muốn hủy đơn hàng này không',
+            icon: 'info',
+            buttons: { cancel: true, confirm: true },
+            dangerMode: true,
+        }).then(async (isOK) => {
+            if (isOK) {
                 let data = {
                     status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
                     log: '',
@@ -59,17 +63,25 @@ function Account() {
                 if (order?.shipOrderCode) {
                     let res = await ghn.cancelOrderGHN(order.shipOrderCode);
                     // if (res.data?.data?.result) {
-                        updateStatusOrderApi(dispatch, order.id, data);
-                        alert('Hủy đơn hàng thành công!');
+                    updateStatusOrderApi(dispatch, order.id, data);
+                    swal({
+                        title: 'Thành công',
+                        text: 'Hủy đơn hàng thành công!',
+                        icon: 'success',
+                    });
                     // } else {
                     //     alert(MESSAGE.ERROR_ACTION);
                     // }
                 } else {
                     updateStatusOrderApi(dispatch, order.id, data);
-                    alert('Hủy đơn hàng thành công!');
+                    swal({
+                        title: 'Thành công',
+                        text: 'Hủy đơn hàng thành công!',
+                        icon: 'success',
+                    });
                 }
-            // }
-        }
+            }
+        });
     };
 
     return (

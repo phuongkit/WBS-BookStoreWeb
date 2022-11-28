@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { getAllOrders, getAllOrdersByShopApi, updateStatusOrderApi } from '../../redux/order/ordersApi';
 import { ENUM, MESSAGE } from '../../utils';
 import { ghn } from '../../services/shipping';
+import swal from 'sweetalert';
 
 const Datatable = () => {
     const dispatch = useDispatch();
@@ -21,64 +22,123 @@ const Datatable = () => {
     const orderList = useSelector((state) => state.orders.pageOrder.data);
 
     const handleAccept = async (order) => {
-        let result = confirm('Bạn có xác nhận đơn hàng và tạo đơn hàng shipper không');
-        if (result) {
-            // let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
-            // if (reason !== null) {
-            //     let data = {
-            //         status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
-            //         log: reason,
-            //         shipOrderCode: null,
-            //         expectedDeliveryTime: null,
-            //     }
-            //     updateStatusOrderApi(dispatch, id, data);
-            // }
-            let res = await ghn.createOrderGHN(order);
-            console.log('res', res?.data?.data);
-            let data = res.data?.data;
+        swal({
+            text: 'Bạn có xác nhận đơn hàng và tạo đơn hàng shipper không',
+            icon: 'info',
+            buttons: {
+                cancel: true,
+                confirm: true,
+            },
+        }).then(async (isOK) => {
+            if (isOK) {
+                let res = await ghn.createOrderGHN(order);
+                console.log('res', res?.data?.data);
+                let data = res.data?.data;
 
-            let resDetails = await ghn.getOrderDetailGHN(data.order_code);
-            console.log('resDetails', resDetails);
+                let resDetails = await ghn.getOrderDetailGHN(data.order_code);
+                console.log('resDetails', resDetails);
 
-            // let resCancel = await ghn.cancelOrderGHN(data.order_code);
-            // console.log('resCancel', resCancel?.data?.data);
+                // let resCancel = await ghn.cancelOrderGHN(data.order_code);
+                // console.log('resCancel', resCancel?.data?.data);
 
-            const dataResponse = {
-                status: resDetails?.data?.data.status,
-                shipOrderCode: data?.order_code,
-                expectedDeliveryTime: data?.expected_delivery_time,
-                transportFee: data?.total_fee,
-            };
-            updateStatusOrderApi(dispatch, order.id, dataResponse);
-            alert('Xác nhận đơn hàng thành công');
-        }
+                const dataResponse = {
+                    status: resDetails?.data?.data.status,
+                    shipOrderCode: data?.order_code,
+                    expectedDeliveryTime: data?.expected_delivery_time,
+                    transportFee: data?.total_fee,
+                };
+                updateStatusOrderApi(dispatch, order.id, dataResponse);
+
+                swal({
+                    title: 'Thành công',
+                    text: 'Xác nhận đơn hàng thành công',
+                    icon: 'success',
+                });
+            }
+        });
     };
 
     const handleCancel = async (order) => {
-        let result = confirm('Bạn có muốn hủy đơn này không');
-        if (result) {
-            let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
-            if (reason !== null) {
-                let data = {
-                    status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
-                    log: reason,
-                    shipOrderCode: null,
-                    expectedDeliveryTime: null,
-                };
-                if (order?.shipOrderCode) {
-                    let res = await ghn.cancelOrderGHN(order.shipOrderCode);
-                    // if (res.data?.data?.result) {
-                        updateStatusOrderApi(dispatch, order.id, data);
-                        alert('Hủy đơn hàng thành công!');
-                    // } else {
-                    //     alert(MESSAGE.ERROR_ACTION);
-                    // }
-                } else {
-                    updateStatusOrderApi(dispatch, order.id, data);
-                    alert('Hủy đơn hàng thành công!');
-                }
+        swal({
+            text: 'Bạn có muốn hủy đơn này không',
+            icon: 'info',
+            buttons: {
+                cancel: true,
+                confirm: true,
+            },
+            dangerMode: true,
+        }).then(async (isOK) => {
+            if (isOK) {
+                //let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
+                swal({
+                    text: 'Nhập lý do hủy đơn hàng',
+                    content: {
+                        element: 'input',
+                        attributes: {
+                            defaultValue: 'Không đủ hàng',
+                        },
+                    },
+                }).then(async (reason) => {
+                    if (reason !== null) {
+                        let data = {
+                            status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
+                            log: reason,
+                            shipOrderCode: null,
+                            expectedDeliveryTime: null,
+                        };
+                        if (order?.shipOrderCode) {
+                            let res = await ghn.cancelOrderGHN(order.shipOrderCode);
+                            // if (res.data?.data?.result) {
+                            updateStatusOrderApi(dispatch, order.id, data);
+                            swal({
+                                title: 'Thành công',
+                                text: 'Hủy đơn hàng thành công',
+                                icon: 'success',
+                            });
+                        } else {
+                            updateStatusOrderApi(dispatch, order.id, data);
+
+                            swal({
+                                title: 'Thành công',
+                                text: 'Hủy đơn hàng thành công',
+                                icon: 'success',
+                            });
+                        }
+                    }
+                });
             }
-        }
+        });
+
+        // let result = confirm('Bạn có muốn hủy đơn này không');
+        // if (result) {
+        //     let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
+        //     if (reason !== null) {
+        //         let data = {
+        //             status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
+        //             log: reason,
+        //             shipOrderCode: null,
+        //             expectedDeliveryTime: null,
+        //         };
+        //         if (order?.shipOrderCode) {
+        //             let res = await ghn.cancelOrderGHN(order.shipOrderCode);
+        //             // if (res.data?.data?.result) {
+        //             updateStatusOrderApi(dispatch, order.id, data);
+        //             swal({
+        //                 title: 'Thành công',
+        //                 text: 'Hủy đơn hàng thành công',
+        //                 icon: 'success',
+        //             });
+        //         } else {
+        //             updateStatusOrderApi(dispatch, order.id, data);
+
+        //             swal({
+        //                 title: 'Thành công',
+        //                 text: 'Hủy đơn hàng thành công',
+        //                 icon: 'success',
+        //             });
+        //         }
+        //     }
+        // }
     };
 
     const actionColumn = [

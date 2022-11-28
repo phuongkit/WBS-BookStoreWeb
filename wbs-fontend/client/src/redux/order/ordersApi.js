@@ -1,25 +1,34 @@
 import { getPageOrder, postOrder, updateOrder } from './orderSlice';
 import { orderService } from '../../services';
 import { MESSAGE } from '../../utils';
+import swal from 'sweetalert';
 
-export const getAllOrdersByUserId = async(dispatch, userId) => {
+export const getAllOrdersByUserId = async (dispatch, userId) => {
     let res = await orderService.getAllOrdersByUserId(userId);
     dispatch(getPageOrder(res.data));
-} 
+};
 
-export const getAllOrders = async(dispatch) => {
+export const getAllOrders = async (dispatch) => {
     let res = await orderService.getAllOrders();
     dispatch(getPageOrder(res.data));
-} 
+};
 
 export const postOrders = async (dispatch, data, navigate) => {
     let res = await orderService.postOrder(data);
     if (res.status === 'CREATED') {
-        alert('Tạo đơn hàng thành công');
+        swal({
+            title: 'Thành công',
+            text: 'Tạo đơn hàng thành công',
+            icon: 'success',
+        });
         dispatch(postOrder(res?.data));
         navigate('/order');
     } else {
-        alert('Có lỗi xảy ra! Vui lòng thử lại sau!');
+        swal({
+            title: 'Thất bại',
+            text: 'Có lỗi xảy ra! Vui lòng thử lại sau!',
+            icon: 'error',
+        });
         navigate('/');
     }
 };
@@ -39,14 +48,21 @@ export const updateStatusOrderApi = async (dispatch, id, data) => {
     dispatch(updateOrder(res?.data));
 };
 
-export const deleteOrdersByIdApi = async (dispatch, id, navigate=null) => {
+export const deleteOrdersByIdApi = async (dispatch, id, navigate = null) => {
     try {
         let res = await orderService.deleteOrderById(id);
         dispatch(deleteOrder());
-        alert('Hủy đơn hàng thành công !');
+        swal({
+            title: 'Thành công',
+            text: 'Hủy đơn hàng thành công!',
+            icon: 'success',
+        });
     } catch (err) {
-        alert(MESSAGE.ERROR_ACTION);
-    } 
+        swal({
+            text: MESSAGE.ERROR_ACTION,
+            icon: 'info',
+        });
+    }
     if (navigate) {
         navigate('/');
     }

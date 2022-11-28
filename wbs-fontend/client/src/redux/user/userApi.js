@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { authService, userService } from '../../services';
 import { getPageUser, login, logout } from './userSlice';
+import swal from 'sweetalert';
 
 export const getAllUsersApi = async (dispatch) => {
     let res = await userService.getAllUsers();
@@ -21,7 +22,11 @@ export const postLogin = async (dispatch, data, navigate) => {
             }
             dispatch(login(res.data));
         } else {
-            alert('Sai tên đăng nhập hoặc mật khẩu! Vui lòng thử lại');
+            swal({
+                title: 'Đăng nhập thất bại',
+                text: 'Sai tên đăng nhập hoặc mật khẩu',
+                icon: 'error',
+            });
         }
     } catch (error) {
         console.error(error);
@@ -38,9 +43,17 @@ export const postRegister = async (dispatch, data, navigate) => {
             //     navigate('/');
             // }
             // dispatch(login(res.data));
-            alert("Đăng ký thành công!");
+            swal({
+                title: 'Đăng ký thành công',
+                text: 'Vui lòng đăng nhập để mua hàng',
+                icon: 'success',
+            });
         } else {
-            alert('Đăng ký không thành công! Vui lòng thử lại');
+            swal({
+                title: 'Đăng ký không thành công',
+                text: 'Vui lòng thử lại',
+                icon: 'error',
+            });
         }
     } catch (error) {
         console.error(error);

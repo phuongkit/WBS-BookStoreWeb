@@ -6,6 +6,7 @@ import { ProductBlock } from '@Components/ProductBlock';
 import { EHomeOption } from '~/utils';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { vnpay } from '../../services/payment';
+import swal from 'sweetalert';
 
 var jQueryBridget = require('jquery-bridget');
 var Isotope = require('isotope-layout');
@@ -26,9 +27,17 @@ function Home({ title }) {
                 const param = params.map(([key, value]) => ({ key, value }));
                 let status = param.find(({ key, value }) => key === 'vnp_ResponseCode');
                 if (status?.value === '00') {
-                    alert('Giao dịch thành công');
+                    swal({
+                        title: 'Thành công',
+                        text: 'Giao dịch thành công',
+                        icon: 'success',
+                    });
                 } else {
-                    alert('Giao dịch thất bại');
+                    swal({
+                        title: 'Thất bại',
+                        text: 'Giao dịch thất bại, vui lòng kiểm tra lại',
+                        icon: 'error',
+                    });
                 }
                 console.log(param);
                 await vnpay.getReturnVNPay(param);
@@ -237,7 +246,11 @@ function Home({ title }) {
     $('.btn-checkout').on('click', function (e) {
         localStorage.clear();
         location.reload(true);
-        alert('cảm ơn đã mua hàng');
+        swal({
+            title: 'Thành công',
+            text: 'Cảm ơn đã bạn mua hàng',
+            icon: 'success',
+        });
     });
 
     $('.items .row').isotope({

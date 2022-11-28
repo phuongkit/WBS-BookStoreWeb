@@ -1,23 +1,32 @@
 import { getPageOrder, postOrder, updateOrder, deleteOrder } from './orderSlice';
 import { orderService } from '../../services';
+import swal from 'sweetalert';
 
-export const getAllOrdersByUserId = async(dispatch, userId) => {
+export const getAllOrdersByUserId = async (dispatch, userId) => {
     let res = await orderService.getAllOrdersByUserId(userId);
     dispatch(getPageOrder(res.data));
-} 
+};
 
-export const getAllOrders = async(dispatch, param) => {
+export const getAllOrders = async (dispatch, param) => {
     let res = await orderService.getAllOrders(param);
     dispatch(getPageOrder(res.data?.content || []));
-} 
+};
 
 export const postOrders = async (dispatch, data) => {
     let res = await orderService.postOrder(data);
     if (res.status === 'CREATED') {
-        alert('Tạo đơn hàng thành công');
+        swal({
+            title: 'Thành công',
+            text: 'Tạo đơn hàng thành công',
+            icon: 'success',
+        });
         dispatch(postOrder(res?.data));
     } else {
-        alert('Có lỗi xảy ra! Vui lòng thử lại sau!');
+        swal({
+            title: 'Thất bại',
+            text: 'Có lỗi xảy ra! Vui lòng thử lại sau!',
+            icon: 'error',
+        });
     }
 };
 
@@ -37,6 +46,6 @@ export const updateStatusOrderApi = async (dispatch, id, data) => {
 };
 
 export const deleteOrderApi = async (dispatch, id) => {
-    let res = await orderService.deleteOrderById(id. data);
+    let res = await orderService.deleteOrderById(id.data);
     dispatch(deleteOrder(id));
-}
+};

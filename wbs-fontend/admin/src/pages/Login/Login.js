@@ -4,6 +4,7 @@ import './Login.scss';
 import { postLogin } from '../../redux/user/userApi';
 import { useDispatch } from 'react-redux';
 import { checkRegex, MESSAGE } from '../../utils';
+import swal from 'sweetalert';
 
 const Login = () => {
     const dispatch = useDispatch();
@@ -25,11 +26,11 @@ const Login = () => {
         } else if (regexType === 1) {
             auth.email = data.loginUserName;
         } else {
-            alert(MESSAGE.LOGIN_USER_NAME_NOT_MATCH);
+            swal(MESSAGE.LOGIN_USER_NAME_NOT_MATCH);
             return;
         }
         postLogin(dispatch, auth, navigate);
-    }
+    };
     return (
         <section className="tw-h-screen gradient-custom">
             <div className="container py-5 h-100">
@@ -47,7 +48,7 @@ const Login = () => {
                                             type="email"
                                             id="typeEmailX"
                                             className="form-control form-control-lg tw-rounded"
-                                            onChange={e => setData({...data, loginUserName: e.target.value})}
+                                            onChange={(e) => setData({ ...data, loginUserName: e.target.value })}
                                         />
                                     </div>
 
@@ -57,7 +58,7 @@ const Login = () => {
                                             type="password"
                                             id="typePasswordX"
                                             className="form-control form-control-lg tw-rounded"
-                                            onChange={e => setData({...data, password: e.target.value})}
+                                            onChange={(e) => setData({ ...data, password: e.target.value })}
                                         />
                                     </div>
 
@@ -67,7 +68,11 @@ const Login = () => {
                                         </a>
                                     </p>
 
-                                    <button className="btn btn-outline-light btn-lg px-5" type="submit" onClick={handleLogin}>
+                                    <button
+                                        className="btn btn-outline-light btn-lg px-5"
+                                        type="submit"
+                                        onClick={handleLogin}
+                                    >
                                         Login
                                     </button>
 
