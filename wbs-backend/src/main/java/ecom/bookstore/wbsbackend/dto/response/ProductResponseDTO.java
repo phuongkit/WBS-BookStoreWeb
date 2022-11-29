@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author minh phuong
@@ -55,4 +56,6 @@ public class ProductResponseDTO {
   private String[] gallery;
   private String description;
   private EProductStatus status;
+  private Date createdAt;
+  private Date updatedAt;
 }

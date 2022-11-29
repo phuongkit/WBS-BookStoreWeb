@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { REGEXP } from './variableDefault';
+import { REGEXP } from './constants';
 
 export const getNameBook = (name, reprintYear) => {
     return reprintYear ? name + ` (Tái bản ${reprintYear})` : name;

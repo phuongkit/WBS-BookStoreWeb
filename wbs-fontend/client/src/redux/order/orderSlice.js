@@ -18,13 +18,16 @@ export const orders = createSlice({
         },
         postOrder: (state, action) => {
             state.order.data = action.payload;
-            const orderData = JSON.stringify(action.payload);
-            localStorage.setItem('order', orderData);
         },
         updateOrder: (state, action) => {
             state.pageOrder.data = {...state.pageOrder.data, content: Array.from(state.pageOrder?.data?.content || []).map(
                 (item) => (item.id === action.payload?.id ? action.payload : item)
               )};
+        },
+        createOrder: (state, action) => {
+            state.order.data = action.payload;
+            const orderData = JSON.stringify(action.payload);
+            localStorage.setItem('order', orderData);
         },
         deleteOrder: (state, action) => {
             state.order.data = null;
@@ -32,5 +35,5 @@ export const orders = createSlice({
         }
     },
 });
-export const { getPageOrder, postOrder, updateOrder, deleteOrder } = orders.actions;
+export const { getPageOrder, postOrder, createOrder,updateOrder, deleteOrder } = orders.actions;
 export default orders.reducer;

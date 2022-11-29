@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -211,6 +213,8 @@ public class OrderServiceImpl implements OrderService {
                             "Name",
                             creationDTO.getShippingMethod())));
     newEntity.setShippingMethod(shippingMethodFound);
+    // set expectedDeliveryTime
+    newEntity.setExpectedDeliveryTime(creationDTO.getExpectedDeliveryTime());
     // set transportFee
     if (creationDTO.getTransportFee() != null) {
       newEntity.setTransportFee(creationDTO.getTransportFee());
@@ -240,10 +244,9 @@ public class OrderServiceImpl implements OrderService {
     // initial total price
     newEntity.setTotalPrice(new BigDecimal(0));
     // initial status
-    newEntity.setStatus(
-        creationDTO.getStatus() == null
-            ? EOrderStatus.ORDER_PENDING
-            : creationDTO.getStatus());
+    newEntity.setStatus(creationDTO.getStatus() == null ?
+                            (creationDTO.getPayment().ordinal() > 0 ? EOrderStatus.ORDER_AWAITING_PAYMENT :
+                                EOrderStatus.ORDER_PENDING) : creationDTO.getStatus());
     newEntity.setNote(creationDTO.getNote());
 
     Order savedEntity = this.orderRepo.save(newEntity);
@@ -380,9 +383,14 @@ public class OrderServiceImpl implements OrderService {
                         String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "PaymentOrderCode", paymentOrderCode));
     }
     Order order = entityList.get(0);
-    System.out.println("txnRef1" + order.getPaymentOrderCode());
     if (success) {
-      order.setPayAt(new Date(Long.parseLong(payString)));
+      try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date payAt = sdf.parse(payString);
+        order.setPayAt(payAt);
+      } catch (ParseException e) {
+        order.setPayAt(new Date());
+      }
       order.setStatus(EOrderStatus.ORDER_PENDING);
     }
     this.orderRepo.save(order);

@@ -12,5 +12,8 @@ export const userService = {
     },
     editUser(phone, data) {
         return axiosClient.patch(`/users/${phone}`, data);
+    },
+    updateEnableUser(id, enable = false) {
+        return axiosClient.put(`/users/${id}/status?enabled=${enable}`);
     }
 };

@@ -80,4 +80,13 @@ export const productService = {
             .join('&');
         return axiosClient.get(`${branch_api}?category=watch&${query}`);
     },
+    createProduct(data) {
+        return axiosClient.post(`${branch_api}`, data);
+      },
+      updateProductById(id, data) {
+        return axiosClient.put(`${branch_api}/${id}`, data);
+      },
+      deleteProductById(id) {
+        return axiosClient.delete(`${branch_api}/${id}`);
+      },
 };

@@ -307,7 +307,7 @@ export const EOrderStatus = {
         en: 'damage',
         index: 34
     },
-    ORDER_lost: {
+    ORDER_LOST: {
         name: 'Hàng bị mất',
         en: 'lost',
         index: 35
@@ -315,7 +315,7 @@ export const EOrderStatus = {
     getNameFromIndex: (index) =>
         EOrderStatus[
             Object.keys(EOrderStatus)[
-                index > EOrderStatus.ORDER_PENDING.index ? EOrderStatus.ORDER_PENDING.index : index
+                index > EOrderStatus.ORDER_LOST.index ? EOrderStatus.ORDER_PENDING.index : index
             ]
         ]?.name || EOrderStatus.ORDER_PENDING.name,
 };

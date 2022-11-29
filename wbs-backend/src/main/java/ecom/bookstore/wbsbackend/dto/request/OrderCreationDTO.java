@@ -11,6 +11,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +49,7 @@ public class OrderCreationDTO {
 
   private EPayment payment;
   private EShippingMethod shippingMethod;
+  private Date expectedDeliveryTime;
   private BigDecimal transportFee;
   private String discountCode;
   private String note;

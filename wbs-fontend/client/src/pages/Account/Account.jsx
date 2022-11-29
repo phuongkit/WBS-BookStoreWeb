@@ -8,7 +8,7 @@ import { getUserByToken } from '../../redux/user/userApi';
 import { useEffect } from 'react';
 import { getPrice, toAddressSlug } from '../../utils/utils';
 import Select from 'react-select';
-import { EGender, EOrderStatus, EPayment, EShippingMethod } from '../../utils/variableDefault';
+import { EGender, EOrderStatus, EPayment, EShippingMethod } from '../../utils';
 import { getAllOrdersByUserId } from '../../redux/order/ordersApi';
 import Paging from '../../components/Paging';
 import { updateStatusOrderApi } from '../../redux/order/ordersApi';
@@ -167,7 +167,7 @@ function Account() {
                                                 type="text"
                                                 name="account-phone"
                                                 disabled="disabled"
-                                                defaultValue={user.phone}
+                                                defaultValue={user?.phone}
                                             />
                                         </div>
                                     </div>
@@ -181,7 +181,7 @@ function Account() {
                                                 type="email"
                                                 name="account-email"
                                                 disabled="disabled"
-                                                defaultValue={user.email}
+                                                defaultValue={user?.email}
                                             />
                                         </div>
                                     </div>

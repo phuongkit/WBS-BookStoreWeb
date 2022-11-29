@@ -27,6 +27,7 @@ public class AuthResponse {
 //  private boolean isChangedUsername;
   private String firstName;
   private String lastName;
+  private String fullName;
   private boolean isEmailVerified;
   private boolean isPhoneVerified;
   private String identityCard;

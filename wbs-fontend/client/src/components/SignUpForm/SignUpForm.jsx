@@ -4,6 +4,9 @@ import './SignUpForm.scss';
 import validate from 'jquery-validation';
 import { postRegister } from '../../redux/user/userApi';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL } from '../../utils/constants';
 
 var $ = require( "jquery" );
 function SignUpForm() {
@@ -151,6 +154,14 @@ function SignUpForm() {
                                     Đăng ký
                                 </button>
                                 <hr className="mt-3 mb-2" />
+                                <a href={GOOGLE_AUTH_URL} className="btn btn-lg btn-google btn-block text-uppercase" type="submit">
+                                    <FontAwesomeIcon icon={faGoogle} className="mr-2" />
+                                    Đăng nhập bằng Google
+                                </a>
+                                <a href={FACEBOOK_AUTH_URL} className="btn btn-lg btn-facebook btn-block text-uppercase" type="submit">
+                                    <FontAwesomeIcon icon={faFacebook} className="mr-2" /> Đăng nhập bằng Facebook
+                                </a>
+                                <hr className="mt-3 mb-2" />                                
                                 <div className="custom-control custom-checkbox">
                                     <p className="text-center">Bằng việc đăng ký, bạn đã đồng ý với DealBook về</p>
                                     <a

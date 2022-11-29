@@ -1,5 +1,5 @@
 import React from "react"
-import { EGender, EOrderStatus, EPayment, EShippingMethod } from '../../utils';
+import { EGender, EOrderStatus, EPayment, EShippingMethod, toFullAddress, EProductStatus } from '../../utils';
 
 export const authorColumns = [
     {
@@ -175,7 +175,7 @@ export const translatorColumns = [
     },
 ]
 
-export const oderColumns = [
+export const orderColumns = [
     {
         field: 'id',
         headerName: 'ID',
@@ -229,7 +229,7 @@ export const oderColumns = [
         renderCell: (params) => {
             return (
                 <div className={`cellWithStatus`}>
-                    {`${params.row.address.homeAdd}, ${params.row.address.ward}, ${params.row.address.district}, ${params.row.address.city}`}
+                    {toFullAddress(params.row.address)}
                 </div>
             );
         },
@@ -282,11 +282,24 @@ export const oderColumns = [
           );
       },
   },
+  {
+    field: 'createdAt',
+    headerName: 'Created At',
+    width: 120,
+    renderCell: (params) => {
+        return (
+            <div className={`cellWithStatus`}>
+                {params.row?.createdAt}
+            </div>
+        );
+    },
+},
     {
         field: 'status',
         headerName: 'Status',
         width: 160,
         renderCell: (params) => {
+            params.row.id === 1 && console.log('param', params.row.status );
             return <div className={`cellWithStatus`}>{EOrderStatus.getNameFromIndex(params.row.status)}</div>;
         },
     },
@@ -335,7 +348,7 @@ export const productColumns = [
         headerName: 'Authors',
         width: 200,
         renderCell: (params) => {
-            return <div className="cellWithImg">{params.row.authors.join(', ')}</div>;
+            return <div className="cellWithImg">{params.row.authors?.join(', ')}</div>;
         },
     },
     {
@@ -368,6 +381,18 @@ export const productColumns = [
         width: 80,
         renderCell: (params) => {
             return <div className={`cellWithStatus`}>{params.row.availableQuantity}</div>;
+        },
+    },
+    {
+        field: 'createdAt',
+        headerName: 'Created At',
+        width: 120,
+        renderCell: (params) => {
+            return (
+                <div className={`cellWithStatus`}>
+                    {params.row?.createdAt}
+                </div>
+            );
         },
     },
     {
@@ -461,20 +486,20 @@ export const userColumns = [
         headerName: 'Address',
         width: 700,
         renderCell: (params) => {
-            return <div className={`cellWithStatus`}>{JSON.stringify(params.row.address)}</div>;
+            return <div className={`cellWithStatus`}>{toFullAddress(params.row.address)}</div>;
         },
     },
-    {
-        field: 'status',
-        headerName: 'Status',
-        width: 120,
-        renderCell: (params) => {
-            return (
-                <div className={`cellWithStatus`}>
-                    {params.row.enabled ? "Hoạt động" : "Khóa"}
-                </div>
-            );
-        },
-    },
+    // {
+    //     field: 'status',
+    //     headerName: 'Status',
+    //     width: 120,
+    //     renderCell: (params) => {
+    //         return (
+    //             <div className={`cellWithStatus`}>
+    //                 {params.row.enabled ? "Hoạt động" : "Khóa"}
+    //             </div>
+    //         );
+    //     },
+    // },
 ];
 

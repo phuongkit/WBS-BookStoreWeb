@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GHN_CONFIG } from '../../utils/variableDefault';
+import { GHN_CONFIG } from '../../utils';
 
 const axiosGHN = axios.create({
     withCredentials: false,

@@ -13,12 +13,13 @@ import { addItem } from '../../redux/shopping-cart/cartItemsSlide';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductDetail.scss';
+import { useEffect } from 'react';
 
 var jQueryBridget = require('jquery-bridget');
 var Isotope = require('isotope-layout');
 jQueryBridget('isotope', Isotope, $);
 
-function ProductDetail(props) {
+function ProductDetail({title}) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
@@ -73,7 +74,9 @@ function ProductDetail(props) {
         return <div dangerouslySetInnerHTML={{ __html: initialProductDetail.description }} />;
     };
 
-    console.log(initialProductDetail);
+    useEffect(() => {
+        document.title = title;
+    }, []);
 
     return (
         <>

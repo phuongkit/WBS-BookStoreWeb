@@ -3,12 +3,8 @@ import axios from 'axios';
 import { handleLogout, postLogout } from '../redux/user/userApi';
 import swal from 'sweetalert';
 
-//const apiProduction = 'https://json-kali.onrender.com';
-// const apiProduction = 'https://jsonserv.glitch.me';
-// const apiDev = 'https://jsonserv.glitch.me';
-
-const apiProduction = 'http://localhost:8080/api/v1';
-const apiDev = 'http://localhost:8080/api/v1';
+const apiProduction = process.env.BACKEND_URL + '/api/v1';
+const apiDev = process.env.BACKEND_URL+ '/api/v1';
 
 const baseURL = process.env.NODE_ENV === 'production' ? apiProduction : apiDev;
 
@@ -62,7 +58,7 @@ axiosClient.interceptors.response.use(
         const { response } = error;
         console.log(error);
         // const { data } = error.response;
-        if (response.status === 401) {
+        if (response?.status === 401) {
             swal({
                 title: 'Thông báo',
                 text: 'Vui lòng đăng nhập để thực hiện chức năng này',
@@ -73,7 +69,7 @@ axiosClient.interceptors.response.use(
         // if (error.hasOwnProperty('code') && data.hasOwnProperty('message')) {
         //     return Promise.reject(createError(response.status, data['status'], data['message'], "error occurred"));
         // }
-        return Promise.reject(error.response.data);
+        return Promise.reject(error?.response?.data);
     },
 );
 export default axiosClient;

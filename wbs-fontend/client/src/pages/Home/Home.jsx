@@ -4,9 +4,11 @@ import validate from 'jquery-validation';
 import './Home.scss';
 import { ProductBlock } from '@Components/ProductBlock';
 import { EHomeOption } from '~/utils';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { vnpay } from '../../services/payment';
 import swal from 'sweetalert';
+import { getUserByToken } from '../../redux/user/userApi';
+import { GOOGLE_AUTH_URL } from '../../utils/constants';
 
 var jQueryBridget = require('jquery-bridget');
 var Isotope = require('isotope-layout');
@@ -14,10 +16,12 @@ var $ = require('jquery');
 jQueryBridget('isotope', Isotope, $);
 
 function Home({ title }) {
+    const location = useLocation();
+    const dispatch = useDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     useEffect(() => {
-        const clearParam = async () => {
+        const clearParamByVNPay = async () => {
             if (searchParams && searchParams.get('vnp_ResponseCode')) {
                 const params = [];
 
@@ -39,12 +43,23 @@ function Home({ title }) {
                         icon: 'error',
                     });
                 }
-                console.log(param);
                 await vnpay.getReturnVNPay(param);
-                navigate('/');
             }
         };
-        clearParam();
+        const clearParamByGoogle = async () => {
+            let token = searchParams.get('token');
+            localStorage.setItem('token', JSON.stringify(token));
+            getUserByToken(dispatch, token)
+        }
+        if (searchParams) {
+            if (searchParams.get('vnp_ResponseCode')) {
+                clearParamByVNPay();
+            } else if (searchParams.get('token')) {
+                clearParamByGoogle();
+            }
+            navigate('/');
+        }
+        document.title = title;
     }, []);
     //hieu ung header va nut backtotop
     $('#backtotop').on('click', function () {

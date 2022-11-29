@@ -1,7 +1,7 @@
 import React from 'react';
 import './datatable.scss';
 import { DataGrid } from '@mui/x-data-grid';
-import { oderColumns } from '../datablesource/datablesource';
+import { orderColumns } from '../datablesource/datablesource';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -77,7 +77,7 @@ const Datatable = () => {
                 }).then(async (reason) => {
                     if (reason !== null) {
                         let data = {
-                            status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
+                            status: ENUM.EOrderStatus.ORDER_CANCELLED.index,
                             log: reason,
                             shipOrderCode: null,
                             expectedDeliveryTime: null,
@@ -93,7 +93,6 @@ const Datatable = () => {
                             });
                         } else {
                             updateStatusOrderApi(dispatch, order.id, data);
-
                             swal({
                                 title: 'Thành công',
                                 text: 'Hủy đơn hàng thành công',
@@ -104,37 +103,6 @@ const Datatable = () => {
                 });
             }
         });
-
-        // let result = confirm('Bạn có muốn hủy đơn này không');
-        // if (result) {
-        //     let reason = prompt('Nhập lý do hủy đơn hàng này', 'Không đủ hàng');
-        //     if (reason !== null) {
-        //         let data = {
-        //             status: ENUM.EOrderStatus.ORDER_CANCELLED.name,
-        //             log: reason,
-        //             shipOrderCode: null,
-        //             expectedDeliveryTime: null,
-        //         };
-        //         if (order?.shipOrderCode) {
-        //             let res = await ghn.cancelOrderGHN(order.shipOrderCode);
-        //             // if (res.data?.data?.result) {
-        //             updateStatusOrderApi(dispatch, order.id, data);
-        //             swal({
-        //                 title: 'Thành công',
-        //                 text: 'Hủy đơn hàng thành công',
-        //                 icon: 'success',
-        //             });
-        //         } else {
-        //             updateStatusOrderApi(dispatch, order.id, data);
-
-        //             swal({
-        //                 title: 'Thành công',
-        //                 text: 'Hủy đơn hàng thành công',
-        //                 icon: 'success',
-        //             });
-        //         }
-        //     }
-        // }
     };
 
     const actionColumn = [
@@ -145,12 +113,12 @@ const Datatable = () => {
             renderCell: (params) => {
                 return (
                     <div className="cellAction text-[12px]">
-                        {params.row.status === ENUM.EOrderStatus.ORDER_PENDING.name && (
+                        {params.row.status === ENUM.EOrderStatus.ORDER_PENDING.index && (
                             <div className="updateButton" onClick={() => handleAccept(params.row)}>
                                 Accept
                             </div>
                         )}
-                        {params.row.status !== ENUM.EOrderStatus.ORDER_CANCELLED.name && (
+                        {params.row.status !== ENUM.EOrderStatus.ORDER_CANCELLED.index && (
                             <div className="deleteButton" onClick={() => handleCancel(params.row)}>
                                 Cancel
                             </div>
@@ -194,7 +162,7 @@ const Datatable = () => {
                 getRowId={(row) => row.id}
                 className="datagrid "
                 rows={orderList || []}
-                columns={oderColumns.concat(actionColumn)}
+                columns={orderColumns.concat(actionColumn)}
                 pageSize={8}
                 rowsPerPageOptions={[8]}
                 checkboxSelection

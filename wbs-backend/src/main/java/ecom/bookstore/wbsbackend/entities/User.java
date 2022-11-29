@@ -46,7 +46,7 @@ public class User implements OAuth2User, UserDetails {
   //  private boolean isChangedUsername;
 
   @Column(name = "password", length = 64)
-  @NotNull(message = "An password is required!")
+//  @NotNull(message = "An password is required!")
   private String password;
 
   @Column(name = "first_name", length = 45)
@@ -109,7 +109,7 @@ public class User implements OAuth2User, UserDetails {
   @JoinColumn(name = "avatar_id")
   private Image avatar;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne
   @JoinColumn(name = "role_id")
   private Role role;
 

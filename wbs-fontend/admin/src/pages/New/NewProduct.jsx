@@ -8,6 +8,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getAllCategoriesApi } from '../../redux/category/categoriesApi';
 import { createProduct, getProductByIdApi, updateProduct } from '../../redux/product/productsApi';
 import { getAllProductApi } from '../../redux/product/productsApi';
+import { getAllAuthorsApi } from "../../redux/author/authorsApi";
+import { getAllGenresApi } from "../../redux/genre/genresApi";
+import { getAllPublishersApi } from "../../redux/publisher/publishersApi";
+import { getAllSuppliersApi } from "../../redux/supplier/suppliersApi";
+import { getAllTranslatorsApi } from "../../redux/translator/tranlatorsApi";
+import { EProductStatus } from '../../utils';
+
 const New = ({ title, action, isUpdate }) => {
     const { productId } = useParams();
     console.log('isUpdate', isUpdate);
@@ -22,6 +29,11 @@ const New = ({ title, action, isUpdate }) => {
     useEffect(() => {
         getAllCategoriesApi(dispatch);
         getAllProductApi(dispatch);
+        getAllAuthorsApi(dispatch);
+        getAllGenresApi(dispatch);
+        getAllPublishersApi(dispatch);
+        getAllSuppliersApi(dispatch);
+        getAllTranslatorsApi(dispatch);
     }, []);
     const categoriesList = useSelector((state) => state.categories?.allCategory?.data) || [];
     const authorList = useSelector((state) => state.authors.allAuthor.data) || [];
@@ -49,24 +61,6 @@ const New = ({ title, action, isUpdate }) => {
             getProductByIdApi(dispatch, productId);
         }
     }, [productId]);
-    // const getLengthProduct = async () => {
-    //   try {
-    //     const res = await axios.get("/product/getLength");
-    //     setProductState(res.data);
-    //   } catch (err) {
-    //     return err;
-    //   }
-    // };
-
-    // //Load trang
-    // useEffect(() => {
-    //   if (user?.accessToken) {
-    //     get1Product(user?.accessToken, dispatch, productid);
-    //     getLengthProduct();
-    //   }
-
-    //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
 
     async function getFileFromUrl(url, urls, defaultType = 'image/png') {
         let name = url.split('/').pop();
@@ -99,7 +93,7 @@ const New = ({ title, action, isUpdate }) => {
             getFileFromUrl(product.img, product.gallery);
             setName(product.name);
             setPrice(product.originPrice);
-            setCategory(categoriesList.find((item) => item.title === product.categoryName)?.id);
+            setCategory(categoriesList.find((item) => item.name === product.categoryName)?.id);
             setAmount(product.availableQuantity);
             setDescription(product.description);
             setStatus(product.status);
@@ -115,14 +109,13 @@ const New = ({ title, action, isUpdate }) => {
             standCost: 0,
             listPrice: Number(price),
             quantity: Number(amount),
-            shopId: Number(getuser.shopId),
-            status: 'PRODUCT_UN_TRADING',
+            status: EProductStatus.PRODUCT_UN_TRADING.index,
+            authors: [Number(author_id)],
             categoryId: Number(category_id),
-            descriptions: {
-                additionalProp1: 'string',
-                additionalProp2: 'string',
-                additionalProp3: 'string',
-            },
+            publisherId: Number(publisher_id),
+            supplierId: Number(supplier_id),
+            translators: Number(translator_id) ? [Number(translator_id)] : [],
+            description: '',
             location: getlocationed[0] || '',
         };
         console.log(newProduct);
@@ -151,11 +144,6 @@ const New = ({ title, action, isUpdate }) => {
                 <div className="bottom">
                     <div className="left">
                         <img src={file ? URL.createObjectURL(file[0]) : ``} alt="" />
-                        {/* <CardMedia
-              image={file || ''}
-              title='Title'
-              
-            /> */}
                     </div>
                     <div className="right">
                         <form onSubmit={handleInsert}>
@@ -163,13 +151,6 @@ const New = ({ title, action, isUpdate }) => {
                                 <label htmlFor="file">
                                     Image: <DriveFolderUploadOutlinedIcon className="icon" />
                                 </label>
-                                {/* <FileBase64
-                  accept='image/*'
-                  multiple={true}
-                  type='file'
-                  
-                  onDone={({ base64 }) => setFile(base64)}
-                /> */}
                                 <input
                                     type="file"
                                     id="file"
@@ -183,13 +164,6 @@ const New = ({ title, action, isUpdate }) => {
                                 <label htmlFor="files">
                                     Image: <DriveFolderUploadOutlinedIcon className="icon" />
                                 </label>
-                                {/* <FileBase64
-                  accept='image/*'
-                  multiple={true}
-                  type='file'
-                  
-                  onDone={({ base64 }) => setFile(base64)}
-                /> */}
                                 <input
                                     type="file"
                                     id="files"
@@ -201,16 +175,16 @@ const New = ({ title, action, isUpdate }) => {
 
                             <div className="formInput">
                                 <label>Name</label>
-                                <input value={name} type="text" onChange={(e) => setName(e.target.value)} />
+                                <input value={name} type="text" onChange={(e) => setName(e.target.value)} required/>
                             </div>
                             <div className="formInput">
                                 <label>Price</label>
-                                <input value={price} type="text" onChange={(e) => setPrice(e.target.value)} />
+                                <input value={price} type="text" onChange={(e) => setPrice(e.target.value)} required/>
                             </div>
 
                             <div className="formInput">
                                 <label>Amount</label>
-                                <input value={amount} type="text" onChange={(e) => setAmount(e.target.value)} />
+                                <input value={amount} type="text" onChange={(e) => setAmount(e.target.value)} required/>
                             </div>
 
                             <div className="formInput">
@@ -257,7 +231,7 @@ const New = ({ title, action, isUpdate }) => {
                                             <option
                                                 key={index}
                                                 value={item.id}
-                                                selected={isUpdate && product && product.authors.contain(item.fullName)}
+                                                selected={isUpdate && product && product.authors?.includes(item.fullName)}
                                                 onSelect={() => setAuthor(item.id)}
                                             >
                                                 {item.fullName}
@@ -317,12 +291,20 @@ const New = ({ title, action, isUpdate }) => {
                                         setTranslator(e.target.value);
                                     }}
                                 >
+                                    <option
+                                                key="0"
+                                                value="-1"
+                                                selected={!isUpdate}
+                                                onSelect={() => setTranslator(0)}
+                                            >
+                                                Không có người dịch
+                                            </option>
                                     {translatorList &&
                                         translatorList?.map((item, index) => (
                                             <option
                                                 key={index}
                                                 value={item.id}
-                                                selected={isUpdate && product && product.translators.contain(item.fullName)}
+                                                selected={isUpdate && product && product.translators?.includes(item.fullName)}
                                                 onSelect={() => setTranslator(item.id)}
                                             >
                                                 {item.fullName}
@@ -330,22 +312,8 @@ const New = ({ title, action, isUpdate }) => {
                                         ))}
                                 </select>
                             </div>
-                            {/* 
-                            <select
-                                className="table-group-action-input form-control"
-                                onChange={(e) => setBrand(e.target.value)}
-                            >
-                                {brandList?.map((item, index) => (
-                                    <option
-                                        key={index}
-                                        value={item.id}
-                                        selected={isUpdate && product && item.name === product.brand}
-                                        onSelect={() => setBrand(item.id)}
-                                    >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select> */}
+                            <div className="formInput">
+                            </div>
 
                             <button type="submit">Send</button>
                         </form>

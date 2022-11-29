@@ -5,7 +5,8 @@ import { brands } from '@fortawesome/fontawesome-svg-core/import.macro';
 import './SignInForm.scss';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL } from '../../utils/constants';
 
 
 function SignInForm({ handleSubmit }) {
@@ -102,13 +103,13 @@ function SignInForm({ handleSubmit }) {
                                     Đăng nhập
                                 </button>
                                 <hr className="my-4" />
-                                <button className="btn btn-lg btn-google btn-block text-uppercase" type="submit">
+                                <a href={GOOGLE_AUTH_URL} className="btn btn-lg btn-google btn-block text-uppercase" type="submit">
                                     <FontAwesomeIcon icon={faGoogle} className="mr-2" />
                                     Đăng nhập bằng Google
-                                </button>
-                                <button className="btn btn-lg btn-facebook btn-block text-uppercase" type="submit">
+                                </a>
+                                <a href={FACEBOOK_AUTH_URL} className="btn btn-lg btn-facebook btn-block text-uppercase" type="submit">
                                     <FontAwesomeIcon icon={faFacebook} className="mr-2" /> Đăng nhập bằng Facebook
-                                </button>
+                                </a>
                             </form>
                         </div>
                     </div>

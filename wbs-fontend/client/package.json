@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.jsx",
   "scripts": {
-    "start": "webpack-dev-server --mode development --open --hot",
+    "start": "webpack-dev-server --mode development --open --hot --history-api-fallback",
     "build": "webpack --mode production",
     "format": "prettier --write \"src/**/*.{js,jsx}\""
   },

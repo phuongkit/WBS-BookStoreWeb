@@ -30,5 +30,7 @@ public interface UserService extends UserDetailsService {
 
   UserResponseDTO updateUser(Integer id, UserCreationDTO creationDTO, MultipartFile imageFile);
 
+  UserResponseDTO updateStatusUser(Integer id, boolean enable);
+
   UserResponseDTO deleteUserById(Integer id);
 }

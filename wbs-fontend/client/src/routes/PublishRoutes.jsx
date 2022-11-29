@@ -34,7 +34,7 @@ export const publishRoutes = [
         ),
     },
     {
-        path: 'account',
+        path: '/account',
         element: (
             <Suspense fallback={<Loading />}>
                 <Account title="Tài khoản - DealBook.com" />
@@ -46,7 +46,7 @@ export const publishRoutes = [
         element: (
             <Suspense fallback={<Loading />}>
                 <ProductDetailProvider>
-                    <ProductDetail />
+                    <ProductDetail title="Thông tin sản phẩm - DealBook.com"/>
                 </ProductDetailProvider>
             </Suspense>
         ),
@@ -56,7 +56,7 @@ export const publishRoutes = [
         // path: 'tim-kiem',
         element: (
             <Suspense fallback={<Loading />}>
-                <Search title="Tìm kiếm | Thegioididong.com" />
+                <Search title="Tìm kiếm - DealBook.com" />
             </Suspense>
         ),
         children: [
@@ -66,7 +66,7 @@ export const publishRoutes = [
                 // path: 'tim-kiem',
                 element: (
                     <Suspense fallback={<Loading />}>
-                        <Search title="Tìm kiếm | Thegioididong.com" />
+                        <Search title="Tìm kiếm | DealBook.com" />
                     </Suspense>
                 ),
             },
@@ -76,7 +76,7 @@ export const publishRoutes = [
         path: ':categorySlug',
         element: (
             <Suspense fallback={<Loading />}>
-                <Category title="Tìm kiếm | Thegioididong.com" />
+                <Category title="Danh mục | DealBook.com" />
             </Suspense>
         ),
     }

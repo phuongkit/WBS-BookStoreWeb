@@ -1,6 +1,9 @@
 const path = require("path");
-require('dotenv').config()
+const dotenv = require('dotenv');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+
+dotenv.config();
 
 module.exports = {
   entry: "./src/index.jsx", // Dẫn tới file index.js ta đã tạo
@@ -26,6 +29,7 @@ module.exports = {
     alias: {
       '~' : path.resolve(__dirname, './src'),
       '@Components': path.resolve(__dirname, './src/components'),
+      process: "process/browser",
       },
   },
   mode: 'production',
@@ -34,6 +38,9 @@ module.exports = {
 	new HtmlWebpackPlugin({
       template: "./public/index.html"
     }),
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(process.env)
+   }),
   ],
   devServer: {
     host: 'localhost',

@@ -33,7 +33,6 @@ public class UserResponseDTO {
   private AddressResponseDTO address;
   private boolean enabled;
   private String avatar;
-//  private ERole[] roles;
   private int role;
   private Date createdAt;
   private Date updatedAt;

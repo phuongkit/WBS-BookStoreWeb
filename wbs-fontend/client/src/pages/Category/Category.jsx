@@ -8,7 +8,7 @@ import './Category.scss';
 import Paging from '../../components/Paging/Paging';
 import { useState } from 'react';
 
-function Category() {
+function Category({title}) {
     const location = useLocation();
     const dispatch = useDispatch();
     const { categorySlug } = useParams();
@@ -25,7 +25,9 @@ function Category() {
             getAllProductByCategoryIdApi(dispatch, category.id, {page: currentPageNumber});
         }
     }, [category?.id, currentPageNumber]);
-    console.log(location.pathname)
+    useEffect(() => {
+        document.title = title;
+    }, []);
     return (
         <>
             {/* <!-- breadcrumb  --> */}

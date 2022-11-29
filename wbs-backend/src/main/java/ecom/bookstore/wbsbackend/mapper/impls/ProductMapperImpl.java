@@ -144,6 +144,8 @@ public class ProductMapperImpl implements ProductMapper {
     }
     responseDTO.setDescription(entity.getDescription());
     responseDTO.setStatus(entity.getStatus());
+    responseDTO.setCreatedAt(entity.getCreatedAt());
+    responseDTO.setUpdatedAt(entity.getUpdatedAt());
     return responseDTO;
   }
 

@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { authService, userService } from '../../services';
-import { getPageUser, login, logout } from './userSlice';
+import { getPageUser,updateUser , login, logout } from './userSlice';
 import swal from 'sweetalert';
 
 export const getAllUsersApi = async (dispatch) => {
@@ -92,3 +92,12 @@ export const postLogout = (dispatch = null, navigate = null) => {
         navigate('/');
     }
 };
+
+export const updateEnableUserApi = async (dispatch, id, enable) => {
+    try {
+        let res = await userService.updateEnableUser(id, enable);
+        dispatch(updateUser(res.data));
+    } catch (err) {
+        console.error(err);
+    };
+}

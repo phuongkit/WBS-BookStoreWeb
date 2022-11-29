@@ -6,7 +6,7 @@ import SlideProduct from '../SlideProduct';
 import './ProductBlock.scss';
 import { getAllProductByOptionApi } from '../../redux/product/productsApi';
 import ProductCard from '../ProductCard';
-import { EHomeOption } from '../../utils/variableDefault';
+import { EHomeOption } from '../../utils';
 
 function ProductBlock({ homeOption }) {
     const dispatch = useDispatch();

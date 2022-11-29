@@ -52,34 +52,7 @@ public class PaymentController {
   }
 
   @PostMapping("/vnpay/return")
-  public String getVNPayReturn(HttpServletRequest request, HttpServletResponse resp)
-      throws IOException {
-    //    Map fields = new HashMap();
-    //    for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {
-    //      String fieldName = (String) params.nextElement();
-    //      String fieldValue = request.getParameter(fieldName);
-    //      if ((fieldValue != null) && (fieldValue.length() > 0)) {
-    //        fields.put(fieldName, fieldValue);
-    //      }
-    //    }
-    //    String vnp_SecureHash = request.getParameter("vnp_SecureHash");
-    //    if (fields.containsKey("vnp_SecureHashType")) {
-    //      fields.remove("vnp_SecureHashType");
-    //    }
-    //    if (fields.containsKey("vnp_SecureHash")) {
-    //      fields.remove("vnp_SecureHash");
-    //    }
-    //    String signValue = Config.hashAllFields(fields);
-    //    if (signValue.equals(vnp_SecureHash)) {
-    //      if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
-    //        return "GD Thanh cong";
-    //      } else {
-    //        return "GD Khong thanh cong";
-    //      }
-    //
-    //    } else {
-    //      return "Chu ky khong hop le";
-    //    }
+  public String getVNPayReturn(HttpServletRequest request, HttpServletResponse resp) {
     try {
       Map fields = new HashMap();
       for (Enumeration params = request.getParameterNames(); params.hasMoreElements(); ) {

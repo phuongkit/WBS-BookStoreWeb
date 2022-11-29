@@ -23,15 +23,15 @@ function Header() {
     const dispatch = useDispatch();
     getAllCategoriesHierarchyApi(dispatch);
     const token = localStorage.getItem('token');
-    const cartAmount =
-        // token ? 0 :
-        localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems'))?.length : 0;
-    const user = token
-        ? localStorage.getItem('user') !== null
-            ? JSON.parse(localStorage.getItem('user'))
-            : useSelector((state) => state.users.auth.currentUser)
-        : undefined;
+    const cartAmount = localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems'))?.length : 0;
+    let user = useSelector(state => state.users.auth.currentUser);
 
+    if (!user || (user && (Object.keys(user).length === 0 || user.constructor !== Object))) {
+        user = localStorage.getItem('user') !== null
+        ? JSON.parse(localStorage.getItem('user'))
+        : null;
+    }
+        
     useEffect(() => {
         if (token && !user) {
             getUserByToken(dispatch);
@@ -178,19 +178,32 @@ function Header() {
                                 {user ? (
                                     <>
                                         <li
-                                            className="nav-item account d-flex btn dropdown"
+                                            className="nav-item account d-flex btn dropdown tw-mr-10"
                                             type="button"
                                             // data-toggle="dropdown"
                                         >
-                                            <a href="/account" className="btn btn-secondary rounded-circle">
-                                                <FontAwesomeIcon icon={solid('user')} />
+                                            <a href="/account" className="btn btn-secondary rounded-circle tw-relative">
+                                                {user?.avatar ? (
+                                                    <img
+                                                        style={{
+                                                            width: '42px',
+                                                            height: '40px',
+                                                            backgroundColor: '#dfdfdf',
+                                                            border: '#cacaca',
+                                                        }}
+                                                        className="rounded-circle tw-absolute tw-top-0 tw-left-0"
+                                                        src={user?.avatar}
+                                                    />
+                                                ) : (
+                                                    <FontAwesomeIcon icon={solid('user')} />
+                                                )}
                                             </a>
                                             <div className="info-logout">
                                                 <a
                                                     className="nav-link text-dark text-uppercase username"
                                                     href="/account"
                                                 >
-                                                    {getName(user?.lastName + ' ' + user?.firstName)}
+                                                    {getName(user?.fullName)}
                                                 </a>
                                                 {/* <a className="nav-link text-dark logout" href="#">
                                                     Thoát

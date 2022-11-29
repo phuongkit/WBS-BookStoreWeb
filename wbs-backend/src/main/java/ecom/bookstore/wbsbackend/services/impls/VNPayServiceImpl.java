@@ -46,13 +46,6 @@ public class VNPayServiceImpl implements VNPayService {
                                    creationDTO.getOrderId(),
                                    "totalPrice",
                                    creationDTO.getTotalPrice()));
-    Order entityFound =
-        this.orderRepo
-            .findById(creationDTO.getOrderId())
-            .orElseThrow(
-                () ->
-                    new ResourceNotFoundException(
-                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Order.class.getSimpleName(), "Id", creationDTO.getOrderId())));
 
     VNPayResponseDTO responseDTO = new VNPayResponseDTO();
     String vnp_TmnCode = Config.vnp_TmnCode;
@@ -78,6 +71,13 @@ public class VNPayServiceImpl implements VNPayService {
     responseDTO.setExpireDate(cld.getTime());
     String vnp_ExpireDate = formatter.format(cld.getTime());
 
+    Order entityFound =
+        this.orderRepo
+            .findById(creationDTO.getOrderId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, Order.class.getSimpleName(), "Id", creationDTO.getOrderId())));
     entityFound.setPaymentOrderCode(vnp_TxnRef);
     this.orderRepo.save(entityFound);
 

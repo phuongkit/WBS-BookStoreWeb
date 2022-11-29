@@ -1,5 +1,5 @@
 import { toAddressSlug, toFullAddress } from '../../utils/utils';
-import { GHN_CONFIG } from '../../utils/variableDefault';
+import { GHN_CONFIG } from '../../utils';
 import axiosGHN from './axios.config';
 
 export const ghn = {
@@ -7,14 +7,14 @@ export const ghn = {
         let addressId = await this.getAddressGHN(order?.address);
         let items = order?.orderItems.map((item) => {
             return {
-                name: item.product?.name,
-                code: item.product?.slug,
+                name: item.productId?.name,
+                code: item.productId?.slug,
                 quantity: item.quantity,
-                price: item.product?.salePrice,
-                weight: item.product?.weight || GHN_CONFIG.weight,
-                length: Number.parseInt(item.product?.packagingLength || GHN_CONFIG.length),
-                width: Number.parseInt(item.product?.packagingWidth || GHN_CONFIG.width),
-                height: Number.parseInt(Math.floor(item.product?.packagingHeight || GHN_CONFIG.height)),
+                price: item.productId?.salePrice,
+                weight: item.productId?.weight || GHN_CONFIG.weight,
+                length: Number.parseInt(item.productId?.packagingLength || GHN_CONFIG.length),
+                width: Number.parseInt(item.productId?.packagingWidth || GHN_CONFIG.width),
+                height: Number.parseInt(Math.floor(item.productId?.packagingHeight || GHN_CONFIG.height)),
                 category: {
                     level1: 'Áo',
                 },
@@ -58,7 +58,7 @@ export const ghn = {
             items: items,
         };
         console.log('data', data);
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', data);
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', data);
     },
     createOrderGHN(order) {
         let items = order?.orderItems.map((item) => {
@@ -114,13 +114,13 @@ export const ghn = {
             items: items,
         };
         console.log('data', data);
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', data);
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', data);
     },
     cancelOrderGHN(orderCode) {
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel', {order_codes: [orderCode]});
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel', {order_codes: [orderCode]});
     },
     getOrderDetailGHN(orderCode) {
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
     },
     async getAddressGHN(address) {
         address = toAddressSlug(address);
@@ -166,16 +166,16 @@ export const ghn = {
         };
     },
     getProvinceList() {
-        return axiosGHN.get('https://online-gateway.ghn.vn/shiip/public-api/master-data/province');
+        return axiosGHN.get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
     },
     getDistrictList(provinceId) {
         return axiosGHN.get(
-            `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceId}`,
+            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceId}`,
         );
     },
     getWardList(districtId) {
         return axiosGHN.get(
-            `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
+            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
         );
     },
 };

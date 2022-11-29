@@ -5,6 +5,7 @@ import ecom.bookstore.wbsbackend.entities.Address;
 import ecom.bookstore.wbsbackend.entities.User;
 import ecom.bookstore.wbsbackend.mapper.AddressMapper;
 import ecom.bookstore.wbsbackend.mapper.AuthMapper;
+import ecom.bookstore.wbsbackend.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +27,6 @@ public class AuthMapperImpl implements AuthMapper {
     }
     AuthResponse responseDTO = new AuthResponse();
 
-    responseDTO.setEmail(entity.getEmail());
-    responseDTO.setPhone(entity.getPhone());
     responseDTO.setAccessToken(accessToken);
 
     responseDTO.setId(entity.getId());
@@ -35,9 +34,10 @@ public class AuthMapperImpl implements AuthMapper {
 //    responseDTO.setChangedUsername(entity.isChangedUsername());
     responseDTO.setFirstName(entity.getFirstName());
     responseDTO.setLastName(entity.getLastName());
-//    responseDTO.setEmail(entity.getEmail());
+    responseDTO.setFullName(Utils.getFullNameFromLastNameAndFirstName(entity.getLastName(), entity.getFirstName()));
+    responseDTO.setEmail(entity.getEmail());
     responseDTO.setEmailVerified(entity.isEmailVerified());
-//    responseDTO.setPhone(entity.getPhone());
+    responseDTO.setPhone(entity.getPhone());
     responseDTO.setPhoneVerified(entity.isPhoneVerified());
     responseDTO.setIdentityCard(entity.getIdentityCard());
     responseDTO.setBirthDate(entity.getBirthDate());

@@ -1,5 +1,5 @@
 import { commentService, productService, ratingService } from '../../services';
-import { EHomeOption, ENUM } from '../../utils/variableDefault';
+import { EHomeOption } from '../../utils';
 import {
     getAllProducts,
     getAllNewProducts,

@@ -6,10 +6,10 @@ import { getPrice, toAddressSlug } from '../../utils/utils';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { updateItem, removeItem, clearCart } from '../../redux/shopping-cart/cartItemsSlide';
-import { postOrders } from '../../redux/order/ordersApi';
+import { createOrder } from '../../redux/order/orderSlice';
 import LocationForm from '../../components/LocationForm';
 import './Cart.scss';
-import { MESSAGE, EGender, EPayment, EShippingMethod } from '../../utils/variableDefault';
+import { MESSAGE, EGender, EPayment, EShippingMethod, EOrderStatus } from '../../utils';
 import validate from 'jquery-validation';
 import { getUserByToken } from '../../redux/user/userApi';
 import swal from 'sweetalert';
@@ -130,7 +130,7 @@ function Cart() {
         paid: false,
         note: '',
         orderItems: [],
-        status: EOrderStatus.ORDER_PENDING.name,
+        totalPriceProduct: totalPrice,
     };
     let orderItem = {
         productId: 0,
@@ -145,7 +145,7 @@ function Cart() {
         let sex = 2;
         let orderItemDetails = cartItems.map((value) => {
             let item = orderItem;
-            item.productId = value.id;
+            item.productId = value;
             item.quantity = value.quantity;
             item.saleName = value.tag;
             item.note = value?.note ? value.note : '';
@@ -166,8 +166,9 @@ function Cart() {
             note: $('#inputNoteOrder').val(),
             orderItems: orderItemDetails,
         };
-        postOrders(dispatch, orderDetail, navigate);
+        dispatch(createOrder(orderDetail));
         dispatch(clearCart());
+        navigate('/order');
     };
     return (
         <>

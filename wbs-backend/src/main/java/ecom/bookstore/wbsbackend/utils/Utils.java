@@ -233,13 +233,9 @@ public class Utils {
   }
 
   public static String getFullNameFromLastNameAndFirstName(String lastName, String firstName) {
-    String fullName = lastName == null ? "" : lastName;
-    if (Objects.equals(fullName, "")) {
-      fullName = firstName == null ? "" : firstName;
-    } else {
-      fullName = (firstName == null ? "" : " " + firstName);
-    }
-    return fullName;
+    String fullName = lastName != null ? lastName : "";
+    fullName = fullName + " " + (firstName != null ? firstName : "");
+    return fullName.trim();
   }
 
   public static boolean checkValidDiscount(Discount discount) {

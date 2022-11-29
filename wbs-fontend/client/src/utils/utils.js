@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { REGEXP } from './variableDefault';
+import { REGEXP } from './constants';
 
 export const getNameBook = (name, reprintYear) => {
     return reprintYear ? name + ` (Tái bản ${reprintYear})` : name;
@@ -58,7 +58,7 @@ export const pseudo = (pseudoSelector, style) => {
 };
 
 export const getName = (name) => {
-    if (name.length > 12) {
+    if (name?.length > 20) {
         name = name.slice(0, 12) + '...';
     }
     return name;

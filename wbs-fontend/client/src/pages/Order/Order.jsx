@@ -7,7 +7,6 @@ import { numberWithCommas } from '../../utils';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { customerService, orderService } from '~/services';
 import { momo, vnpay } from '../../services/payment';
-import { updatePaymentOrders } from '~/redux/order/ordersApi';
 import { EGender, EOrderStatus, EPayment } from '../../utils';
 import { deleteOrdersByIdApi } from '../../redux/order/ordersApi';
 import { ghn } from '../../services/shipping/ghn.service';
@@ -20,7 +19,6 @@ function Order({ title }) {
         ? JSON.parse(localStorage.getItem('order'))
         : useSelector((state) => state.orders.order.data);
     if (!order) {
-        console.log('orer', title);
         navigate('/');
     }
     const hasOrder = Object.keys(order).length > 0 && order.constructor === Object;
@@ -38,43 +36,42 @@ function Order({ title }) {
     }
     const handleConfirm = async () => {
         const payment = getPayment();
-        console.log('payment', payment);
-        // const data = { ...order, payment };
-        const data = {
-            ...payment,
-            ...ship,
-            status:
-                payment.payment > 0
-                    ? EOrderStatus.ORDER_AWAITING_PAYMENT.name
-                    : EOrderStatus.ORDER_PENDING.name,
-        };
-        updatePaymentOrders(dispatch, data, order.id);
-        localStorage.removeItem('order');
-        if (payment.payment === EPayment.MOMO.index) {
-            const dataMomo = {
-                orderId: info.id,
-                orderInfo: `${customer.fullName} thanh toán đơn hàng ${info.id} với MoMo`,
-                redirectUrl: window.location.origin +'/#/',
-                amount: 5000,
-                extraData: '',
-            };
-            const res = await momo.createMomoPayment(dataMomo);
-            localStorage.removeItem('order');
-            window.location = res.data.payUrl;
-        } else if (payment.payment === EPayment.VNPAY.index) {
-            console.log(window.location.origin);
-            const dataVNPay = {
-                orderId: info.id,
-                // orderInfo: `${customer.fullName} thanh toán đơn hàng ${info.id} với MoMo`,
-                fullName: customer.fullName,
-                redirectUrl: window.location.origin +'/#/',
-                totalPrice: info.totalPrice,
-                // extraData: '',
-            };
-            const res = await vnpay.createVNPayPayment(dataVNPay);
-            localStorage.removeItem('order');
-            window.location = res.data.payUrl;
-        } else {
+        let orderItems = [...order.orderItems].map((value) => ({ ...value, productId: value.productId?.id }));
+        const data = { ...order, orderItems, ...ship, ...payment };
+        try {
+            const res = await orderService.postOrder(data);
+            if (res?.status === 'CREATED') {
+                if (data.payment === EPayment.MOMO.index) {
+                    const dataMomo = {
+                        orderId: res?.data?.id,
+                        orderInfo: `${order.fullName} thanh toán đơn hàng ${order.id} với MoMo`,
+                        redirectUrl: window.location.origin,
+                        amount: 1000,
+                        extraData: '',
+                    };
+                    const resMomo = await momo.createMomoPayment(dataMomo);
+                    window.location = resMomo.data.payUrl;
+                } else if (data.payment === EPayment.VNPAY.index) {
+                    const dataVNPay = {
+                        orderId: res?.data?.id,
+                        // orderInfo: `${order.fullName} thanh toán đơn hàng ${order.id} với MoMo`,
+                        fullName: order.fullName,
+                        redirectUrl: window.location.origin,
+                        totalPrice: res?.data?.totalPriceProduct + res?.data?.transportFee,
+                        // extraData: '',
+                    };
+                    const resVNPay = await vnpay.createVNPayPayment(dataVNPay);
+                    window.location = resVNPay.data.payUrl || window.location.origin;
+                } else {
+                    alert('Tạo đơn hàng thành công');
+                    navigate('/');
+                }
+            } else {
+                alert(MESSAGE.ERROR_ACTION);
+                navigate('/');
+            }
+        } catch (err) {
+            alert(MESSAGE.ERROR_ACTION);
             navigate('/');
         }
     };
@@ -193,7 +190,10 @@ function Order({ title }) {
                                         <i className="info-order__dot-icon"></i>
                                         <span>
                                             <strong>
-                                                Tổng tiền: {numberWithCommas(Number(info.totalPrice + (ship.transportFee.transportFee || 0))) || 0}{' đ'}
+                                                Tổng tiền: {numberWithCommas(
+                                                    Number(ship.transportFee) + Number(order.totalPriceProduct) || 0
+                                                ) || 0}{' '}
+                                                {' đ'}
                                             </strong>
                                         </span>
                                     </span>

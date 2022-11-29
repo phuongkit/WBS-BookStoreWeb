@@ -66,7 +66,7 @@ public class Product {
   @Enumerated(EnumType.STRING)
   @Column(length = 50, nullable = false)
   @NotNull(message = "An status is required!")
-  private EProductStatus status;
+  private EProductStatus status = EProductStatus.PRODUCT_TRADING;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "category_id", nullable = false)
@@ -99,7 +99,7 @@ public class Product {
   private Series series;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "language_id", nullable = false)
+  @JoinColumn(name = "language_id")
   private Language language;
 
   @ManyToOne(fetch = FetchType.EAGER)
@@ -123,7 +123,7 @@ public class Product {
   @Enumerated(EnumType.STRING)
   @Column(name = "book_layout", length = 50, nullable = false)
   @NotNull(message = "An book layout is required!")
-  private EProductLayout bookLayout;
+  private EProductLayout bookLayout = EProductLayout.PAPERBACK;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(

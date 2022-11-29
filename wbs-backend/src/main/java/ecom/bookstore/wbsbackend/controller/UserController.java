@@ -103,6 +103,16 @@ public class UserController {
                                 this.userService.updateUser(id, userCreationDTO, imageFile));
   }
 
+  @PutMapping("/{id}/status")
+  @RolesAllowed({ERole.Names.ADMIN})
+  public ResponseObject<UserResponseDTO> updateStatusUser(
+      @RequestParam(name = "enabled", required = false, defaultValue = "false") boolean enable,
+      @PathVariable(name = "id") Integer id
+  ) {
+    return new ResponseObject<>(HttpStatus.OK, String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, branchName),
+                                this.userService.updateStatusUser(id, enable));
+  }
+
   @DeleteMapping("/{id}")
   @RolesAllowed({ERole.Names.ADMIN})
   public ResponseObject<UserResponseDTO> deleteUser(@PathVariable(name = "id") Integer id) {

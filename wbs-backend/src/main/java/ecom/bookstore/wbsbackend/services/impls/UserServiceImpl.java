@@ -8,6 +8,7 @@ import ecom.bookstore.wbsbackend.entities.keys.AddressKey;
 import ecom.bookstore.wbsbackend.exceptions.InvalidFieldException;
 import ecom.bookstore.wbsbackend.exceptions.ResourceAlreadyExistsException;
 import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
+import ecom.bookstore.wbsbackend.exceptions.UserNotPermissionException;
 import ecom.bookstore.wbsbackend.mapper.UserMapper;
 import ecom.bookstore.wbsbackend.models.enums.*;
 import ecom.bookstore.wbsbackend.repositories.RoleRepo;
@@ -377,6 +378,18 @@ public class UserServiceImpl implements UserService {
 
     return this.userMapper.userToUserResponseDTO(this.userRepo.save(userFound));
 
+  }
+
+  @Override public UserResponseDTO updateStatusUser(Integer id, boolean enable) {
+    this.LOGGER.info(String.format(Utils.LOG_UPDATE_OBJECT_BY_TWO_FIELD, branchName, "Id", id, "Enable", enable));
+    User userFound = this.userRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException(
+        String.format(Utils.OBJECT_NOT_FOUND_BY_FIELD, branchName, "ID", id)));
+    if (userFound.getRole().getName() == ERole.ROLE_ADMIN) {
+      throw new UserNotPermissionException();
+    } else {
+      userFound.setEnabled(enable);
+    }
+    return this.userMapper.userToUserResponseDTO(this.userRepo.save(userFound));
   }
 
   @Override public UserResponseDTO deleteUserById(Integer id) {

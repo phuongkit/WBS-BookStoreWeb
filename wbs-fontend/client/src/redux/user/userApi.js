@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import { authService, userService } from '../../services';
 import { getPageUser, login, logout } from './userSlice';
 import swal from 'sweetalert';
@@ -64,6 +63,8 @@ export const getUserByToken = async (dispatch) => {
     try {
         let res = await userService.getUserByToken();
         if (res.status === 'OK') {
+            delete res?.data?.tokenToken;
+            localStorage.setItem('user', JSON.stringify(res.data));
             dispatch(login(res.data));
         } else {
             dispatch(login(null));

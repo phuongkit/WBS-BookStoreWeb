@@ -1,5 +1,5 @@
 import { commentService, productService, ratingService } from '../../services';
-import { EHomeOption, ENUM } from '../../utils/variableDefault';
+import { EHomeOption, ENUM } from '../../utils';
 import {
     getAllProducts,
     getAllNewProducts,
@@ -72,12 +72,12 @@ export const getProductByIdApi = async (dispatch, id) => {
 
 export const createProduct = async (product, dispatch, navigate, productList) => {
     try {
-        const res = await productService.postProduct(product);
+        const res = await productService.createProduct(product);
         let products = { ...productList };
         products.content = products?.content || [];
         products.content = Array.from(products.content).push(res.data);
         dispatch(getPageProduct(products));
-        navigate('/admin/products');
+        navigate('/products');
     } catch (err) {
         console.error(err?.message);
     }
@@ -85,12 +85,12 @@ export const createProduct = async (product, dispatch, navigate, productList) =>
 
 export const updateProduct = async (id, product, dispatch, navigate, productList) => {
     try {
-        const res = await productService.putProduct(id, product);
+        const res = await productService.updateProductById(id, product);
         let products = { ...productList };
         products.content = products?.content || [];
         products.content = Array.from(products.content).map((item) => (item.id === res.data.id ? res.data : item));
         dispatch(getPageProduct(products));
-        navigate('/admin/products');
+        navigate('/products');
     } catch (err) {
         console.error(err?.message);
     }
@@ -98,13 +98,12 @@ export const updateProduct = async (id, product, dispatch, navigate, productList
 
 export const deleteProduct = async (id, dispatch, navigate, productList) => {
     try {
-        const res = await productService.deleteProduct(id);
+        const res = await productService.deleteProductById(id);
         let products = { ...productList };
-        console.log(products);
         products.content = products?.content || [];
         products.content = Array.from(products.content).filter((item) => item.id !== id);
         dispatch(getPageProduct(products));
-        navigate('/admin/products');
+        navigate('/products');
     } catch (err) {
         console.error(err?.message);
     }

@@ -10,6 +10,7 @@ import ecom.bookstore.wbsbackend.exceptions.ResourceNotFoundException;
 import ecom.bookstore.wbsbackend.mapper.ProductMapper;
 import ecom.bookstore.wbsbackend.models.enums.EHomeOption;
 import ecom.bookstore.wbsbackend.models.enums.EImageType;
+import ecom.bookstore.wbsbackend.models.enums.ELanguage;
 import ecom.bookstore.wbsbackend.models.enums.EProductStatus;
 import ecom.bookstore.wbsbackend.repositories.*;
 import ecom.bookstore.wbsbackend.services.ImageService;
@@ -53,6 +54,10 @@ public class ProductServiceImpl implements ProductService {
   @Autowired
   public void ImageService(ImageService imageService) {
     this.imageService = imageService;
+  }
+  private LanguageRepo languageRepo;
+  @Autowired public void LanguageRepo(LanguageRepo languageRepo) {
+    this.languageRepo = languageRepo;
   }
 
   private LocationService locationService;
@@ -318,6 +323,7 @@ public class ProductServiceImpl implements ProductService {
                               creationDTO.getTranslators()[0])));
       translators.add(translatorFound);
     }
+    Language languageFound = this.languageRepo.findByName(ELanguage.VN).orElse(null);
 
     Product product = new Product();
     product.setName(creationDTO.getName());
@@ -332,7 +338,7 @@ public class ProductServiceImpl implements ProductService {
     product.setPublisher(publisherFound);
     product.setSupplier(supplierFound);
     product.setTranslators(translators);
-
+    product.setLanguage(languageFound);
     // Set thumbnail
     if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
       Image thumbnailImage =
@@ -390,6 +396,62 @@ public class ProductServiceImpl implements ProductService {
                             Category.class.getSimpleName(),
                             "ID",
                             creationDTO.getCategoryId())));
+    Set<Author> authors = new HashSet<>();
+    // check category input is valid
+    if (creationDTO.getAuthors() != null && creationDTO.getAuthors().length > 0) {
+      Author authorFound =
+          this.authorRepo
+              .findById(creationDTO.getAuthors()[0])
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          String.format(
+                              Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                              Author.class.getSimpleName(),
+                              "ID",
+                              creationDTO.getAuthors()[0])));
+      authors.add(authorFound);
+    }
+    // check category input is valid
+    Publisher publisherFound =
+        this.publisherRepo
+            .findById(creationDTO.getPublisherId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(
+                            Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                            Publisher.class.getSimpleName(),
+                            "ID",
+                            creationDTO.getPublisherId())));
+    // check category input is valid
+    Supplier supplierFound =
+        this.supplierRepo
+            .findById(creationDTO.getSupplierId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format(
+                            Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                            Supplier.class.getSimpleName(),
+                            "ID",
+                            creationDTO.getSupplierId())));
+    Set<Translator> translators = new HashSet<>();
+    // check category input is valid
+    if (creationDTO.getTranslators() != null && creationDTO.getTranslators().length > 0) {
+      Translator translatorFound =
+          this.translatorRepo
+              .findById(creationDTO.getTranslators()[0])
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          String.format(
+                              Utils.OBJECT_NOT_FOUND_BY_FIELD,
+                              Translator.class.getSimpleName(),
+                              "ID",
+                              creationDTO.getTranslators()[0])));
+      translators.add(translatorFound);
+    }
 
     productFound.setName(creationDTO.getName());
     productFound.setSlug(Utils.toSlug(productFound.getName()) + "." + UUID.randomUUID().toString().replace("-", ""));
@@ -399,6 +461,10 @@ public class ProductServiceImpl implements ProductService {
     productFound.setQuantity(creationDTO.getQuantity());
     productFound.setStatus(creationDTO.getStatus());
     productFound.setCategory(categoryFound);
+    productFound.setAuthors(authors);
+    productFound.setPublisher(publisherFound);
+    productFound.setSupplier(supplierFound);
+    productFound.setTranslators(translators);
 
     // update thumbnail
     if (thumbnailFile != null && !thumbnailFile.isEmpty()) {

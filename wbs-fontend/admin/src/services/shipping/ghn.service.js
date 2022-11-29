@@ -1,5 +1,5 @@
 import { toAddressSlug, toFullAddress } from '../../utils/utils';
-import { GHN_CONFIG } from '../../utils/variableDefault';
+import { GHN_CONFIG } from '../../utils';
 import axiosGHN from './axios.config';
 
 export const ghn = {
@@ -58,7 +58,7 @@ export const ghn = {
             items: items,
         };
         console.log('data', data);
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', data);
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/preview', data);
     },
     createOrderGHN(order) {
         let items = order?.orderItems.map((item) => {
@@ -114,13 +114,13 @@ export const ghn = {
             items: items,
         };
         console.log('data', data);
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', data);
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create', data);
     },
     cancelOrderGHN(orderCode) {
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel', {order_codes: [orderCode]});
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel', {order_codes: [orderCode]});
     },
     getOrderDetailGHN(orderCode) {
-        return axiosGHN.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
+        return axiosGHN.post('https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail', {order_code: orderCode});
     },
     async getAddressGHN(address) {
         address = toAddressSlug(address);
@@ -166,16 +166,16 @@ export const ghn = {
         };
     },
     getProvinceList() {
-        return axiosGHN.get('https://online-gateway.ghn.vn/shiip/public-api/master-data/province');
+        return axiosGHN.get('https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province');
     },
     getDistrictList(provinceId) {
         return axiosGHN.get(
-            `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceId}`,
+            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${provinceId}`,
         );
     },
     getWardList(districtId) {
         return axiosGHN.get(
-            `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
+            `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
         );
     },
 };
