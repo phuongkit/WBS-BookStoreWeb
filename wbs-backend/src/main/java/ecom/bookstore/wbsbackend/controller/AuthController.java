@@ -62,7 +62,7 @@ public class AuthController {
     try {
       Authentication authentication =
           this.authManager.authenticate(
-              new UsernamePasswordAuthenticationToken(request.isOtp() ? request.getPhone() : request.getEmail(),
+              new UsernamePasswordAuthenticationToken(request.isOtp() ? request.getPhone() : (request.getEmail() == null ? request.getPhone() : request.getEmail()),
                                                       request.getPassword()));
       String accessToken = this.jwtTokenUtil.generateAccessToken(authentication);
       User user = (User) authentication.getPrincipal();

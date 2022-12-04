@@ -5,9 +5,9 @@ import './Order.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { numberWithCommas } from '../../utils';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { customerService, orderService } from '~/services';
+import { customerService, orderService } from '../../services';
 import { momo, vnpay } from '../../services/payment';
-import { EGender, EOrderStatus, EPayment } from '../../utils';
+import { EGender, EOrderStatus, EPayment, MESSAGE } from '../../utils';
 import { deleteOrdersByIdApi } from '../../redux/order/ordersApi';
 import { ghn } from '../../services/shipping/ghn.service';
 
@@ -15,9 +15,9 @@ function Order({ title }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [ship, setShip] = useState({ expectedDeliveryTime: null, transportFee: 0 });
-    const order = localStorage.getItem('order')
+    const order = useSelector((state) => state.orders.order.data) || localStorage.getItem('order')
         ? JSON.parse(localStorage.getItem('order'))
-        : useSelector((state) => state.orders.order.data);
+        : undefined;
     if (!order) {
         navigate('/');
     }
@@ -45,7 +45,7 @@ function Order({ title }) {
                     const dataMomo = {
                         orderId: res?.data?.id,
                         orderInfo: `${order.fullName} thanh toán đơn hàng ${order.id} với MoMo`,
-                        redirectUrl: window.location.origin,
+                        redirectUrl: window.location.origin + '/#/',
                         amount: 1000,
                         extraData: '',
                     };
@@ -56,12 +56,12 @@ function Order({ title }) {
                         orderId: res?.data?.id,
                         // orderInfo: `${order.fullName} thanh toán đơn hàng ${order.id} với MoMo`,
                         fullName: order.fullName,
-                        redirectUrl: window.location.origin,
+                        redirectUrl: window.location.origin + '/#/',
                         totalPrice: res?.data?.totalPriceProduct + res?.data?.transportFee,
                         // extraData: '',
                     };
                     const resVNPay = await vnpay.createVNPayPayment(dataVNPay);
-                    window.location = resVNPay.data.payUrl || window.location.origin;
+                    window.location = resVNPay.data.payUrl || window.location.origin + '/#/';
                 } else {
                     alert('Tạo đơn hàng thành công');
                     navigate('/');

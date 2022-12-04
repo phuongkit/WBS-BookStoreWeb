@@ -12,6 +12,7 @@ import { EGender, EOrderStatus, EPayment, EShippingMethod } from '../../utils';
 import { getAllOrdersByUserId } from '../../redux/order/ordersApi';
 import Paging from '../../components/Paging';
 import { updateStatusOrderApi } from '../../redux/order/ordersApi';
+import { ghn } from '../../services/shipping';
 import swal from 'sweetalert';
 
 var $ = require('jquery');
@@ -28,10 +29,9 @@ function Account() {
     if (!token) {
         navigate('/');
     }
-    const user = token
-        ? localStorage.getItem('user') !== null
-            ? JSON.parse(localStorage.getItem('user'))
-            : useSelector((state) => state.users.auth.currentUser)
+    const user = useSelector((state) => state.users.auth.currentUser) || token
+        && localStorage.getItem('user') !== null
+        ? JSON.parse(localStorage.getItem('user'))
         : undefined;
     const { content: orders = [], ...page } = useSelector((state) => state.orders.pageOrder.data);
     useEffect(() => {
@@ -207,7 +207,7 @@ function Account() {
                                                             label: EGender.UNKNOWN.name,
                                                         },
                                                     ]}
-                                                    onChange={(option) => {}}
+                                                    onChange={(option) => { }}
                                                     placeholder="Giới tính"
                                                     defaultValue={{
                                                         value: user?.gender || EGender.UNKNOWN.index,
@@ -235,7 +235,7 @@ function Account() {
                                     <div className="email my-3">
                                         <div className="row">
                                             <label className="col-md-2 offset-md-2" htmlFor="account-address">
-                                                {}
+                                                { }
                                             </label>
                                             <LocationForm
                                                 name="account-address"

@@ -2,8 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import $ from 'jquery';
 import validate from 'jquery-validation';
-import { ProductBlock } from '@Components/ProductBlock';
-import { EHomeOption } from '~/utils';
+import { ProductBlock } from '../../components/ProductBlock';
+import { EHomeOption } from '../../utils';
 import Parameter from './Parameter';
 import { getNameBook, numberWithCommas } from '../../utils';
 import { EBookLayout } from '../../utils';
@@ -223,7 +223,7 @@ function ProductDetail({title}) {
                                                 <input
                                                     id="quantity"
                                                     type="text"
-                                                    value={quantity}
+                                                    defaultValue={quantity}
                                                     className="soluongsp text-center"
                                                 />
                                                 <div

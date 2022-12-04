@@ -1,4 +1,4 @@
-import { getPageOrder, postOrder, updateOrder } from './orderSlice';
+import { getPageOrder, postOrder, updateOrder, deleteOrder } from './orderSlice';
 import { orderService } from '../../services';
 import { MESSAGE } from '../../utils';
 import swal from 'sweetalert';

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-// import { ArrowLeftCircleFill, ArrowRightCircleFill } from 'react-bootstrap-icons';
+import { ArrowLeftCircleFill, ArrowRightCircleFill } from 'react-bootstrap-icons';
 import ProductCard from '../ProductCard';
 import styles from './slick.module.scss';
 function Slick({ children, autoplay, numberChild }) {

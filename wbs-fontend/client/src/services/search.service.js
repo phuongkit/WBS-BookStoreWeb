@@ -1,4 +1,4 @@
-import { axiosClient } from '~/api';
+import { axiosClient } from '../api';
 
 export const searchService = {
     getResultSearchApi({keyword = '', page = null, limit = null, location = null}) {

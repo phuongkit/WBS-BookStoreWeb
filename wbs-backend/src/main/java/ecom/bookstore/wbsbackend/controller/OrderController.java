@@ -127,7 +127,6 @@ public class OrderController {
   public ResponseObject<OrderResponseDTO> updateStatus(@PathVariable(name = "id") Long id,
                                                              @RequestBody OrderUpdateStatusDTO updateStatusDTO,
                                                              HttpServletRequest request) {
-    //    this.LOGGER.info(String.valueOf(SecurityContextHolder.getContext().getAuthentication().getAuthorities()));
     String loginKey = jwtTokenUtil.getUserNameFromRequest(request);
     return new ResponseObject<>(HttpStatus.OK, String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, branchName),
                                 this.orderService.updateStatusOrder(loginKey, id, updateStatusDTO));

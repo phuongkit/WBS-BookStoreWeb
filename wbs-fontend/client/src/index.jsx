@@ -10,6 +10,7 @@ import GlobalStyles from './components/GlobalStyles';
 import { store } from './redux/store';
 import { Provider } from 'react-redux';
 import './index.css';
+import * as serviceWorker from './serviceWorker';
 
 const container = document.getElementById('root');
 
@@ -24,3 +25,19 @@ root.render(
         </Provider>
     </StrictMode>,
 );
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.register();
+
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//       navigator.serviceWorker.register('/service-worker.js')
+//      .then(registration => {
+//         console.log('SW registered: ', registration);
+//       }).catch(registrationError => {
+//         console.log('SW registration failed: ', registrationError);
+//       });
+//     });
+//   }

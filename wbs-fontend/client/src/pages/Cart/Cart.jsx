@@ -26,10 +26,9 @@ function Cart() {
         city: '',
     });
     const token = localStorage.getItem('token');
-    const user = token
-        ? localStorage.getItem('user') !== null
-            ? JSON.parse(localStorage.getItem('user'))
-            : useSelector((state) => state.users.auth.currentUser)
+    const user = useSelector((state) => state.users.auth.currentUser) || token
+        && localStorage.getItem('user') !== null
+        ? JSON.parse(localStorage.getItem('user'))
         : undefined;
     useEffect(() => {
         if (token && !user) {

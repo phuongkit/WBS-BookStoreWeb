@@ -8,6 +8,7 @@ const Order = lazy(() => import('../pages/Order'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 const Search = lazy(() => import('../pages/Search'));
 import { ProductDetailProvider } from '../context/ProductDetailContext';
+
 export const publishRoutes = [
     {
         index: true,

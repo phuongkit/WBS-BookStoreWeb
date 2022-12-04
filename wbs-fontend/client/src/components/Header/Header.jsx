@@ -28,10 +28,10 @@ function Header() {
 
     if (!user || (user && (Object.keys(user).length === 0 || user.constructor !== Object))) {
         user = localStorage.getItem('user') !== null
-        ? JSON.parse(localStorage.getItem('user'))
-        : null;
+            ? JSON.parse(localStorage.getItem('user'))
+            : null;
     }
-        
+
     useEffect(() => {
         if (token && !user) {
             getUserByToken(dispatch);
@@ -149,7 +149,7 @@ function Header() {
                                     aria-label="Small"
                                     placeholder="Nhập sách cần tìm kiếm..."
                                     onKeyDown={(e) => {
-                                        e.preventDefault;
+                                        e.preventDefault();
                                         if (e.key === 'Enter') {
                                             let keyword = e.target.value;
                                             navigate(`/search?keyword=${keyword}`);
@@ -180,7 +180,7 @@ function Header() {
                                         <li
                                             className="nav-item account d-flex btn dropdown tw-mr-10"
                                             type="button"
-                                            // data-toggle="dropdown"
+                                        // data-toggle="dropdown"
                                         >
                                             <a href="/account" className="btn btn-secondary rounded-circle tw-relative">
                                                 {user?.avatar ? (
@@ -226,6 +226,7 @@ function Header() {
                                                 <Link
                                                     className="dropdown-item text-center text-white-important"
                                                     onClick={handleLogout}
+                                                    to="/"
                                                 >
                                                     Đăng xuất
                                                 </Link>
@@ -280,7 +281,7 @@ function Header() {
                                     <div className="cart-amount">{cartAmount || 0}</div>
                                 </Link>
                                 <Link
-                                    to={'/cart'}
+                                    to="/cart"
                                     className="nav-link text-dark giohang text-uppercase"
                                     style={{ display: 'inline-block', marginLeft: '1px' }}
                                 >

@@ -10,13 +10,27 @@ import { EHomeOption } from '../../utils';
 
 function ProductBlock({ homeOption }) {
     const dispatch = useDispatch();
-    const data = homeOption.index === EHomeOption.NEW.index
-        ? useSelector((state) => state.products.allProduct.new)
-        : homeOption.index === EHomeOption.SALE.index
-        ? useSelector((state) => state.products.allProduct.sale)
-        : homeOption.index === EHomeOption.POPULAR.index
-        ? useSelector((state) => state.products.allProduct.popular)
-        : useSelector((state) => state.products.allProduct.data);
+    // const data = homeOption.index === EHomeOption.NEW.index
+    //     ? useSelector((state) => state.products.allProduct.new)
+    //     : homeOption.index === EHomeOption.SALE.index
+    //     ? useSelector((state) => state.products.allProduct.sale)
+    //     : homeOption.index === EHomeOption.POPULAR.index
+    //     ? useSelector((state) => state.products.allProduct.popular)
+    //     : useSelector((state) => state.products.allProduct.data);
+    const data1 = useSelector((state) => state.products.allProduct.new);
+    const data2 = useSelector((state) => state.products.allProduct.sale);
+    const data3 = useSelector((state) => state.products.allProduct.popular);
+    const data4 = useSelector((state) => state.products.allProduct.data);
+    let data = {content: []};
+    if (homeOption.index === EHomeOption.NEW.index) {
+       data = data1;
+    } else if (homeOption.index === EHomeOption.SALE.index) {
+        data = data2;
+    } else  if (homeOption.index === EHomeOption.POPULAR.index) {
+        data = data3;
+    } else {
+        data = data4;
+    }
 
     useEffect(() => {
         getAllProductByOptionApi(dispatch, homeOption.index);

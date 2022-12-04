@@ -2,13 +2,12 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import validate from 'jquery-validation';
 import './Home.scss';
-import { ProductBlock } from '@Components/ProductBlock';
-import { EHomeOption } from '~/utils';
+import { ProductBlock } from '../../components/ProductBlock';
+import { EHomeOption, parseQueryString } from '../../utils';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { vnpay } from '../../services/payment';
 import swal from 'sweetalert';
 import { getUserByToken } from '../../redux/user/userApi';
-import { GOOGLE_AUTH_URL } from '../../utils/constants';
 
 var jQueryBridget = require('jquery-bridget');
 var Isotope = require('isotope-layout');
@@ -46,16 +45,18 @@ function Home({ title }) {
                 await vnpay.getReturnVNPay(param);
             }
         };
-        const clearParamByGoogle = async () => {
-            let token = searchParams.get('token');
+        const clearParamByGoogle = async (token) => {
             localStorage.setItem('token', JSON.stringify(token));
             getUserByToken(dispatch, token)
         }
-        if (searchParams) {
-            if (searchParams.get('vnp_ResponseCode')) {
-                clearParamByVNPay();
-            } else if (searchParams.get('token')) {
-                clearParamByGoogle();
+
+        let param = parseQueryString(window.location.search);
+        if (searchParams || param) {
+            if (searchParams.get('vnp_ResponseCode') || param['vnp_ResponseCode']) {
+                clearParamByVNPay(searchParams.get('vnp_ResponseCode') || param['vnp_ResponseCode']);
+            } else if (searchParams.get('token') || param['token']) {
+                clearParamByGoogle(searchParams.get('token') || param['token']);
+                window.location.search = '';
             }
             navigate('/');
         }
@@ -202,13 +203,13 @@ function Home({ title }) {
 
     // add to cart
 
-    let carts = document.querySelector('.nutmua');
-    if (carts) {
-        carts.addEventListener('click', () => {
-            cartNumbers(product);
-            totalCost(product);
-        });
-    }
+    // let carts = document.querySelector('.nutmua');
+    // if (carts) {
+    //     carts.addEventListener('click', () => {
+    //         cartNumbers(product);
+    //         totalCost(product);
+    //     });
+    // }
 
     function cartNumbers(product) {
         let productNumbers = localStorage.getItem('cartNumbers');

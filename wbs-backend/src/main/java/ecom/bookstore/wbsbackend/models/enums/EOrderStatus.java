@@ -20,28 +20,28 @@ public enum EOrderStatus {
   ORDER_DISPUTED(Names.ORDER_DISPUTED),
   ORDER_MANUAL_VERIFICATION_REQUIRED(Names.ORDER_MANUAL_VERIFICATION_REQUIRED),
   ORDER_PARTIALLY_REFUNDED(Names.ORDER_PARTIALLY_REFUNDED),
-  ORDER_ready_to_pick(Names.ORDER_ready_to_pick),
-  ORDER_picking(Names.ORDER_picking),
-  ORDER_cancel(Names.ORDER_cancel),
-  ORDER_money_collect_picking(Names.ORDER_money_collect_picking),
-  ORDER_picked(Names.ORDER_picked),
-  ORDER_storing(Names.ORDER_storing),
-  ORDER_transporting(Names.ORDER_transporting),
-  ORDER_sorting(Names.ORDER_sorting),
-  ORDER_delivering(Names.ORDER_delivering),
-  ORDER_money_collect_delivering(Names.ORDER_money_collect_delivering),
-  ORDER_delivered(Names.ORDER_delivered),
-  ORDER_delivery_fail(Names.ORDER_delivery_fail),
-  ORDER_waiting_to_return(Names.ORDER_waiting_to_return),
-  ORDER_return(Names.ORDER_return),
-  ORDER_return_transporting(Names.ORDER_return_transporting),
-  ORDER_return_sorting(Names.ORDER_return_sorting),
-  ORDER_returning(Names.ORDER_returning),
-  ORDER_return_fail(Names.ORDER_return_fail),
-  ORDER_returned(Names.ORDER_returned),
-  ORDER_exception(Names.ORDER_exception),
-  ORDER_damage(Names.ORDER_damage),
-  ORDER_lost(Names.ORDER_lost);
+  ORDER_READY_TO_PICK(Names.ORDER_READY_TO_PICK),
+  ORDER_PICKING(Names.ORDER_PICKING),
+  ORDER_CANCEL(Names.ORDER_CANCEL),
+  ORDER_MONEY_COLLECT_PICKING(Names.ORDER_MONEY_COLLECT_PICKING),
+  ORDER_PICKED(Names.ORDER_PICKED),
+  ORDER_STORING(Names.ORDER_STORING),
+  ORDER_TRANSPORTING(Names.ORDER_TRANSPORTING),
+  ORDER_SORTING(Names.ORDER_SORTING),
+  ORDER_DELIVERING(Names.ORDER_DELIVERING),
+  ORDER_MONEY_COLLECT_DELIVERING(Names.ORDER_MONEY_COLLECT_DELIVERING),
+  ORDER_DELIVERED(Names.ORDER_DELIVERED),
+  ORDER_DELIVERY_FAIL(Names.ORDER_DELIVERY_FAIL),
+  ORDER_WAITING_TO_RETURN(Names.ORDER_WAITING_TO_RETURN),
+  ORDER_RETURN(Names.ORDER_RETURN),
+  ORDER_RETURN_TRANSPORTING(Names.ORDER_RETURN_TRANSPORTING),
+  ORDER_RETURN_SORTING(Names.ORDER_RETURN_SORTING),
+  ORDER_RETURNING(Names.ORDER_RETURNING),
+  ORDER_RETURN_FAIL(Names.ORDER_RETURN_FAIL),
+  ORDER_RETURNED(Names.ORDER_RETURNED),
+  ORDER_EXCEPTION(Names.ORDER_EXCEPTION),
+  ORDER_DAMAGE(Names.ORDER_DAMAGE),
+  ORDER_LOST(Names.ORDER_LOST);
 
   public class Names{
     public static final String ORDER_PENDING = "Đang chờ xác nhận";
@@ -58,28 +58,28 @@ public enum EOrderStatus {
     public static final String ORDER_DISPUTED = "";
     public static final String ORDER_MANUAL_VERIFICATION_REQUIRED = "";
     public static final String ORDER_PARTIALLY_REFUNDED = "";
-    public static final String ORDER_ready_to_pick = "Mới tạo đơn hàng";
-    public static final String ORDER_picking = "Nhân viên đang lấy hàng";
-    public static final String ORDER_cancel = "Hủy đơn hàng";
-    public static final String ORDER_money_collect_picking = "Đang thu tiền người gửi";
-    public static final String ORDER_picked = "Nhân viên đã lấy hàng";
-    public static final String ORDER_storing = "Hàng đang nằm ở kho";
-    public static final String ORDER_transporting = "Đang luân chuyển hàng";
-    public static final String ORDER_sorting = "Đang phân loại hàng hóa";
-    public static final String ORDER_delivering = "Nhân viên đang giao cho người nhận";
-    public static final String ORDER_money_collect_delivering = "Nhân viên đang thu tiền người nhận";
-    public static final String ORDER_delivered = "Nhân viên đã giao hàng thành công";
-    public static final String ORDER_delivery_fail = "Nhân viên giao hàng thất bại";
-    public static final String ORDER_waiting_to_return = "Đang đợi trả hàng về cho người gửi";
-    public static final String ORDER_return = "Trả hàng";
-    public static final String ORDER_return_transporting = "Đang luân chuyển hàng trả";
-    public static final String ORDER_return_sorting = "Đang phân loại hàng trả";
-    public static final String ORDER_returning = "Nhân viên đang đi trả hàng";
-    public static final String ORDER_return_fail = "Nhân viên trả hàng thất bại";
-    public static final String ORDER_returned = "Nhân viên trả hàng thành công";
-    public static final String ORDER_exception = "Đơn hàng ngoại lệ không nằm trong quy trình";
-    public static final String ORDER_damage = "Hàng bị hư hỏng";
-    public static final String ORDER_lost = "Hàng bị mất";
+    public static final String ORDER_READY_TO_PICK = "Mới tạo đơn hàng";
+    public static final String ORDER_PICKING = "Nhân viên đang lấy hàng";
+    public static final String ORDER_CANCEL = "Hủy đơn hàng";
+    public static final String ORDER_MONEY_COLLECT_PICKING = "Đang thu tiền người gửi";
+    public static final String ORDER_PICKED = "Nhân viên đã lấy hàng";
+    public static final String ORDER_STORING = "Hàng đang nằm ở kho";
+    public static final String ORDER_TRANSPORTING = "Đang luân chuyển hàng";
+    public static final String ORDER_SORTING = "Đang phân loại hàng hóa";
+    public static final String ORDER_DELIVERING = "Nhân viên đang giao cho người nhận";
+    public static final String ORDER_MONEY_COLLECT_DELIVERING = "Nhân viên đang thu tiền người nhận";
+    public static final String ORDER_DELIVERED = "Nhân viên đã giao hàng thành công";
+    public static final String ORDER_DELIVERY_FAIL = "Nhân viên giao hàng thất bại";
+    public static final String ORDER_WAITING_TO_RETURN = "Đang đợi trả hàng về cho người gửi";
+    public static final String ORDER_RETURN = "Trả hàng";
+    public static final String ORDER_RETURN_TRANSPORTING = "Đang luân chuyển hàng trả";
+    public static final String ORDER_RETURN_SORTING = "Đang phân loại hàng trả";
+    public static final String ORDER_RETURNING = "Nhân viên đang đi trả hàng";
+    public static final String ORDER_RETURN_FAIL = "Nhân viên trả hàng thất bại";
+    public static final String ORDER_RETURNED = "Nhân viên trả hàng thành công";
+    public static final String ORDER_EXCEPTION = "Đơn hàng ngoại lệ không nằm trong quy trình";
+    public static final String ORDER_DAMAGE = "Hàng bị hư hỏng";
+    public static final String ORDER_LOST = "Hàng bị mất";
   }
 
   private final String label;

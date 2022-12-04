@@ -1,4 +1,4 @@
-import { axiosClient } from '~/api';
+import { axiosClient } from '../api';
 
 const branch_api = "/books";
 
