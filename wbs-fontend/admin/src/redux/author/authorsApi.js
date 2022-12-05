@@ -1,4 +1,4 @@
-import { getAllAuthors, getOneAuthor } from './authorsSlice';
+import { getAllAuthors, getOneAuthor, createAuthor } from './authorsSlice';
 import { authorService } from '../../services';
 
 export const getAllAuthorsApi = async (dispatch) => {
@@ -6,9 +6,9 @@ export const getAllAuthorsApi = async (dispatch) => {
     dispatch(getAllAuthors(res.data));
 };
 
-export const createAuthorApi = async (dispatch, id) => {
-    let res = await authorService.getById(id);
-    dispatch(getOneAuthor(res.data));
+export const createAuthorApi = async (dispatch, data) => {
+    let res = await authorService.create(data);
+    dispatch(createAuthor(res.data));
 };
 
 export const updateAuthorApi = async (dispatch, id, data) => {

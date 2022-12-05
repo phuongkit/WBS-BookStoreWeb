@@ -12,6 +12,7 @@ const ListTranslator = lazy(() => import('../pages/List/ListTranslator'));
 const ListSupplier = lazy(() => import('../pages/List/ListSupplier'));
 const ListUser = lazy(() => import('../pages/List/ListUser'));
 const AddProduct = lazy(() => import('../pages/New/NewProduct'));
+const AddAuthor = lazy(() => import('../pages/New/NewAuthor'));
 export const publishRoutes = [
     {
         index: true,
@@ -76,40 +77,53 @@ export const publishRoutes = [
     },
     {
         path: 'authors',
-        element: (
-            <Suspense fallback={<Loading />}>
-                <ListAuthor />
-            </Suspense>
-        ),
-    },{
+        children: [
+            {
+                index: true,
+                element: (
+                    <Suspense fallback={<Loading />}>
+                        <ListAuthor />
+                    </Suspense>
+                ),
+            }, 
+            {
+                path: 'addAuthor',
+                element: (
+                    <Suspense fallback={<Loading />}>
+                        <AddAuthor isUpdate />
+                    </Suspense>
+                ),
+            }
+        ]
+    }, {
         path: 'categories',
         element: (
             <Suspense fallback={<Loading />}>
                 <ListCategory />
             </Suspense>
         ),
-    },{
+    }, {
         path: 'genres',
         element: (
             <Suspense fallback={<Loading />}>
                 <ListGenre />
             </Suspense>
         ),
-    },{
+    }, {
         path: 'publishers',
         element: (
             <Suspense fallback={<Loading />}>
                 <ListPublisher />
             </Suspense>
         ),
-    },{
+    }, {
         path: 'suppliers',
         element: (
             <Suspense fallback={<Loading />}>
                 <ListSupplier />
             </Suspense>
         ),
-    },{
+    }, {
         path: 'translators',
         element: (
             <Suspense fallback={<Loading />}>

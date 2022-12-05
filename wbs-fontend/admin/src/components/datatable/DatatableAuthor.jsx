@@ -25,7 +25,7 @@ const Datatable = () => {
             renderCell: (params) => {
                 return (
                     <div className="cellAction text-[12px]">
-                        <Link to={`/Authors/${params.row._id}`}>
+                        <Link to={`/authors/${params.row._id}`}>
                             <div className="updateButton">Detail</div>
                         </Link>
                     </div>
@@ -37,7 +37,7 @@ const Datatable = () => {
         <div className="datatable">
             <div className="datatableTitle">
                 Add New Author
-                <Link to="/products/new" className="link">
+                <Link to="/authors/addAuthor" className="link">
                     Add New
                 </Link>
             </div>

@@ -1,4 +1,4 @@
-import { getPageOrder, postOrder, updateOrder, deleteOrder } from './orderSlice';
+import { getPageOrder, getStatisticPageOrder, postOrder, updateOrder, deleteOrder } from './orderSlice';
 import { orderService } from '../../services';
 import swal from 'sweetalert';
 
@@ -9,7 +9,11 @@ export const getAllOrdersByUserId = async (dispatch, userId) => {
 
 export const getAllOrders = async (dispatch, param) => {
     let res = await orderService.getAllOrders(param);
-    dispatch(getPageOrder(res.data?.content || []));
+    if (param?.sortDir) {
+        dispatch(getStatisticPageOrder(res.data));
+    } else {
+        dispatch(getPageOrder(res.data?.content || []));
+    }
 };
 
 export const postOrders = async (dispatch, data) => {

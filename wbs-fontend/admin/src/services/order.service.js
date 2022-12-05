@@ -3,10 +3,12 @@ import { axiosClient } from '~/api';
 const branch_api = '/orders';
 
 export const orderService = {
-    getAllOrders({ page = null, limit = null }) {
+    getAllOrders({ page = null, limit = null, sortField = null, sortDir = null }) {
         const params = {
             page: page,
             limit: limit,
+            sortField: sortField,
+            sortDir: sortDir,
         };
         const query = Object.keys(params).reduce((acc, key) => {
             const value = params[key];

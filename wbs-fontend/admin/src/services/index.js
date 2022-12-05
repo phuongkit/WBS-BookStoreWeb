@@ -14,3 +14,4 @@ export { customerService } from './customer.service';
 export { orderService } from './order.service';
 export { promoService } from './promo.service';
 export { userService } from './user.service';
+export { statisticService } from './statistic.service';

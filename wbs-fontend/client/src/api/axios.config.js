@@ -59,11 +59,19 @@ axiosClient.interceptors.response.use(
         console.log(error);
         // const { data } = error.response;
         if (response?.status === 401) {
-            swal({
-                title: 'Thông báo',
-                text: 'Vui lòng đăng nhập để thực hiện chức năng này',
-                icon: 'warning',
-            });
+            if (response?.data?.message === 'User is disabled') {
+                swal({
+                    title: 'Thông báo',
+                    text: 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ website chúng tôi để được hỗ trợ!',
+                    icon: 'warning',
+                });
+            } else {
+                swal({
+                    title: 'Thông báo',
+                    text: 'Vui lòng đăng nhập để thực hiện chức năng này',
+                    icon: 'info',
+                });
+            }
             postLogout();
         }
         // if (error.hasOwnProperty('code') && data.hasOwnProperty('message')) {

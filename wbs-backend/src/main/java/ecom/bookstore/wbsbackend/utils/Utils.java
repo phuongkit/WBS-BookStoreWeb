@@ -3,6 +3,7 @@ package ecom.bookstore.wbsbackend.utils;
 import ecom.bookstore.wbsbackend.entities.*;
 import ecom.bookstore.wbsbackend.exceptions.ResourceNotValidException;
 import ecom.bookstore.wbsbackend.models.enums.EPattern;
+import ecom.bookstore.wbsbackend.models.enums.ETimeDistance;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -12,11 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
+import java.text.DateFormat;
 import java.text.Normalizer;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -91,6 +91,9 @@ public class Utils {
   // Objects Per Page
   public static final String DEFAULT_PAGE = "1";
   public static final String DEFAULT_SIZE = "20";
+  public static final long hourTime = 1000 * 3600;
+  public static final long dayTime = hourTime * 24;
+  public static final long monthTime = dayTime * 30;
   public static final String PRODUCT_PER_PAGE = "20";
   public static final String SHOP_PER_PAGE = "20";
   public static final String DISCOUNT_PER_PAGE = "30";
@@ -303,6 +306,34 @@ public class Utils {
       String lastName = fullName.substring(0, firstSpace);
       String firstName = fullName.substring(firstSpace+1);
       return new String[]{firstName, lastName};
+    }
+  }
+
+  //Convert Date to Calendar
+  public static Calendar dateToCalendar(Date date) {
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    return calendar;
+
+  }
+
+  //Convert Calendar to Date
+  public static Date calendarToDate(Calendar calendar) {
+    return calendar.getTime();
+  }
+
+  public static String getStringFromCalendar(Calendar calendar, ETimeDistance timeDistance) {
+    DateFormat sdfDay = new SimpleDateFormat("dd/MM/yyyy");
+    DateFormat sdfMonth = new SimpleDateFormat("MM/yyyy");
+    DateFormat sdfYear = new SimpleDateFormat("yyyy");
+    switch (timeDistance) {
+      case MONTH:
+        return sdfMonth.format(calendar.getTime());
+      case YEAR:
+        return sdfYear.format(calendar.getTime());
+      default:
+        return sdfDay.format(calendar.getTime());
     }
   }
 }

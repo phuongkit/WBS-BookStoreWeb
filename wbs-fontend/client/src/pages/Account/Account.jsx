@@ -54,7 +54,7 @@ function Account() {
         }).then(async (isOK) => {
             if (isOK) {
                 let data = {
-                    status: EOrderStatus.ORDER_CANCELLED.name,
+                    status: EOrderStatus.ORDER_CANCELLED.index,
                     log: '',
                     shipOrderCode: null,
                     expectedDeliveryTime: null,
@@ -304,7 +304,7 @@ function Account() {
                                 >
                                     <div className="donhang-table table-responsive-xl">
                                         <table className="table table-striped m-auto">
-                                            <tr>
+                                            <thead><tr>
                                                 <th>Mã đơn hàng</th>
                                                 <th>Ngày mua</th>
                                                 <th>Sản phẩm</th>
@@ -314,10 +314,11 @@ function Account() {
                                                 <th>Phương thức vận chuyển</th>
                                                 <th>Hành động</th>
                                             </tr>
+                                            </thead>
                                             <tbody>
                                                 {orders &&
                                                     orders.map((order, index) => (
-                                                        <tr>
+                                                        <tr key={index}>
                                                             <td>{order.id}</td>
                                                             <td>{order.createdAt}</td>
                                                             <td>
@@ -327,7 +328,7 @@ function Account() {
                                                                         .toString()}
                                                             </td>
                                                             <td>{getPrice(order.totalPrice)} đ</td>
-                                                            <td>{order.status}</td>
+                                                            <td>{EOrderStatus.getNameFromIndex(order.status)}</td>
                                                             <td>{EPayment.getNameFromIndex(order.payment)}</td>
                                                             <td>
                                                                 {EShippingMethod.getNameFromIndex(
@@ -335,12 +336,14 @@ function Account() {
                                                                 )}
                                                             </td>
                                                             <td>
-                                                                <div
-                                                                    className="deleteButton"
-                                                                    onClick={() => handleCancel(order)}
-                                                                >
-                                                                    Cancel
-                                                                </div>
+                                                                {order.status !== EOrderStatus.ORDER_CANCEL.index && order.status !== EOrderStatus.ORDER_CANCELLED.index &&
+                                                                    <div
+                                                                        className="deleteButton"
+                                                                        onClick={() => handleCancel(order)}
+                                                                    >
+                                                                        Cancel
+                                                                    </div>
+                                                                }
                                                             </td>
                                                         </tr>
                                                     ))}

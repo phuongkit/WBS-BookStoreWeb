@@ -316,12 +316,12 @@ export const productColumns = [
     {
         field: 'product',
         headerName: 'Product',
-        width: 250,
+        width: 450,
         renderCell: (params) => {
             return (
                 <div className="cellWithImg">
                     <img className="cellImg2" src={params.row.img} alt="avatar" />
-                    {params.row.title}
+                    {params.row.name}
                 </div>
             );
         },

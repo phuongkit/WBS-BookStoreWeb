@@ -69,6 +69,8 @@ public class ProductMapperImpl implements ProductMapper {
       BigDecimal salePrice = Utils.getPriceProduct(entity, sale);
       responseDTO.setSalePrice(salePrice);
       responseDTO.setSale(sale.getPercent());
+    }  else {
+      responseDTO.setSalePrice(responseDTO.getOriginPrice());
     }
     Rating rating = this.reviewService.getRatingByProduct(entity.getId());
     if (rating != null) {
@@ -171,6 +173,8 @@ public class ProductMapperImpl implements ProductMapper {
       BigDecimal salePrice = Utils.getPriceProduct(entity, sale);
       responseDTO.setSalePrice(salePrice);
       responseDTO.setSale(sale.getPercent());
+    } else {
+      responseDTO.setSalePrice(responseDTO.getOriginPrice());
     }
     if (entity.getAuthors() != null && entity.getAuthors().size() > 0) {
       String[] authors = new String[entity.getAuthors().size()];

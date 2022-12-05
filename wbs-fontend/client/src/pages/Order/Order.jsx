@@ -63,7 +63,11 @@ function Order({ title }) {
                     const resVNPay = await vnpay.createVNPayPayment(dataVNPay);
                     window.location = resVNPay.data.payUrl || window.location.origin + '/#/';
                 } else {
-                    alert('Tạo đơn hàng thành công');
+                    swal({
+                        title: 'Thông báo',
+                        text: 'Tạo đơn hàng thành công!',
+                        icon: 'info',
+                    });
                     navigate('/');
                 }
             } else {

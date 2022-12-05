@@ -142,14 +142,11 @@ function Cart() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let sex = 2;
-        let orderItemDetails = cartItems.map((value) => {
-            let item = orderItem;
-            item.productId = value;
-            item.quantity = value.quantity;
-            item.saleName = value.tag;
-            item.note = value?.note ? value.note : '';
-            return item;
-        });
+        let orderItemDetails = cartItems.map((value) => ({productId: value,
+                quantity: value.quantity,
+                saleName: value.tag,
+                note: value?.note ? value.note : ''}
+        ));
         orderDetail = {
             ...orderDetail,
             fullName: $('#inputNameOrder').val(),
@@ -275,6 +272,9 @@ function Cart() {
                                                                         </div>
                                                                     </div>
                                                                     <div className="item-price ml-auto d-flex flex-column align-items-end">
+                                                                        {
+                                                                            item.sale ? 
+                                                                        <>
                                                                         <div className="giamoi">
                                                                             {getPrice(item.salePrice * item.quantity)} ₫
                                                                         </div>
@@ -282,6 +282,12 @@ function Cart() {
                                                                             {getPrice(item.originPrice * item.quantity)}{' '}
                                                                             ₫
                                                                         </div>
+                                                                        </> : <>
+                                                                        <div className="giamoi" style={{color: 'black'}}>
+                                                                            {getPrice(item.salePrice * item.quantity)} ₫
+                                                                        </div>
+                                                                        </>
+                                                                        }
                                                                         <span
                                                                             className="remove mt-auto"
                                                                             onClick={() => {

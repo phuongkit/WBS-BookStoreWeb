@@ -59,10 +59,17 @@ axiosClient.interceptors.response.use(
         console.log(error);
         // const { data } = error.response;
         if (response.status === 401) {
-            swal({
-                text: 'Vui lòng đăng nhập để thực hiện chức năng này',
-                icon: 'info',
-            });
+            if (response?.data?.message === 'User is disabled') {
+                swal({
+                    text: 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ website chúng tôi để được hỗ trợ!',
+                    icon: 'warning',
+                });
+            } else {
+                swal({
+                    text: 'Vui lòng đăng nhập để thực hiện chức năng này',
+                    icon: 'info',
+                });
+            }
 
             postLogout();
         }

@@ -21,7 +21,7 @@
     color: crimson;
     border: 1px dotted rgba(220, 20, 60, 0.6);
     cursor: pointer;
-  }
+}
 
 .button-capnhat {
     background: linear-gradient(#f8c168, #ffa142);
@@ -50,4 +50,18 @@ table {
 h3.account-header {
     color: #9d9d9d;
     font-size: 18px;
+}
+
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_desc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:before {
+    bottom: 0.5em;
 }

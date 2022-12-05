@@ -200,107 +200,107 @@ export const EOrderStatus = {
         name: '',
         index: 13,
     },
-    ORDER_ready_to_pick: {
+    ORDER_READY_TO_PICK: {
         name: 'Mới tạo đơn hàng',
         en: 'ready_to_pick',
         index: 14,
     },
-    ORDER_picking: {
+    ORDER_PICKING: {
         name: 'Nhân nameên đang lấy hàng',
         en: 'picking',
         index: 15,
     },
-    ORDER_cancel: {
+    ORDER_CANCEL: {
         name: 'Hủy đơn hàng',
         en: 'cancel',
         index: 16,
     },
-    ORDER_money_collect_picking: {
+    ORDER_MONEY_COLLECT_PICKING: {
         name: 'Đang thu tiền người gửi',
         en: 'money_collect_picking',
         index: 17,
     },
-    ORDER_picked: {
+    ORDER_PICKED: {
         name: 'Nhân nameên đã lấy hàng',
         en: 'picked',
         index: 18,
     },
-    ORDER_storing: {
+    ORDER_STORING: {
         name: 'Hàng đang nằm ở kho',
         en: 'storing',
         index: 19,
     },
-    ORDER_transporting: {
+    ORDER_TRANSPORTING: {
         name: 'Đang luân chuyển hàng',
         en: 'transporting',
         index: 20,
     },
-    ORDER_sorting: {
+    ORDER_SORTING: {
         name: 'Đang phân loại hàng hóa',
         en: 'sorting',
         index: 21,
     },
-    ORDER_delivering: {
+    ORDER_DELIVERING: {
         name: 'Nhân nameên đang giao cho người nhận',
         en: 'delivering',
         index: 22,
     },
-    ORDER_money_collect_delivering: {
+    ORDER_MONEY_COLLECT_DELIVERING: {
         name: 'Nhân nameên đang thu tiền người nhận',
         en: 'money_collect_delivering',
         index: 23,
     },
-    ORDER_delivered: {
+    ORDER_DELIVERED: {
         name: 'Nhân nameên đã giao hàng thành công',
         en: 'delivered',
         index: 24,
     },
-    ORDER_delivery_fail: {
+    ORDER_DELIVERY_FAIL: {
         name: 'Nhân nameên giao hàng thất bại',
         en: 'delivery_fail',
         index: 25,
     },
-    ORDER_waiting_to_return: {
+    ORDER_WAITING_TO_RETURN: {
         name: 'Đang đợi trả hàng về cho người gửi',
         en: 'waiting_to_return',
         index: 26,
     },
-    ORDER_return: {
+    ORDER_RETURN: {
         name: 'Trả hàng',
         en: 'return',
         index: 27,
     },
-    ORDER_return_transporting: {
+    ORDER_RETURN_TRANSPORTING: {
         name: 'Đang luân chuyển hàng trả',
         en: 'return_transporting',
         index: 28,
     },
-    ORDER_return_sorting: {
+    ORDER_RETURN_SORTING: {
         name: 'Đang phân loại hàng trả',
         en: 'return_sorting',
         index: 29,
     },
-    ORDER_returning: {
+    ORDER_RETURNING: {
         name: 'Nhân nameên đang đi trả hàng',
         en: 'returning',
         index: 30,
     },
-    ORDER_return_fail: {
+    ORDER_RETURN_FAIL: {
         name: 'Nhân nameên trả hàng thất bại',
         en: 'return_fail',
         index: 31,
     },
-    ORDER_returned: {
+    ORDER_RETURNED: {
         name: 'Nhân nameên trả hàng thành công',
         en: 'returned',
         index: 32,
     },
-    ORDER_exception: {
+    ORDER_EXCEPTION: {
         name: 'Đơn hàng ngoại lệ không nằm trong quy trình',
         en: 'exception',
         index: 33,
     },
-    ORDER_damage: {
+    ORDER_DAMAGE: {
         name: 'Hàng bị hư hỏng',
         en: 'damage',
         index: 34,

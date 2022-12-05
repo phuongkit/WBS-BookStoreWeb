@@ -142,7 +142,7 @@ function ProductDetail({title}) {
                                     </div>
                                     <div className="col-md-7">
                                         <div className="gia">
-                                            {initialProductDetail?.sale && false ? (
+                                            {initialProductDetail?.sale ? (
                                                 <>
                                                     <div className="giabia">
                                                         Giá gốc:
@@ -182,7 +182,7 @@ function ProductDetail({title}) {
                                                             className="giamoi font-weight-bold"
                                                             style={{ color: 'black' }}
                                                         >
-                                                            {numberWithCommas(initialProductDetail.salePrice)}
+                                                            {numberWithCommas(initialProductDetail.originPrice)}
                                                         </span>
                                                         <span className="donvitien" style={{ color: 'black' }}>
                                                             ₫

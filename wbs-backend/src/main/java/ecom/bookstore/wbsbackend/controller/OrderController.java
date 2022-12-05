@@ -123,10 +123,11 @@ public class OrderController {
   }
 
   @PutMapping("/{id}/status")
-  @RolesAllowed({ERole.Names.ADMIN})
+  @RolesAllowed({ERole.Names.CUSTOMER, ERole.Names.ADMIN})
   public ResponseObject<OrderResponseDTO> updateStatus(@PathVariable(name = "id") Long id,
                                                              @RequestBody OrderUpdateStatusDTO updateStatusDTO,
                                                              HttpServletRequest request) {
+    this.LOGGER.info(updateStatusDTO.toString());
     String loginKey = jwtTokenUtil.getUserNameFromRequest(request);
     return new ResponseObject<>(HttpStatus.OK, String.format(Utils.UPDATE_OBJECT_SUCCESSFULLY, branchName),
                                 this.orderService.updateStatusOrder(loginKey, id, updateStatusDTO));

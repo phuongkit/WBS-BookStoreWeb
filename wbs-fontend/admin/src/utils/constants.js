@@ -103,7 +103,7 @@ export const EPayment = {
         index: 2,
     },
     getNameFromIndex: (index) =>
-        EPayment[Object.keys(EPayment)[index > EPayment.CASH.index ? EPayment.CASH.index : index]]?.name ||
+        EPayment[Object.keys(EPayment)[index > EPayment.VNPAY.index ? EPayment.CASH.index : index]]?.name ||
         EPayment.CASH.name,
 };
 

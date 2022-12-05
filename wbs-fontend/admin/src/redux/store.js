@@ -16,6 +16,7 @@ import translatorReducer from './translator/tranlatorsSlice';
 import searchSlice from './search/searchSlice';
 import historyOrdersSlice from './history/historyOrdersSlice';
 import orderSlice from './order/orderSlice';
+import statisticReducer from './statistic/statisticsSlice';
 //khoi tao store
 export const store = configureStore({
     reducer: {
@@ -34,5 +35,6 @@ export const store = configureStore({
         translators: translatorReducer,
         historyOrders: historyOrdersSlice,
         orders: orderSlice,
+        statistics: statisticReducer,
     },
 });

@@ -8,20 +8,24 @@ import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlin
 import { useTheme } from '@emotion/react';
 import { useSelect } from '@mui/base';
 import { useSelector } from 'react-redux';
+import numberWithCommas from '../../utils/numberWithCommas';
 
 const Widget = ({ type }) => {
     const theme = useTheme();
     let data;
 
-    const pageOrder = useSelector(state => state.orders.pageOrder.data) || {};
+    const pageOrder = useSelector(state => state.orders.statisticPageOrder.data) || {};
+    const statisticOrder = useSelector(state=> state.statistics.statisticOrder.data);
     //temporary
     const amount = pageOrder?.totalElements || 0;
+    const totalPrice = statisticOrder?.reduce((acc, item) => acc + item.totalPrice, 0) || 0;
     const diff = 20;
 
     switch (type) {
         case 'user':
             data = {
                 title: 'USERS',
+                value: amount,
                 isMoney: false,
                 link: 'See all users',
                 icon: (
@@ -39,6 +43,7 @@ const Widget = ({ type }) => {
         case 'order':
             data = {
                 title: 'ORDERS',
+                value: amount,
                 isMoney: false,
                 link: 'View all orders',
                 icon: (
@@ -55,6 +60,7 @@ const Widget = ({ type }) => {
         case 'earning':
             data = {
                 title: 'EARNINGS',
+                value: numberWithCommas(totalPrice),
                 isMoney: true,
                 link: 'View net earnings',
                 icon: (
@@ -68,6 +74,7 @@ const Widget = ({ type }) => {
         case 'balance':
             data = {
                 title: 'BALANCE',
+                value: 0,
                 isMoney: true,
                 link: 'See details',
                 icon: (
@@ -90,7 +97,7 @@ const Widget = ({ type }) => {
             <div className="left">
                 <span className="title">{data.title}</span>
                 <span className="counter">
-                    {data.isMoney && '$'} {amount}
+                    {data.isMoney && 'đ'} {data.value}
                 </span>
                 <span className="link">{data.link}</span>
             </div>

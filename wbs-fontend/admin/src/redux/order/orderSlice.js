@@ -7,6 +7,9 @@ export const orders = createSlice({
         pageOrder: {
             data: [],
         },
+        statisticPageOrder: {
+            data: {},
+        },
         order: {
             //data: [],
             data: {}//order,
@@ -15,6 +18,9 @@ export const orders = createSlice({
     reducers: {
         getPageOrder: (state, action) => {
             state.pageOrder.data = action.payload;
+        },
+        getStatisticPageOrder: (state, action) => {
+            state.statisticPageOrder.data = action.payload || {content: []};
         },
         postOrder: (state, action) => {
             state.pageOrder.data = [...state.pageOrder.data, action.payload];
@@ -31,5 +37,5 @@ export const orders = createSlice({
         },
     },
 });
-export const { getPageOrder, postOrder, updateOrder, deleteOrder } = orders.actions;
+export const { getPageOrder, getStatisticPageOrder, postOrder, updateOrder, deleteOrder } = orders.actions;
 export default orders.reducer;
